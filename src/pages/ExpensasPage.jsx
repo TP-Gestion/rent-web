@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import StatCard from "../components/StatCard";
 import DataTable from "../components/dataTable/DataTable";
-import { MorosityCard, BatchActionsCard } from "../components/BottomCards";
+import { MorosityCard, BatchActionsCard } from "../components/bottomCards";
 import {
   EXPENSAS_PERIOD_LABEL,
   PER_PAGE,
