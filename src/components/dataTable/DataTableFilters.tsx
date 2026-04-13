@@ -1,10 +1,16 @@
-import { TABS } from "./dataTable.constants";
+import type { Tab, BuildingOption } from './dataTable.constants'
+import { TABS } from './dataTable.constants'
 
-function TabFilter({ activeTab, onChange }) {
+interface TabFilterProps {
+  activeTab: string
+  onChange: (tab: string) => void
+}
+
+function TabFilter({ activeTab, onChange }: TabFilterProps) {
   return (
     <div className="tab-filter" role="tablist" aria-label="Filtrar por estado">
-      {TABS.map((tab) => {
-        const isActive = activeTab === tab.key;
+      {TABS.map((tab: Tab) => {
+        const isActive = activeTab === tab.key
 
         return (
           <button
@@ -12,17 +18,23 @@ function TabFilter({ activeTab, onChange }) {
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(tab.key)}
-            className={`tab-filter__button${isActive ? " tab-filter__button--active" : ""}`}
+            className={`tab-filter__button${isActive ? ' tab-filter__button--active' : ''}`}
           >
             {tab.label}
           </button>
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 
-function BuildingFilter({ value, options, onChange }) {
+interface BuildingFilterProps {
+  value: string
+  options: BuildingOption[]
+  onChange: (value: string) => void
+}
+
+function BuildingFilter({ value, options, onChange }: BuildingFilterProps) {
   return (
     <div className="building-filter">
       <span className="building-filter__label">FILTRAR POR EDIFICIO</span>
@@ -39,14 +51,22 @@ function BuildingFilter({ value, options, onChange }) {
         ))}
       </select>
     </div>
-  );
+  )
 }
 
-export default function DataTableFilters({ activeTab, building, buildingOptions, onTabChange, onBuildingChange }) {
+interface DataTableFiltersProps {
+  activeTab: string
+  building: string
+  buildingOptions: BuildingOption[]
+  onTabChange: (tab: string) => void
+  onBuildingChange: (building: string) => void
+}
+
+export default function DataTableFilters({ activeTab, building, buildingOptions, onTabChange, onBuildingChange }: DataTableFiltersProps) {
   return (
     <div className="data-table__controls">
       <TabFilter activeTab={activeTab} onChange={onTabChange} />
       <BuildingFilter value={building} options={buildingOptions} onChange={onBuildingChange} />
     </div>
-  );
+  )
 }

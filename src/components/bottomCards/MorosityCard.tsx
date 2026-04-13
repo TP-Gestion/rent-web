@@ -1,15 +1,24 @@
+interface MorosityCardProps {
+  percentage?: number
+  trend?: 'up' | 'down' | 'neutral'
+  trendLabel?: string
+  description?: string
+  onVerInforme?: () => void
+  onConfigurar?: () => void
+}
+
 export default function MorosityCard({
   percentage = 12.4,
-  trend = "up",
-  trendLabel = "crítico",
-  description = "Se detectó un incremento del 4% en pagos fuera de término para el segmento comercial en Torre Solaris I. Se recomienda iniciar gestiones preventivas.",
+  trend = 'up',
+  trendLabel = 'crítico',
+  description = 'Se detectó un incremento del 4% en pagos fuera de término para el segmento comercial en Torre Solaris I. Se recomienda iniciar gestiones preventivas.',
   onVerInforme,
   onConfigurar,
-}) {
-  const isUp = trend === "up";
-  const trendColor = isUp ? "#a33030" : "#2e7d4f";
-  const trendBg = isUp ? "#fdf0f0" : "#eaf6ef";
-  const trendArrow = isUp ? "↑" : trend === "down" ? "↓" : "→";
+}: MorosityCardProps) {
+  const isUp = trend === 'up'
+  const trendColor = isUp ? '#a33030' : '#2e7d4f'
+  const trendBg = isUp ? '#fdf0f0' : '#eaf6ef'
+  const trendArrow = isUp ? '↑' : trend === 'down' ? '↓' : '→'
 
   return (
     <div className="morosity-card" role="region" aria-label="Análisis de rendimiento - Índice de morosidad">
@@ -22,7 +31,7 @@ export default function MorosityCard({
         <span className="morosity-card__percentage">{percentage.toFixed(1)}%</span>
         <span
           className="morosity-card__trend-pill"
-          style={{ "--trend-color": trendColor, "--trend-bg": trendBg }}
+          style={{ '--trend-color': trendColor, '--trend-bg': trendBg } as React.CSSProperties}
         >
           {trendArrow} {trendLabel}
         </span>
@@ -39,5 +48,5 @@ export default function MorosityCard({
         </button>
       </div>
     </div>
-  );
+  )
 }

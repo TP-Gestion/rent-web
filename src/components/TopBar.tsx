@@ -1,5 +1,5 @@
-import { useState, useRef} from "react";
-import "./TopBar.css";
+import { useState, useRef } from 'react'
+import './TopBar.css'
 
 const BellIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -10,7 +10,7 @@ const BellIcon = () => (
     />
     <path d="M6.5 11.5a1.5 1.5 0 003 0" fill="currentColor" opacity="0.85" />
   </svg>
-);
+)
 
 const SettingsIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -23,7 +23,7 @@ const SettingsIcon = () => (
       opacity="0.85"
     />
   </svg>
-);
+)
 
 const SearchIcon = () => (
   <svg
@@ -36,15 +36,30 @@ const SearchIcon = () => (
     <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
     <path d="M9.5 9.5L12.5 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
   </svg>
-);
+)
 
-function getInitials(name = "") {
+function getInitials(name = ''): string {
   return name
-    .split(" ")
+    .split(' ')
     .map((w) => w[0])
-    .join("")
+    .join('')
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 2)
+}
+
+interface User {
+  name: string
+}
+
+interface TopBarProps {
+  sectionTitle?: string
+  user?: User
+  notificationCount?: number
+  onSearch?: (query: string) => void
+  onMenuClick?: () => void
+  onNotificationsClick?: () => void
+  onSettingsClick?: () => void
+  onAvatarClick?: () => void
 }
 
 export default function TopBar({
@@ -52,34 +67,46 @@ export default function TopBar({
   user,
   notificationCount,
   onSearch,
+  onMenuClick,
   onNotificationsClick,
   onSettingsClick,
   onAvatarClick,
-}) {
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const searchRef = useRef(null);
+}: TopBarProps) {
+  const [searchFocused, setSearchFocused] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
+  const searchRef = useRef<HTMLInputElement>(null)
 
-  const handleSearchChange = (e) => {
-    setSearchValue(e.target.value);
-    if (onSearch) onSearch(e.target.value);
-  };
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value)
+    if (onSearch) onSearch(e.target.value)
+  }
 
   const handleSearchClear = () => {
-    setSearchValue("");
-    if (onSearch) onSearch("");
-    searchRef.current?.focus();
-  };
+    setSearchValue('')
+    if (onSearch) onSearch('')
+    searchRef.current?.focus()
+  }
 
   return (
     <header className="topbar" role="banner">
+      {/* Hamburguer - solo mobile */}
+      <button
+        className="topbar__menu-btn"
+        onClick={onMenuClick}
+        aria-label="Abrir menú"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </button>
+
       {/* Título de sección */}
       <div className="topbar__section-title">
         {sectionTitle}
       </div>
 
       {/* Buscador */}
-      <div className={`topbar__search-wrapper${searchFocused ? " topbar__search-wrapper--focused" : ""}`}>
+      <div className={`topbar__search-wrapper${searchFocused ? ' topbar__search-wrapper--focused' : ''}`}>
         <SearchIcon />
         <input
           ref={searchRef}
@@ -113,7 +140,7 @@ export default function TopBar({
           onClick={onNotificationsClick}
         >
           <BellIcon />
-          {notificationCount > 0 && <span className="topbar__notif-dot" />}
+          {notificationCount != null && notificationCount > 0 && <span className="topbar__notif-dot" />}
         </button>
 
         {/* Settings */}
@@ -129,9 +156,10 @@ export default function TopBar({
           className="topbar__avatar-btn"
           onClick={onAvatarClick}
         >
-          {getInitials(user.name)}
+          {getInitials(user?.name)}
         </button>
       </div>
     </header>
-  );
+  )
 }
+

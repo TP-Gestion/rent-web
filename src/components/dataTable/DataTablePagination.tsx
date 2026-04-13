@@ -1,11 +1,19 @@
-export default function DataTablePagination({ currentPage, totalPages, totalResults, perPage = 10, onChange }) {
-  const from = (currentPage - 1) * perPage + 1;
-  const to = Math.min(currentPage * perPage, totalResults);
+interface DataTablePaginationProps {
+  currentPage: number
+  totalPages: number
+  totalResults: number
+  perPage?: number
+  onChange: (page: number) => void
+}
 
-  const pages = [];
-  const maxVisible = 3;
+export default function DataTablePagination({ currentPage, totalPages, totalResults, perPage = 10, onChange }: DataTablePaginationProps) {
+  const from = (currentPage - 1) * perPage + 1
+  const to = Math.min(currentPage * perPage, totalResults)
+
+  const pages: number[] = []
+  const maxVisible = 3
   for (let i = 1; i <= Math.min(maxVisible, totalPages); i += 1) {
-    pages.push(i);
+    pages.push(i)
   }
 
   return (
@@ -18,7 +26,7 @@ export default function DataTablePagination({ currentPage, totalPages, totalResu
           <button
             onClick={() => onChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className={`pagination__button${currentPage === 1 ? " pagination__button--disabled" : ""}`}
+            className={`pagination__button${currentPage === 1 ? ' pagination__button--disabled' : ''}`}
             aria-label="Página anterior"
           >
             ‹
@@ -28,9 +36,9 @@ export default function DataTablePagination({ currentPage, totalPages, totalResu
             <button
               key={page}
               onClick={() => onChange(page)}
-              className={`pagination__button${page === currentPage ? " pagination__button--active" : ""}`}
+              className={`pagination__button${page === currentPage ? ' pagination__button--active' : ''}`}
               aria-label={`Página ${page}`}
-              aria-current={page === currentPage ? "page" : undefined}
+              aria-current={page === currentPage ? 'page' : undefined}
             >
               {page}
             </button>
@@ -41,7 +49,7 @@ export default function DataTablePagination({ currentPage, totalPages, totalResu
           <button
             onClick={() => onChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
-            className={`pagination__button${currentPage === totalPages ? " pagination__button--disabled" : ""}`}
+            className={`pagination__button${currentPage === totalPages ? ' pagination__button--disabled' : ''}`}
             aria-label="Página siguiente"
           >
             ›
@@ -49,5 +57,5 @@ export default function DataTablePagination({ currentPage, totalPages, totalResu
         </div>
       </div>
     </div>
-  );
+  )
 }

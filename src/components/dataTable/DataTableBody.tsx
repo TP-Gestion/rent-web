@@ -1,6 +1,13 @@
-import TenantRow from "./TenantRow";
+import type { Tenant } from '../../propiedadService'
+import TenantRow from './TenantRow'
 
-export default function DataTableBody({ headers, tenants, onVerDetalle }) {
+interface DataTableBodyProps {
+  headers: string[]
+  tenants: Tenant[]
+  onVerDetalle?: (tenant: Tenant) => void
+}
+
+export default function DataTableBody({ headers, tenants, onVerDetalle }: DataTableBodyProps) {
   return (
     <div className="data-table__table-wrap">
       <table className="data-table__table" aria-label="Tabla de expensas de inquilinos">
@@ -9,7 +16,7 @@ export default function DataTableBody({ headers, tenants, onVerDetalle }) {
             {headers.map((column) => (
               <th
                 key={column}
-                className={`data-table__head-cell${column === "Monto" || column === "Acción" ? " data-table__head-cell--right" : ""}`}
+                className={`data-table__head-cell${column === 'Monto' || column === 'Acción' ? ' data-table__head-cell--right' : ''}`}
               >
                 {column}
               </th>
@@ -31,5 +38,5 @@ export default function DataTableBody({ headers, tenants, onVerDetalle }) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }

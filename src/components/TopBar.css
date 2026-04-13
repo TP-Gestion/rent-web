@@ -121,3 +121,41 @@
   transition: background-color 0.15s ease;
   border: none;
 }
+
+/* ── Hamburger button ── */
+.topbar__menu-btn {
+  display: none;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f0ece0;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: pointer;
+  color: #555550;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.topbar__menu-btn:hover {
+  background-color: #fafaf7;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .topbar__menu-btn {
+    display: flex;
+  }
+
+  .topbar__search-wrapper {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .topbar__divider,
+  .topbar__icon-btn {
+    display: none;
+  }
+}

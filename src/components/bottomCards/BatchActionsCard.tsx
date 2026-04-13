@@ -36,7 +36,16 @@ const SyncIcon = () => (
   </svg>
 );
 
-function ActionRow({ icon, title, subtitle, onClick }) {
+import type { ReactNode } from 'react'
+
+interface ActionRowProps {
+  icon: ReactNode
+  title: string
+  subtitle: string
+  onClick?: () => void
+}
+
+function ActionRow({ icon, title, subtitle, onClick }: ActionRowProps) {
   return (
     <button onClick={onClick} className="action-row" aria-label={title}>
       <div className="action-row__icon-wrap">{icon}</div>
@@ -50,16 +59,24 @@ function ActionRow({ icon, title, subtitle, onClick }) {
         <path d="M5 3l4 4-4 4" stroke="#D4A017" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </button>
-  );
+  )
+}
+
+interface BatchActionsCardProps {
+  pendingCount?: number
+  lastSyncLabel?: string
+  onSendReminders?: () => void
+  onReconcileBank?: () => void
+  version?: string
 }
 
 export default function BatchActionsCard({
   pendingCount = 14,
-  lastSyncLabel = "Hace 2hs",
+  lastSyncLabel = 'Hace 2hs',
   onSendReminders,
   onReconcileBank,
-  version = "SOLARIS v2.6.0 · Enterprise Edition",
-}) {
+  version = 'SOLARIS v2.6.0 · Enterprise Edition',
+}: BatchActionsCardProps) {
   return (
     <div className="batch-actions-card" role="region" aria-label="Acciones de lote">
       <div className="bc-section-label batch-actions-card__header-label">Acciones de Lote</div>
@@ -80,5 +97,5 @@ export default function BatchActionsCard({
 
       <div className="batch-actions-card__version">{version}</div>
     </div>
-  );
+  )
 }

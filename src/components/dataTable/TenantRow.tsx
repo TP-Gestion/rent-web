@@ -1,29 +1,35 @@
-import { AVATAR_COLORS, BADGE_STYLES } from "./dataTable.constants";
-import { formatArsAmount, getInitials } from "./dataTable.utils";
+import type { Tenant, TenantStatus } from '../../propiedadService'
+import { AVATAR_COLORS, BADGE_STYLES } from './dataTable.constants'
+import { formatArsAmount, getInitials } from './dataTable.utils'
 
-function StatusBadge({ status }) {
-  const style = BADGE_STYLES[status] || BADGE_STYLES.pendiente;
+function StatusBadge({ status }: { status: TenantStatus }) {
+  const style = BADGE_STYLES[status] ?? BADGE_STYLES.pendiente
 
   return (
-    <span className="status-badge" style={{ "--badge-color": style.color, "--badge-bg": style.bg }}>
+    <span className="status-badge" style={{ '--badge-color': style.color, '--badge-bg': style.bg } as React.CSSProperties}>
       {style.label}
     </span>
-  );
+  )
 }
 
-function Avatar({ name }) {
-  const index = name.charCodeAt(0) % AVATAR_COLORS.length;
-  const { bg, color } = AVATAR_COLORS[index];
+function Avatar({ name }: { name: string }) {
+  const index = name.charCodeAt(0) % AVATAR_COLORS.length
+  const { bg, color } = AVATAR_COLORS[index]
 
   return (
-    <div className="avatar" style={{ "--avatar-bg": bg, "--avatar-color": color }} aria-hidden="true">
+    <div className="avatar" style={{ '--avatar-bg': bg, '--avatar-color': color } as React.CSSProperties} aria-hidden="true">
       {getInitials(name)}
     </div>
-  );
+  )
 }
 
-export default function TenantRow({ tenant, onVerDetalle }) {
-  const isOverdue = tenant.status === "vencido";
+interface TenantRowProps {
+  tenant: Tenant
+  onVerDetalle?: (tenant: Tenant) => void
+}
+
+export default function TenantRow({ tenant, onVerDetalle }: TenantRowProps) {
+  const isOverdue = tenant.status === 'vencido'
 
   return (
     <tr className="tenant-row">
@@ -47,7 +53,7 @@ export default function TenantRow({ tenant, onVerDetalle }) {
       </td>
 
       <td className="tenant-row__cell">
-        <div className={`tenant-row__due-date${isOverdue ? " tenant-row__due-date--overdue" : ""}`}>
+        <div className={`tenant-row__due-date${isOverdue ? ' tenant-row__due-date--overdue' : ''}`}>
           {tenant.dueDate}
         </div>
       </td>
@@ -65,5 +71,5 @@ export default function TenantRow({ tenant, onVerDetalle }) {
         </button>
       </td>
     </tr>
-  );
+  )
 }
