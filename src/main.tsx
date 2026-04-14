@@ -1,11 +1,12 @@
-import * as React from 'react'
-import * as ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import App from './App'
-import AppLayout from './AppLayout'
-import ExpensasPage from './pages/ExpensasPage'
-import NotFoundPage from './pages/NotFoundPage'
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import App from "./App";
+import AppLayout from "./AppLayout";
+import ExpensasPage from "./pages/ExpensasPage";
+import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,14 +20,14 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
-})
+});
 
 const router = createBrowserRouter([
   {
     Component: App,
     children: [
       {
-        path: '/',
+        path: "/",
         Component: AppLayout,
         children: [
           {
@@ -34,11 +35,15 @@ const router = createBrowserRouter([
             Component: ExpensasPage,
           },
           {
-            path: 'tenants',
+            path: "tenants",
             Component: ExpensasPage,
           },
           {
-            path: '*',
+            path: "nueva-propiedad",
+            Component: NuevaPropiedadPage,
+          },
+          {
+            path: "*",
             Component: NotFoundPage,
           },
         ],
@@ -46,15 +51,15 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '*',
+    path: "*",
     Component: NotFoundPage,
   },
-])
+]);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
   </React.StrictMode>,
-)
+);
