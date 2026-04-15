@@ -6,6 +6,7 @@ import App from "./App";
 import AppLayout from "./AppLayout";
 import ExpensasPage from "./pages/ExpensasPage";
 import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
+import PropiedadDetallePage from "./pages/propertyDetail";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const queryClient = new QueryClient({
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
           {
             path: "nueva-propiedad",
             Component: NuevaPropiedadPage,
+          },
+          {
+            path: "propiedades/:idPropiedad",
+            Component: PropiedadDetallePage,
           },
           {
             path: "*",

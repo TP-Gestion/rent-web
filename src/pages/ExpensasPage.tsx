@@ -88,9 +88,7 @@ export default function ExpensasPage() {
   };
 
   const handleVerDetalle = (tenant: Tenant) => {
-    alert(
-      `Ver detalle de: ${tenant.name}\nPropiedad: ${tenant.property}\nMonto: $${tenant.amount.toLocaleString("es-AR")}`,
-    );
+    navigate(`/propiedades/${tenant.id}`);
   };
 
   const handleExportar = () => {
