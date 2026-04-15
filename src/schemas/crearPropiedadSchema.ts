@@ -36,6 +36,7 @@ const crearPropiedadSchema = z
     nombreInquilino: z.string(),
     apellidoInquilino: z.string(),
     correoInquilino: z.string(),
+    telefonoInquilino: z.string(),
   })
   .superRefine((data, ctx) => {
     if (!data.enAlquiler) return;
