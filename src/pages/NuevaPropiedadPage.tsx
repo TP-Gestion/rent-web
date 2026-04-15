@@ -33,6 +33,7 @@ const INITIAL_VALUES: FormValues = {
   nombreInquilino: "",
   apellidoInquilino: "",
   correoInquilino: "",
+  telefonoInquilino: "",
 };
 
 function extractErrors(result: z.SafeParseReturnType<FormValues, FormValues>) {
@@ -156,6 +157,7 @@ export default function NuevaPropiedadPage() {
             nombreInquilino: undefined,
             apellidoInquilino: undefined,
             correoInquilino: undefined,
+            telefonoInquilino: undefined,
           }
         : {}),
     });
@@ -361,6 +363,15 @@ export default function NuevaPropiedadPage() {
                 onChange={(e) => change("correoInquilino", e.target.value)}
                 onBlur={() => blur("correoInquilino")}
                 error={errors.correoInquilino}
+              />
+              <InputField
+                label="Teléfono"
+                placeholder="Ej: +54 11 4523-8891"
+                type="tel"
+                value={values.telefonoInquilino}
+                onChange={(e) => change("telefonoInquilino", e.target.value)}
+                onBlur={() => blur("telefonoInquilino")}
+                error={errors.telefonoInquilino}
               />
             </div>
           )}
