@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { Tenant } from "../services/expensasService";
+import type { Tenant } from "../types/expensas";
 import { filterTenants } from "../services/expensasService";
 
 interface TableStateParams {

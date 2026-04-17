@@ -6,6 +6,8 @@ import { BuildingFilter, TabFilter } from "./table/TableFilters";
 import TenantRow from "./table/TenantRow";
 import Pagination from "./table/Pagination";
 import styles from "./ExpensasDataTable.module.css";
+
+
 export default function ExpensasDataTable({ tenants, perPage = PER_PAGE, onVerDetalle }: DataTableProps) {
   const { activeTab, building, currentPage, handleBuildingChange, handleTabChange, setPage, totalPages, totalResults, visibleTenants } =
     useExpensasTableState({ tenants, perPage });

@@ -1,4 +1,4 @@
-import type { StatVariant } from "../services/expensasService";
+import type { StatVariant } from "../types/expensas";
 import styles from "./ExpensasStatCard.module.css";
 
 interface StatCardProps {

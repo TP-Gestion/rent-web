@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { Tenant, TenantStatus } from "../../services/expensasService";
+import type { Tenant, TenantStatus } from "../../types/expensas";
 import { formatArsAmount, getInitials } from "../../services/expensasService";
 import { AVATAR_COLORS, BADGE_STYLES } from "../../mocks/dataTable";
 import styles from "../ExpensasDataTable.module.css";

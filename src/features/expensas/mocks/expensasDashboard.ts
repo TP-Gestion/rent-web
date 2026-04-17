@@ -1,4 +1,4 @@
-import type { BatchActionsData, MorosityData, Stat, Tenant } from "../services/expensasService";
+import type { BatchActionsData, MorosityData, Stat, Tenant } from "../types/expensas";
 
 export const PER_PAGE = 10;
 export const EXPENSAS_PERIOD_LABEL = "MARZO 2026";

@@ -1,46 +1,25 @@
-export type TenantStatus = "pagado" | "pendiente" | "vencido";
+import type { FilterState, Tenant, TenantStatus } from "../types/expensas";
 
-export interface Tenant {
-  id: string;
-  name: string;
-  property: string;
-  propertyType: string;
-  status: TenantStatus;
-  dueDate: string;
-  amount: number;
-}
-
-export type StatVariant = "default" | "success" | "warning" | "danger";
-
-export interface Stat {
-  label: string;
-  value: string;
-  badge: string;
-  variant: StatVariant;
-  description?: string;
-}
-
-export interface MorosityData {
-  percentage: number;
-  trend: "up" | "down" | "neutral";
-  trendLabel: string;
-  description: string;
-}
-
-export interface BatchActionsData {
-  pendingCount: number;
-  lastSyncLabel: string;
-}
-
-export interface FilterState {
-  tab: string;
-  building: string;
-}
+export type {
+  BatchActionsData,
+  FilterState,
+  MorosityData,
+  Stat,
+  StatVariant,
+  Tenant,
+  TenantStatus,
+} from "../types/expensas";
 
 const STATUS_MAP: Record<string, TenantStatus> = {
   pagados: "pagado",
   pendientes: "pendiente",
   vencidos: "vencido",
+};
+
+const BUILDING_MAP: Record<string, string> = {
+  "solaris-i": "Torre Solaris I",
+  "solaris-ii": "Torre Solaris II",
+  "torres-este": "Torres del Este",
 };
 
 export function filterTenants(tenants: Tenant[], filters: FilterState): Tenant[] {
@@ -54,13 +33,7 @@ export function filterTenants(tenants: Tenant[], filters: FilterState): Tenant[]
   }
 
   if (filters.building !== "todos") {
-    const buildingMap: Record<string, string | null> = {
-      "solaris-i": "Torre Solaris I",
-      "solaris-ii": "Torre Solaris II",
-      "torres-este": null,
-    };
-
-    const buildingLabel = buildingMap[filters.building];
+    const buildingLabel = BUILDING_MAP[filters.building];
     if (buildingLabel) {
       filtered = filtered.filter((tenant) => tenant.property.startsWith(buildingLabel));
     }

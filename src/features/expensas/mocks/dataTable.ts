@@ -1,4 +1,4 @@
-import type { TenantStatus } from "../services/expensasService";
+import type { TenantStatus } from "../types/expensas";
 
 export const BADGE_STYLES: Record<TenantStatus, { bg: string; color: string; label: string }> = {
   pagado: { bg: "#eaf6ef", color: "#2e7d4f", label: "PAGADO" },

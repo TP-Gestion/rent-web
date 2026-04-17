@@ -33,7 +33,7 @@ export default function ExpensasPage() {
         </div>
         <div className={styles.headerActions}>
           <HeaderButton label="↓  Exportar reporte" onClick={handleExportar} />
-          <HeaderButton label="＋ Nueva Propiedad" onClick={() => navigate("/nueva-propiedad")} />
+          <HeaderButton label="+ Nueva Propiedad" onClick={() => navigate("/nueva-propiedad")} />
           <HeaderButton label="+ Generar liquidación" primary onClick={handleGenerarLiquidacion} />
         </div>
       </div>

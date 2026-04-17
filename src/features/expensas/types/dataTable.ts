@@ -1,4 +1,4 @@
-import type { Tenant } from "../services/expensasService";
+import type { Tenant } from "./expensas";
 
 export interface DataTableProps {
   tenants: Tenant[];
