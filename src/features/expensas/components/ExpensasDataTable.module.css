@@ -1,0 +1,279 @@
+.table {
+  background-color: #ffffff;
+  border: 1px solid #f0ece0;
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0ece0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.tabButton {
+  font-size: 11.5px;
+  font-weight: 400;
+  padding: 5px 13px;
+  border-radius: 7px;
+  border: none;
+  background-color: transparent;
+  color: #888880;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.tabButtonActive {
+  font-weight: 600;
+  background-color: #d4a017;
+  color: #3a2700;
+}
+
+.buildingFilter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.buildingLabel {
+  font-size: 10px;
+  color: #b8a882;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.buildingSelect {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #3a3530;
+  border: 1px solid #f0ece0;
+  border-radius: 7px;
+  padding: 4px 24px 4px 10px;
+  background-color: #ffffff;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23b8a882' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  font-family: inherit;
+  outline: none;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.tableEl {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.headRow {
+  border-bottom: 1px solid #f0ece0;
+}
+
+.headCell {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  color: #b8a882;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.headCellRight {
+  text-align: right;
+}
+
+.row {
+  background-color: transparent;
+  transition: background-color 0.1s ease;
+}
+
+.row:hover {
+  background-color: #fafaf7;
+}
+
+.cell {
+  padding: 10px 12px;
+}
+
+.tenantCell {
+  width: 220px;
+}
+
+.tenantWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #2c2820;
+  line-height: 1.2;
+}
+
+.id {
+  font-size: 10px;
+  color: #b8a882;
+  margin-top: 2px;
+}
+
+.property {
+  font-size: 12px;
+  color: #555550;
+}
+
+.propertyType {
+  font-size: 10px;
+  color: #b8a882;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dueDate {
+  font-size: 12px;
+  color: #555550;
+  font-weight: 400;
+}
+
+.overdue {
+  color: #a33030;
+  font-weight: 600;
+}
+
+.amount {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2c2820;
+}
+
+.detailBtn {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d4a017;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  letter-spacing: 0.2px;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.statusBadge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--badge-color);
+  background-color: var(--badge-bg);
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--avatar-bg);
+  color: var(--avatar-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+.paginationWrap {
+  border-top: 1px solid #f0ece0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 4px;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.summary {
+  font-size: 11px;
+  color: #b8a882;
+}
+
+.paginationControls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.paginationButton {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #f0ece0;
+  background-color: #ffffff;
+  color: #888880;
+  font-size: 11.5px;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  transition: all 0.15s ease;
+}
+
+.paginationButtonActive {
+  border-color: #d4a017;
+  background-color: #d4a017;
+  color: #3a2700;
+  font-weight: 700;
+}
+
+.paginationButtonDisabled {
+  opacity: 0.4;
+}
+
+.ellipsis {
+  font-size: 11px;
+  color: #b8a882;
+  padding: 0 4px;
+}
+
+.empty {
+  padding: 40px;
+  text-align: center;
+  font-size: 13px;
+  color: #b8a882;
+}
+
+@media (max-width: 640px) {
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

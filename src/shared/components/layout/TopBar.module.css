@@ -1,0 +1,161 @@
+:global(.topbar) {
+  height: 54px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f0ece0;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 14px;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+:global(.topbar__section-title) {
+  font-size: 20px;
+  font-weight: 900;
+  color: #3a3530;
+  letter-spacing: 0.5px;
+  flex: 1;
+  min-width: 0;
+}
+
+:global(.topbar__search-wrapper) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fafaf7;
+  border: 1px solid #f0ece0;
+  border-radius: 8px;
+  padding: 0 15px;
+  height: 32px;
+  width: 500px;
+  transition: all 0.2s ease;
+}
+
+:global(.topbar__search-wrapper--focused) {
+  border-color: #d4a017;
+  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.12);
+}
+
+:global(.topbar__search-icon) {
+  flex-shrink: 0;
+}
+
+:global(.topbar__search-input) {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12px;
+  color: #555550;
+  width: 100%;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+:global(.topbar__clear-btn) {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #b8a882;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+:global(.topbar__divider) {
+  width: 1px;
+  height: 20px;
+  background-color: #f0ece0;
+  flex-shrink: 0;
+}
+
+:global(.topbar__actions) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+:global(.topbar__icon-btn) {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #f0ece0;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #888880;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+:global(.topbar__notif-dot) {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #d4a017;
+  border: 1.5px solid #ffffff;
+}
+
+:global(.topbar__avatar-btn) {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #d4a017;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  color: #3a2700;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+  border: none;
+}
+
+/* ── Hamburger button ── */
+:global(.topbar__menu-btn) {
+  display: none;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f0ece0;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: pointer;
+  color: #555550;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+:global(.topbar__menu-btn):hover {
+  background-color: #fafaf7;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  :global(.topbar__menu-btn) {
+    display: flex;
+  }
+
+  :global(.topbar__search-wrapper) {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+
+  :global(.topbar__divider),
+  :global(.topbar__icon-btn) {
+    display: none;
+  }
+}
