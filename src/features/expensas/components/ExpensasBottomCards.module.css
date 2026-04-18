@@ -1,18 +1,18 @@
 .morosityCard {
-  background-color: #fffdf5;
-  border: 1px solid #f0e8c8;
-  border-radius: 12px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: 20px 22px;
-  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  font-family: var(--font-sans);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .sectionLabel {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
-  color: #b8a882;
+  color: var(--color-text-label);
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
@@ -24,7 +24,7 @@
 .morosityTitle {
   font-size: 15px;
   font-weight: 700;
-  color: #2c2820;
+  color: var(--color-text-primary);
   letter-spacing: 0.2px;
 }
 
@@ -37,7 +37,7 @@
 .morosityPercentage {
   font-size: 42px;
   font-weight: 800;
-  color: #2c2820;
+  color: var(--color-text-primary);
   letter-spacing: -2px;
   line-height: 1;
 }
@@ -48,13 +48,13 @@
   color: var(--trend-color);
   background-color: var(--trend-bg);
   padding: 3px 9px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   letter-spacing: 0.3px;
 }
 
 .morosityDescription {
   font-size: 12px;
-  color: #888880;
+  color: var(--color-text-muted);
   line-height: 1.6;
   margin: 0;
 }
@@ -68,41 +68,41 @@
 .button {
   font-size: 11.5px;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: var(--transition-fast);
   font-family: inherit;
 }
 
 .buttonPrimary {
   font-weight: 600;
   border: none;
-  background-color: #d4a017;
-  color: #3a2700;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-accent);
   letter-spacing: 0.2px;
 }
 
 .buttonPrimary:hover {
-  background-color: #c4920f;
+  background-color: var(--color-primary-hover);
 }
 
 .buttonSecondary {
   font-weight: 500;
-  border: 1px solid #f0e8c8;
-  background-color: #ffffff;
-  color: #888880;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-muted);
 }
 
 .buttonSecondary:hover {
-  background-color: #fafaf7;
+  background-color: var(--color-bg-warm);
 }
 
 .batchActionsCard {
-  background-color: #ffffff;
-  border: 1px solid #f0ece0;
-  border-radius: 12px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: 20px 22px;
-  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  font-family: var(--font-sans);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -117,27 +117,27 @@
   align-items: center;
   gap: 12px;
   padding: 11px 13px;
-  background-color: #fafaf7;
-  border: 1px solid #f4f1ea;
-  border-radius: 9px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
   width: 100%;
   text-align: left;
-  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  font-family: var(--font-sans);
 }
 
 .actionRow:hover {
-  background-color: #fffbef;
-  border-color: #f0e8c8;
+  background-color: var(--color-bg-warm);
+  border-color: var(--color-border-warm);
 }
 
 .actionIconWrap {
   width: 34px;
   height: 34px;
-  border-radius: 8px;
-  background-color: #fff8e6;
-  border: 1px solid #f0e8c8;
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-warm);
+  border: 1px solid var(--color-border-warm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,20 +152,20 @@
 .actionTitle {
   font-size: 12.5px;
   font-weight: 600;
-  color: #2c2820;
+  color: var(--color-text-primary);
   line-height: 1.2;
 }
 
 .actionSubtitle {
   font-size: 10px;
-  color: #b8a882;
+  color: var(--color-text-label);
   margin-top: 2px;
 }
 
 .actionArrow {
   flex-shrink: 0;
   opacity: 0.3;
-  transition: opacity 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .actionRow:hover .actionArrow {
@@ -174,7 +174,7 @@
 
 .batchVersion {
   font-size: 9px;
-  color: #d0ccc0;
+  color: var(--color-text-faint);
   letter-spacing: 0.5px;
   margin-top: 4px;
   text-align: right;

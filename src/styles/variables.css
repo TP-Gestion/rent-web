@@ -1,0 +1,39 @@
+:root {
+  --font-sans: "DM Sans", "Trebuchet MS", sans-serif;
+  
+  --color-primary: #d4a017;
+  --color-primary-hover: #c4920f;
+  --color-secondary: #8c6f3f;
+  --color-secondary-hover: #7a5f32;
+
+  --color-accent: var(--color-primary);
+  --color-accent-hover: var(--color-primary-hover);
+
+  --color-bg-page: #f8f7f3;
+  --color-bg-surface: #ffffff;
+  --color-bg-warm: #fffdf5;
+
+  --color-border: #f0ece0;
+  --color-border-warm: #f0e8c8;
+
+  --color-text-primary: #2c2820;
+  --color-text-body: #555550;
+  --color-text-muted: #888880;
+  --color-text-label: #b8a882;
+  --color-text-faint: #d0ccc0;
+  --color-text-on-accent: #3a2700;
+
+  --color-warning: #9a6f00;
+  --color-danger: #a33030;
+  --color-success: #2e7d4f;
+
+  --radius-xs: 6px;
+  --radius-sm: 7px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.03);
+  --transition-fast: all 0.15s ease;
+}

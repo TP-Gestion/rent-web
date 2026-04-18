@@ -8,6 +8,7 @@ import ExpensasPage from "./pages/ExpensasPage";
 import AddPropertyPage from "./features/property/pages/AddPropertyPage";
 import PropertyDetailsPage from "./features/property/pages/PropertyDetailsPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import "./styles/globals.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

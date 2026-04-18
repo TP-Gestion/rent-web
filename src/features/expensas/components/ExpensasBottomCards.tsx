@@ -33,7 +33,7 @@ export function MorosityCard({
   const { trendColor, trendBg, trendArrow } = useMorosityTrend(trend);
 
   return (
-    <div className={styles.morosityCard} role="region" aria-label={BOTTOM_CARDS_COPY.morosityRegionLabel}>
+    <div className={styles.morosityCard}>
       <div>
         <div className={`${styles.sectionLabel} ${styles.morosityHeaderLabel}`}>{BOTTOM_CARDS_COPY.morositySectionLabel}</div>
         <div className={styles.morosityTitle}>{BOTTOM_CARDS_COPY.morosityTitle}</div>
@@ -71,7 +71,7 @@ export function BatchActionsCard({
   version = BATCH_ACTIONS_DEFAULTS.version,
 }: BatchActionsCardProps) {
   return (
-    <div className={styles.batchActionsCard} role="region" aria-label={BOTTOM_CARDS_COPY.batchRegionLabel}>
+    <div className={styles.batchActionsCard}>
       <div className={`${styles.sectionLabel} ${styles.batchHeaderLabel}`}>{BOTTOM_CARDS_COPY.batchSectionLabel}</div>
 
       <ActionRow
