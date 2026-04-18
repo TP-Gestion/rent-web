@@ -1,37 +1,18 @@
-import { getDueDateStatus, formatDate } from "../../utils/propertyDetail";
+import { useDueDateBanner } from "../../hooks/useDueDateBanner";
 
 interface Props {
   fechaVencimiento: string;
 }
 
-const BANNER_CONFIG = {
-  past: {
-    icon: "⚠️",
-    label: "Vencimiento pasado",
-    cls: "pd-due-banner pd-due-banner--past",
-  },
-  soon: {
-    icon: "🔔",
-    label: "Próximo vencimiento",
-    cls: "pd-due-banner pd-due-banner--soon",
-  },
-  ok: {
-    icon: "📅",
-    label: "Próximo vencimiento",
-    cls: "pd-due-banner pd-due-banner--ok",
-  },
-};
-
 export default function DueDateBanner({ fechaVencimiento }: Props) {
-  const status = getDueDateStatus(fechaVencimiento);
-  const cfg = BANNER_CONFIG[status];
+  const { icon, label, className, dateLabel } = useDueDateBanner(fechaVencimiento);
 
   return (
-    <div className={cfg.cls}>
-      <span className="pd-due-banner__icon">{cfg.icon}</span>
+    <div className={className}>
+      <span className="pd-due-banner__icon">{icon}</span>
       <div className="pd-due-banner__content">
-        <span className="pd-due-banner__label">{cfg.label}</span>
-        <span className="pd-due-banner__date">{formatDate(fechaVencimiento)}</span>
+        <span className="pd-due-banner__label">{label}</span>
+        <span className="pd-due-banner__date">{dateLabel}</span>
       </div>
     </div>
   );

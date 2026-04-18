@@ -3,10 +3,10 @@ import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
-import AppLayout from "./shared/components/layout/AppLayout";
+import AppLayout from "./layout/AppLayout";
 import ExpensasPage from "./pages/ExpensasPage";
-import AddPropertyPage from "./features/property/pages/AddPropertyPage";
-import PropertyDetailsPage from "./features/property/pages/PropertyDetailsPage";
+import AddPropertyPage from "./pages/AddPropertyPage";
+import PropertyDetailsPage from "./pages/PropertyDetailsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import "./styles/globals.css";
 

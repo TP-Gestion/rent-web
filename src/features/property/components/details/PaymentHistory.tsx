@@ -1,6 +1,6 @@
-import type { PagoHistorial } from "../../services/propertyService";
+import type { PagoHistorial } from "../../types/property";
 import { formatCurrency, formatDate } from "../../utils/propertyDetail";
-import DownloadIcon from "../../../../components/DownloadIcon";
+import DownloadIcon from "./DownloadIcon";
 
 interface Props {
   pagos: PagoHistorial[];

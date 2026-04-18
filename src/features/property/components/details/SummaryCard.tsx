@@ -1,4 +1,4 @@
-import type { PropiedadDetalle } from "../../services/propertyService";
+import type { PropiedadDetalle } from "../../types/property";
 import { formatCurrency, formatDate } from "../../utils/propertyDetail";
 
 interface Props {

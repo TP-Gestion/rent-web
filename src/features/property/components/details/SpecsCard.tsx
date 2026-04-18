@@ -1,4 +1,4 @@
-import type { PropiedadDetalle } from "../../services/propertyService";
+import type { PropiedadDetalle } from "../../types/property";
 
 interface Props {
   detalle: PropiedadDetalle;

@@ -1,16 +1,12 @@
-import DownloadIcon from "../../../../components/DownloadIcon";
-
-const DOCS = [
-  { name: "Contrato de alquiler", size: "2.4 MB", icon: "📄" },
-  { name: "Reglamento de convivencia", size: "840 KB", icon: "📋" },
-];
+import DownloadIcon from "./DownloadIcon";
+import { PROPERTY_DOCUMENTS } from "../../mocks/propertyDocuments";
 
 export default function DocumentsCard() {
   return (
     <div className="pd-card">
       <h2 className="pd-card__title">Documentación</h2>
       <div className="pd-docs__list">
-        {DOCS.map((doc) => (
+        {PROPERTY_DOCUMENTS.map((doc) => (
           <div key={doc.name} className="pd-docs__item">
             <span className="pd-docs__icon">{doc.icon}</span>
             <div className="pd-docs__info">

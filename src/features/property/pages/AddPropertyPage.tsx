@@ -1,52 +1,9 @@
 import { useNavigate } from "react-router";
 import { InputField, SelectField, Toggle } from "../components/form/FormFields";
+import PropertyCreatedFeedback from "../components/form/PropertyCreatedFeedback";
 import { useAddPropertyForm } from "../hooks/useAddPropertyForm";
+import { useAddPropertyPageState } from "../hooks/useAddPropertyPageState";
 import "./AddPropertyPage.module.css";
-
-const isExistingPropertyError = (
-  data?: { errors: { code: string }[] } | undefined,
-) => data?.errors?.some((e) => e.code === "PROP001");
-
-function PropertyCreatedFeedback({
-  edificio,
-  piso,
-  handleReset,
-}: {
-  edificio: string;
-  piso: string;
-  handleReset: () => void;
-}) {
-  const navigate = useNavigate();
-
-  return (
-    <div className="np-page">
-      <div>
-        <div className="np-page__section-label">Administracion de Cartera</div>
-        <h1 className="np-page__title">Nueva Propiedad</h1>
-      </div>
-      <div className="np-card">
-        <div className="np-success">
-          <div className="np-success__icon">✓</div>
-          <h2 className="np-success__title">Propiedad registrada</h2>
-          <p className="np-success__subtitle">
-            {`La unidad ${edificio.toUpperCase()} | ${piso.toUpperCase()} fue integrada al portafolio correctamente.`}
-          </p>
-          <div className="np-success__actions">
-            <button className="np-btn np-btn--secondary" onClick={handleReset}>
-              Registrar otra
-            </button>
-            <button
-              className="np-btn np-btn--primary"
-              onClick={() => navigate("/")}
-            >
-              Volver al inicio
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function AddPropertyPage() {
   const navigate = useNavigate();
@@ -62,27 +19,23 @@ export default function AddPropertyPage() {
     handleReset,
   } = useAddPropertyForm();
 
-  const showExistingPropertyMessage = isExistingPropertyError(mutation.data);
-  const hasApiErrors = (mutation.data?.errors?.length ?? 0) > 0;
-  const isSuccess = mutation.isSuccess && !hasApiErrors;
+  const { showExistingPropertyMessage, hasApiErrors, isSuccess, errorMessage } =
+    useAddPropertyPageState({
+      data: mutation.data,
+      error: mutation.error,
+      isError: mutation.isError,
+      isSuccess: mutation.isSuccess,
+    });
 
   if (isSuccess) {
     return (
       <PropertyCreatedFeedback
         edificio={values.edificio}
         piso={values.piso}
-        handleReset={handleReset}
+        onReset={handleReset}
       />
     );
   }
-
-  const errorMessage = mutation.isError
-    ? ((mutation.error as Error)?.message ?? "Error inesperado del servidor.")
-    : showExistingPropertyMessage
-      ? mutation.data!.errors[0].message
-      : hasApiErrors
-        ? mutation.data!.errors[0].message
-        : null;
 
   return (
     <div className="np-page">

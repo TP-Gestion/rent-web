@@ -3,31 +3,9 @@ import z from "zod";
 import {
   createPropertySchema,
   FormValues,
-} from "../schemas/createPropertySchema";
+} from "../types/createPropertySchema";
+import { INITIAL_VALUES, TIPO_OPTIONS } from "../mocks/addPropertyForm";
 import { useCreateProperty } from "./useCreateProperty";
-
-export const TIPO_OPTIONS = [
-  { value: "departamento", label: "Departamento" },
-  { value: "casa", label: "Casa" },
-  { value: "oficina", label: "Oficina" },
-  { value: "local", label: "Local comercial" },
-];
-
-const INITIAL_VALUES: FormValues = {
-  direccion: "",
-  edificio: "",
-  piso: "",
-  superficie: "",
-  ambientes: "",
-  montoAlquiler: "",
-  expensas: "",
-  tipoUnidad: "",
-  enAlquiler: false,
-  nombreInquilino: "",
-  apellidoInquilino: "",
-  correoInquilino: "",
-  telefonoInquilino: "",
-};
 
 type FormErrors = Partial<Record<keyof FormValues, string>>;
 type TouchedMap = Partial<Record<keyof FormValues, boolean>>;
