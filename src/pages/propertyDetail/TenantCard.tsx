@@ -6,9 +6,7 @@ interface Props {
 }
 
 export default function TenantCard({ detalle }: Props) {
-  const hasTenant = Boolean(
-    detalle.nombreInquilino && detalle.apellidoInquilino,
-  );
+  const hasTenant = detalle.estadoOcupacion === "OCUPADO";
 
   return (
     <div className="pd-card">
@@ -19,11 +17,9 @@ export default function TenantCard({ detalle }: Props) {
 }
 
 function TenantInfo({ detalle }: Props) {
-  const fullName = `${detalle.nombreInquilino} ${detalle.apellidoInquilino}`;
-  const initials = getInitials(
-    detalle.nombreInquilino,
-    detalle.apellidoInquilino,
-  );
+  const fullName = detalle.nombreInquilino;
+  const nameParts = fullName.split(" ");
+  const initials = getInitials(nameParts[0] ?? "", nameParts[1] ?? "");
 
   return (
     <>
@@ -32,20 +28,6 @@ function TenantInfo({ detalle }: Props) {
         <div>
           <p className="pd-tenant__name">{fullName}</p>
           <span className="pd-tenant__role">Inquilino activo</span>
-        </div>
-      </div>
-      <div className="pd-tenant__fields">
-        <div className="pd-tenant__field">
-          <span className="pd-tenant__field-key">Email</span>
-          <span className="pd-tenant__field-val">
-            {detalle.correoInquilino || "—"}
-          </span>
-        </div>
-        <div className="pd-tenant__field">
-          <span className="pd-tenant__field-key">Teléfono</span>
-          <span className="pd-tenant__field-val">
-            {detalle.telefonoInquilino || "—"}
-          </span>
         </div>
       </div>
       <button
