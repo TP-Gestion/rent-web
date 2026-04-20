@@ -6,6 +6,7 @@ import App from "./App";
 import AppLayout from "./layout/AppLayout";
 import TenantsPage from "./pages/TenantsPage";
 import FinancesPage from "./pages/FinancesPage";
+import MaintenancePage from "./pages/MaintenancePage";
 import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
 import PropiedadDetallePage from "./pages/propertyDetail";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
           {
             path: "finances",
             Component: FinancesPage,
+          },
+          {
+            path: "maintenance",
+            Component: MaintenancePage,
           },
           {
             path: "propiedades/:idPropiedad",
