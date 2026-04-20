@@ -6,9 +6,10 @@ interface DataTablePaginationProps {
   onChange: (page: number) => void
 }
 
-export default function DataTablePagination({ currentPage, totalPages, totalResults, perPage = 10, onChange }: DataTablePaginationProps) {
-  const from = (currentPage - 1) * perPage + 1
-  const to = Math.min(currentPage * perPage, totalResults)
+export default function DataTablePagination({ currentPage, totalPages, totalResults, perPage, onChange }: DataTablePaginationProps) {
+  const pageSize = perPage ?? totalResults
+  const from = (currentPage - 1) * pageSize + 1
+  const to = Math.min(currentPage * pageSize, totalResults)
 
   const pages: number[] = []
   const maxVisible = 3
@@ -18,7 +19,7 @@ export default function DataTablePagination({ currentPage, totalPages, totalResu
 
   return (
     <div className="data-table__pagination-wrap">
-      <div className="pagination" role="navigation" aria-label="Paginación">
+      <div className="pagination">
         <span className="pagination__summary">
           Mostrando {from}-{to} de {totalResults} resultados
         </span>
@@ -27,7 +28,6 @@ export default function DataTablePagination({ currentPage, totalPages, totalResu
             onClick={() => onChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
             className={`pagination__button${currentPage === 1 ? ' pagination__button--disabled' : ''}`}
-            aria-label="Página anterior"
           >
             ‹
           </button>
@@ -37,8 +37,6 @@ export default function DataTablePagination({ currentPage, totalPages, totalResu
               key={page}
               onClick={() => onChange(page)}
               className={`pagination__button${page === currentPage ? ' pagination__button--active' : ''}`}
-              aria-label={`Página ${page}`}
-              aria-current={page === currentPage ? 'page' : undefined}
             >
               {page}
             </button>
@@ -50,7 +48,6 @@ export default function DataTablePagination({ currentPage, totalPages, totalResu
             onClick={() => onChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
             className={`pagination__button${currentPage === totalPages ? ' pagination__button--disabled' : ''}`}
-            aria-label="Página siguiente"
           >
             ›
           </button>

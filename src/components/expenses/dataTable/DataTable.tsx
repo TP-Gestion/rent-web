@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { PropiedadListItem } from "../../service/propiedades";
+import type { PropiedadListItem } from "../../../service/propiedades";
 import { BuildingOption, COL_HEADERS } from "./dataTable.constants";
 import DataTableBody from "./DataTableBody";
 import DataTableFilters from "./DataTableFilters";

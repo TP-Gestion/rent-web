@@ -1,8 +1,8 @@
-import type { PropiedadListItem } from "../../service/propiedades";
+import type { PropiedadListItem } from "../../../service/propiedades";
 import type { EstadoDisplay } from "./dataTable.constants";
 import { AVATAR_COLORS, BADGE_STYLES } from "./dataTable.constants";
 import { formatArsAmount, getInitials } from "./dataTable.utils";
-import { formatTipoUnidad } from "../../utils/propertyDetail";
+import { formatTipoUnidad } from "../../../utils/propertyDetail";
 
 function StatusBadge({ status }: { status: EstadoDisplay }) {
   const style = BADGE_STYLES[status] ?? BADGE_STYLES.PENDIENTE;
@@ -32,7 +32,6 @@ function Avatar({ name }: { name: string }) {
       style={
         { "--avatar-bg": bg, "--avatar-color": color } as React.CSSProperties
       }
-      aria-hidden="true"
     >
       {getInitials(name)}
     </div>

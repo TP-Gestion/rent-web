@@ -1,4 +1,4 @@
-import type { PropiedadListItem } from "../../service/propiedades";
+import type { PropiedadListItem } from "../../../service/propiedades";
 import TenantRow from "./TenantRow";
 
 interface DataTableBodyProps {
@@ -14,10 +14,7 @@ export default function DataTableBody({
 }: DataTableBodyProps) {
   return (
     <div className="data-table__table-wrap">
-      <table
-        className="data-table__table"
-        aria-label="Tabla de expensas de inquilinos"
-      >
+      <table className="data-table__table">
         <thead>
           <tr className="data-table__head-row">
             {headers.map((column) => (

@@ -8,10 +8,10 @@ interface MorosityCardProps {
 }
 
 export default function MorosityCard({
-  percentage = 12.4,
-  trend = 'up',
-  trendLabel = 'crítico',
-  description = 'Se detectó un incremento del 4% en pagos fuera de término para el segmento comercial en Torre Solaris I. Se recomienda iniciar gestiones preventivas.',
+  percentage,
+  trend,
+  trendLabel,
+  description,
   onVerInforme,
   onConfigurar,
 }: MorosityCardProps) {
@@ -21,14 +21,14 @@ export default function MorosityCard({
   const trendArrow = isUp ? '↑' : trend === 'down' ? '↓' : '→'
 
   return (
-    <div className="morosity-card" role="region" aria-label="Análisis de rendimiento - Índice de morosidad">
+    <div className="morosity-card">
       <div>
         <div className="bc-section-label morosity-card__header-label">Análisis de Rendimiento</div>
         <div className="morosity-card__title">Índice de Morosidad</div>
       </div>
 
       <div className="morosity-card__percentage-row">
-        <span className="morosity-card__percentage">{percentage.toFixed(1)}%</span>
+        <span className="morosity-card__percentage">{percentage != null ? `${percentage.toFixed(1)}%` : ''}</span>
         <span
           className="morosity-card__trend-pill"
           style={{ '--trend-color': trendColor, '--trend-bg': trendBg } as React.CSSProperties}
@@ -37,7 +37,7 @@ export default function MorosityCard({
         </span>
       </div>
 
-      <p className="morosity-card__description">{description}</p>
+      <p className="morosity-card__description">{description ?? ''}</p>
 
       <div className="morosity-card__actions">
         <button onClick={onVerInforme} className="bc-button bc-button--primary">

@@ -47,7 +47,7 @@ interface ActionRowProps {
 
 function ActionRow({ icon, title, subtitle, onClick }: ActionRowProps) {
   return (
-    <button onClick={onClick} className="action-row" aria-label={title}>
+    <button onClick={onClick} className="action-row">
       <div className="action-row__icon-wrap">{icon}</div>
 
       <div className="action-row__text">
@@ -71,31 +71,31 @@ interface BatchActionsCardProps {
 }
 
 export default function BatchActionsCard({
-  pendingCount = 14,
-  lastSyncLabel = 'Hace 2hs',
+  pendingCount,
+  lastSyncLabel,
   onSendReminders,
   onReconcileBank,
-  version = 'SOLARIS v2.6.0 · Enterprise Edition',
+  version,
 }: BatchActionsCardProps) {
   return (
-    <div className="batch-actions-card" role="region" aria-label="Acciones de lote">
+    <div className="batch-actions-card">
       <div className="bc-section-label batch-actions-card__header-label">Acciones de Lote</div>
 
       <ActionRow
         icon={<EnvelopeIcon />}
         title="Enviar recordatorios"
-        subtitle={`${pendingCount} pendientes detectados`}
+        subtitle={pendingCount != null ? `${pendingCount} pendientes detectados` : ''}
         onClick={onSendReminders}
       />
 
       <ActionRow
         icon={<SyncIcon />}
         title="Conciliar bancos"
-        subtitle={`Última sync: ${lastSyncLabel}`}
+        subtitle={lastSyncLabel ? `Última sync: ${lastSyncLabel}` : ''}
         onClick={onReconcileBank}
       />
 
-      <div className="batch-actions-card__version">{version}</div>
+      {version && <div className="batch-actions-card__version">{version}</div>}
     </div>
   )
 }

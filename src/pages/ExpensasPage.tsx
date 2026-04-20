@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
-import StatCard from "../components/StatCard";
-import DataTable from "../components/dataTable/DataTable";
-import { MorosityCard, BatchActionsCard } from "../components/bottomCards";
+import StatCard from "../components/expenses/StatCard";
+import DataTable from "../components/expenses/dataTable/DataTable";
+import { MorosityCard, BatchActionsCard } from "../components/expenses/bottomCards";
 import type { PropiedadListItem } from "../service/propiedades";
 import {
   EXPENSAS_PERIOD_LABEL,

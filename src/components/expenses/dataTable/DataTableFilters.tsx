@@ -8,15 +8,13 @@ interface TabFilterProps {
 
 function TabFilter({ activeTab, onChange }: TabFilterProps) {
   return (
-    <div className="tab-filter" role="tablist" aria-label="Filtrar por estado">
+    <div className="tab-filter">
       {TABS.map((tab: Tab) => {
         const isActive = activeTab === tab.key
 
         return (
           <button
             key={tab.key}
-            role="tab"
-            aria-selected={isActive}
             onClick={() => onChange(tab.key)}
             className={`tab-filter__button${isActive ? ' tab-filter__button--active' : ''}`}
           >
@@ -41,7 +39,6 @@ function BuildingFilter({ value, options, onChange }: BuildingFilterProps) {
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        aria-label="Filtrar por edificio"
         className="building-filter__select"
       >
         {options.map((option) => (
