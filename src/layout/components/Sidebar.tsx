@@ -65,17 +65,6 @@ const NAV_ITEMS: NavItem[] = [
 
 const FOOTER_ITEMS: NavItem[] = [
   {
-    label: 'Support',
-    href: '/support',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.85" />
-        <path d="M6 6.5C6 5.4 6.9 4.5 8 4.5s2 .9 2 2c0 1-1 1.5-1.5 2S8 10 8 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.85" />
-        <circle cx="8" cy="12" r="0.75" fill="currentColor" opacity="0.85" />
-      </svg>
-    ),
-  },
-  {
     label: 'Logout',
     href: '/logout',
     icon: (
