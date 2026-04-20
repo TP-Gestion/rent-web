@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import AppLayout from "./layout/AppLayout";
-import ExpensasPage from "./pages/ExpensasPage";
+import TenantsPage from "./pages/TenantsPage";
 import FinancesPage from "./pages/FinancesPage";
 import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
 import PropiedadDetallePage from "./pages/propertyDetail";
@@ -34,11 +34,11 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            Component: ExpensasPage,
+            Component: TenantsPage,
           },
           {
             path: "tenants",
-            Component: ExpensasPage,
+            Component: TenantsPage,
           },
           {
             path: "nueva-propiedad",

@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
-import StatCard from "../components/expenses/StatCard";
-import DataTable from "../components/expenses/dataTable/DataTable";
-import { MorosityCard, BatchActionsCard } from "../components/expenses/bottomCards";
+import StatCard from "../components/tenants/StatCard";
+import DataTable from "../components/tenants/dataTable/DataTable";
+import { MorosityCard, BatchActionsCard } from "../components/tenants/bottomCards";
 import type { PropiedadListItem } from "../service/propiedades";
 import {
   EXPENSAS_PERIOD_LABEL,
@@ -12,7 +12,7 @@ import {
   getMorosityData,
 } from "../propiedadService";
 import { usePropiedades } from "../hooks/usePropiedades";
-import "./ExpensasPage.css";
+import "./TenantsPage.css";
 
 interface FilterState {
   tab: string;
@@ -37,7 +37,7 @@ function HeaderButton({ label, primary, onClick }: HeaderButtonProps) {
   );
 }
 
-export default function ExpensasPage() {
+export default function TenantsPage() {
   const navigate = useNavigate();
   const { data: propiedadesData } = usePropiedades();
   const propiedades = propiedadesData ?? [];
