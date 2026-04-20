@@ -4,7 +4,6 @@ import DetailHeader from "./DetailHeader";
 import DueDateBanner from "./DueDateBanner";
 import SummaryCard from "./SummaryCard";
 import TenantCard from "./TenantCard";
-import PaymentHistory from "./PaymentHistory";
 import SpecsCard from "./SpecsCard";
 import DocumentsCard from "./DocumentsCard";
 import "./PropertyDetailPage.css";
@@ -13,20 +12,44 @@ function SkeletonView() {
   return (
     <div className="pd-page">
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <div className="pd-skeleton" style={{ height: "12px", width: "90px" }} />
-        <div className="pd-skeleton" style={{ height: "32px", width: "55%", borderRadius: "8px" }} />
+        <div
+          className="pd-skeleton"
+          style={{ height: "12px", width: "90px" }}
+        />
+        <div
+          className="pd-skeleton"
+          style={{ height: "32px", width: "55%", borderRadius: "8px" }}
+        />
         <div className="pd-skeleton" style={{ height: "14px", width: "28%" }} />
       </div>
-      <div className="pd-skeleton" style={{ height: "52px", borderRadius: "10px" }} />
+      <div
+        className="pd-skeleton"
+        style={{ height: "52px", borderRadius: "10px" }}
+      />
       <div className="pd-grid">
         <div className="pd-left-col">
-          <div className="pd-skeleton" style={{ height: "200px", borderRadius: "12px" }} />
-          <div className="pd-skeleton" style={{ height: "260px", borderRadius: "12px" }} />
+          <div
+            className="pd-skeleton"
+            style={{ height: "200px", borderRadius: "12px" }}
+          />
+          <div
+            className="pd-skeleton"
+            style={{ height: "260px", borderRadius: "12px" }}
+          />
         </div>
         <div className="pd-right-col">
-          <div className="pd-skeleton" style={{ height: "170px", borderRadius: "12px" }} />
-          <div className="pd-skeleton" style={{ height: "190px", borderRadius: "12px" }} />
-          <div className="pd-skeleton" style={{ height: "120px", borderRadius: "12px" }} />
+          <div
+            className="pd-skeleton"
+            style={{ height: "170px", borderRadius: "12px" }}
+          />
+          <div
+            className="pd-skeleton"
+            style={{ height: "190px", borderRadius: "12px" }}
+          />
+          <div
+            className="pd-skeleton"
+            style={{ height: "120px", borderRadius: "12px" }}
+          />
         </div>
       </div>
     </div>
@@ -42,7 +65,11 @@ function ErrorView({ onBack }: { onBack: () => void }) {
         <p className="pd-error__sub">
           Verificá que el identificador sea correcto o intentá nuevamente.
         </p>
-        <button className="pd-btn pd-btn--secondary" type="button" onClick={onBack}>
+        <button
+          className="pd-btn pd-btn--secondary"
+          type="button"
+          onClick={onBack}
+        >
           Volver
         </button>
       </div>
@@ -66,7 +93,6 @@ export default function PropertyDetailPage() {
       <div className="pd-grid">
         <div className="pd-left-col">
           <SummaryCard detalle={detalle} />
-          <PaymentHistory pagos={detalle.historialDePagos} />
         </div>
         <div className="pd-right-col">
           <TenantCard detalle={detalle} />

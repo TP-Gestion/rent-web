@@ -1,7 +1,7 @@
 import { getDueDateStatus, formatDate } from "../../utils/propertyDetail";
 
 interface Props {
-  fechaVencimiento: string;
+  fechaVencimiento: string | null;
 }
 
 const BANNER_CONFIG = {
@@ -31,7 +31,9 @@ export default function DueDateBanner({ fechaVencimiento }: Props) {
       <span className="pd-due-banner__icon">{cfg.icon}</span>
       <div className="pd-due-banner__content">
         <span className="pd-due-banner__label">{cfg.label}</span>
-        <span className="pd-due-banner__date">{formatDate(fechaVencimiento)}</span>
+        <span className="pd-due-banner__date">
+          {formatDate(fechaVencimiento)}
+        </span>
       </div>
     </div>
   );
