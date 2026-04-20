@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import AppLayout from "./layout/AppLayout";
 import ExpensasPage from "./pages/ExpensasPage";
+import FinancesPage from "./pages/FinancesPage";
 import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
 import PropiedadDetallePage from "./pages/propertyDetail";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
           {
             path: "nueva-propiedad",
             Component: NuevaPropiedadPage,
+          },
+          {
+            path: "finances",
+            Component: FinancesPage,
           },
           {
             path: "propiedades/:idPropiedad",
