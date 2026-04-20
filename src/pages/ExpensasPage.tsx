@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import StatCard from "../components/StatCard";
 import DataTable from "../components/dataTable/DataTable";
 import { MorosityCard, BatchActionsCard } from "../components/bottomCards";
-import type { Tenant, TenantStatus } from "../propiedadService";
+import type { PropiedadListItem } from "../service/propiedades";
 import {
   EXPENSAS_PERIOD_LABEL,
   PER_PAGE,
-  getAllTenants,
   getBatchActionsData,
   getExpensasStats,
   getMorosityData,
 } from "../propiedadService";
+import { usePropiedades } from "../hooks/usePropiedades";
 import "./ExpensasPage.css";
 
 interface FilterState {
@@ -39,56 +39,53 @@ function HeaderButton({ label, primary, onClick }: HeaderButtonProps) {
 
 export default function ExpensasPage() {
   const navigate = useNavigate();
-  const allTenants = getAllTenants();
+  const { data: propiedades = [] } = usePropiedades();
   const stats = getExpensasStats();
   const morosityData = getMorosityData();
   const batchActionsData = getBatchActionsData();
+
+  const buildingOptions = useMemo(() => {
+    const unique = [...new Set(propiedades.map((p) => p.edificio))];
+    return [
+      { value: "todos", label: "Todos los edificios" },
+      ...unique.map((b) => ({ value: b, label: b })),
+    ];
+  }, [propiedades]);
 
   const [filters, setFilters] = useState<FilterState>({
     tab: "todos",
     building: "todos",
     page: 1,
   });
-  const [visibleTenants, setVisibleTenants] = useState<Tenant[]>([]);
+  const [visibleItems, setVisibleItems] = useState<PropiedadListItem[]>([]);
   const [totalResults, setTotalResults] = useState(0);
 
   useEffect(() => {
-    let filtered = [...allTenants];
+    let filtered = [...propiedades];
 
     if (filters.tab !== "todos") {
-      const statusMap: Record<string, TenantStatus> = {
-        pagados: "pagado",
-        pendientes: "pendiente",
-        vencidos: "vencido",
-      };
-      const mapped = statusMap[filters.tab];
-      if (mapped) filtered = filtered.filter((t) => t.status === mapped);
+      filtered = filtered.filter((p) => {
+        const estado = p.estadoOcupacion === "LIBRE" ? "LIBRE" : p.estadoPago;
+        return estado === filters.tab;
+      });
     }
 
     if (filters.building !== "todos") {
-      const buildingMap: Record<string, string | null> = {
-        "solaris-i": "Torre Solaris I",
-        "solaris-ii": "Torre Solaris II",
-        "torres-este": null,
-      };
-      const buildingStr = buildingMap[filters.building];
-      if (buildingStr) {
-        filtered = filtered.filter((t) => t.property.startsWith(buildingStr));
-      }
+      filtered = filtered.filter((p) => p.edificio === filters.building);
     }
 
     setTotalResults(filtered.length);
 
     const start = (filters.page - 1) * PER_PAGE;
-    setVisibleTenants(filtered.slice(start, start + PER_PAGE));
-  }, [filters, allTenants]);
+    setVisibleItems(filtered.slice(start, start + PER_PAGE));
+  }, [filters, propiedades]);
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
-  const handleVerDetalle = (tenant: Tenant) => {
-    navigate(`/propiedades/${tenant.id}`);
+  const handleVerDetalle = (item: PropiedadListItem) => {
+    navigate(`/propiedades/${item.id}`);
   };
 
   const handleExportar = () => {
@@ -141,9 +138,10 @@ export default function ExpensasPage() {
 
       {/* ── Data Table ── */}
       <DataTable
-        tenants={visibleTenants}
+        items={visibleItems}
         totalResults={totalResults}
         perPage={PER_PAGE}
+        buildingOptions={buildingOptions}
         onVerDetalle={handleVerDetalle}
         onFilterChange={handleFilterChange}
       />

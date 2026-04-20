@@ -1,22 +1,29 @@
-import type { Tenant } from '../../propiedadService'
-import TenantRow from './TenantRow'
+import type { PropiedadListItem } from "../../service/propiedades";
+import TenantRow from "./TenantRow";
 
 interface DataTableBodyProps {
-  headers: string[]
-  tenants: Tenant[]
-  onVerDetalle?: (tenant: Tenant) => void
+  headers: string[];
+  items: PropiedadListItem[];
+  onVerDetalle?: (item: PropiedadListItem) => void;
 }
 
-export default function DataTableBody({ headers, tenants, onVerDetalle }: DataTableBodyProps) {
+export default function DataTableBody({
+  headers,
+  items,
+  onVerDetalle,
+}: DataTableBodyProps) {
   return (
     <div className="data-table__table-wrap">
-      <table className="data-table__table" aria-label="Tabla de expensas de inquilinos">
+      <table
+        className="data-table__table"
+        aria-label="Tabla de expensas de inquilinos"
+      >
         <thead>
           <tr className="data-table__head-row">
             {headers.map((column) => (
               <th
                 key={column}
-                className={`data-table__head-cell${column === 'Monto' || column === 'Acción' ? ' data-table__head-cell--right' : ''}`}
+                className={`data-table__head-cell${column === "Monto" || column === "Acción" ? " data-table__head-cell--right" : ""}`}
               >
                 {column}
               </th>
@@ -24,19 +31,23 @@ export default function DataTableBody({ headers, tenants, onVerDetalle }: DataTa
           </tr>
         </thead>
         <tbody>
-          {tenants.length === 0 ? (
+          {items.length === 0 ? (
             <tr>
               <td colSpan={headers.length} className="data-table__empty">
                 No se encontraron resultados
               </td>
             </tr>
           ) : (
-            tenants.map((tenant) => (
-              <TenantRow key={tenant.id} tenant={tenant} onVerDetalle={onVerDetalle} />
+            items.map((item) => (
+              <TenantRow
+                key={item.id}
+                item={item}
+                onVerDetalle={onVerDetalle}
+              />
             ))
           )}
         </tbody>
       </table>
     </div>
-  )
+  );
 }
