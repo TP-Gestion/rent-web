@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router'
+import { logout } from '../auth'
 import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 
@@ -9,6 +10,13 @@ export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const handleNavigate = (path: string) => {
+    if (path === '/logout') {
+      logout()
+      navigate('/login')
+      setMobileOpen(false)
+      return
+    }
+
     navigate(path)
     setMobileOpen(false)
   }
