@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import StatCard from "../components/StatCard";
 import DataTable from "../components/dataTable/DataTable";
@@ -39,7 +39,8 @@ function HeaderButton({ label, primary, onClick }: HeaderButtonProps) {
 
 export default function ExpensasPage() {
   const navigate = useNavigate();
-  const { data: propiedades = [] } = usePropiedades();
+  const { data: propiedadesData } = usePropiedades();
+  const propiedades = propiedadesData ?? [];
   const stats = getExpensasStats();
   const morosityData = getMorosityData();
   const batchActionsData = getBatchActionsData();
@@ -57,10 +58,8 @@ export default function ExpensasPage() {
     building: "todos",
     page: 1,
   });
-  const [visibleItems, setVisibleItems] = useState<PropiedadListItem[]>([]);
-  const [totalResults, setTotalResults] = useState(0);
 
-  useEffect(() => {
+  const filteredItems = useMemo(() => {
     let filtered = [...propiedades];
 
     if (filters.tab !== "todos") {
@@ -74,11 +73,15 @@ export default function ExpensasPage() {
       filtered = filtered.filter((p) => p.edificio === filters.building);
     }
 
-    setTotalResults(filtered.length);
+    return filtered;
+  }, [filters.tab, filters.building, propiedades]);
 
+  const totalResults = filteredItems.length;
+
+  const visibleItems = useMemo(() => {
     const start = (filters.page - 1) * PER_PAGE;
-    setVisibleItems(filtered.slice(start, start + PER_PAGE));
-  }, [filters, propiedades]);
+    return filteredItems.slice(start, start + PER_PAGE);
+  }, [filteredItems, filters.page]);
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
