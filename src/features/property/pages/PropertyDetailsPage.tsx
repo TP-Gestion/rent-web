@@ -12,21 +12,21 @@ import "../components/details/PropertyDetails.module.css";
 function SkeletonView() {
   return (
     <div className="pd-page">
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <div className="pd-skeleton" style={{ height: "12px", width: "90px" }} />
-        <div className="pd-skeleton" style={{ height: "32px", width: "55%", borderRadius: "8px" }} />
-        <div className="pd-skeleton" style={{ height: "14px", width: "28%" }} />
+      <div className="pd-skeleton-stack">
+        <div className="pd-skeleton pd-skeleton--meta" />
+        <div className="pd-skeleton pd-skeleton--title" />
+        <div className="pd-skeleton pd-skeleton--subline" />
       </div>
-      <div className="pd-skeleton" style={{ height: "52px", borderRadius: "10px" }} />
+      <div className="pd-skeleton pd-skeleton--banner" />
       <div className="pd-grid">
         <div className="pd-left-col">
-          <div className="pd-skeleton" style={{ height: "200px", borderRadius: "12px" }} />
-          <div className="pd-skeleton" style={{ height: "260px", borderRadius: "12px" }} />
+          <div className="pd-skeleton pd-skeleton--card-md" />
+          <div className="pd-skeleton pd-skeleton--card-lg" />
         </div>
         <div className="pd-right-col">
-          <div className="pd-skeleton" style={{ height: "170px", borderRadius: "12px" }} />
-          <div className="pd-skeleton" style={{ height: "190px", borderRadius: "12px" }} />
-          <div className="pd-skeleton" style={{ height: "120px", borderRadius: "12px" }} />
+          <div className="pd-skeleton pd-skeleton--card-sm-a" />
+          <div className="pd-skeleton pd-skeleton--card-sm-b" />
+          <div className="pd-skeleton pd-skeleton--card-sm-c" />
         </div>
       </div>
     </div>

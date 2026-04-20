@@ -23,7 +23,7 @@ function StatusBadge({ status }: StatusBadgeProps) {
   return (
     <span
       className={styles.statusBadge}
-      style={{ "--badge-color": style.color, "--badge-bg": style.bg } as CSSProperties}
+      style={{ "--badge-color": style.color, "--badge-background": style.bg } as CSSProperties}
     >
       {style.label}
     </span>

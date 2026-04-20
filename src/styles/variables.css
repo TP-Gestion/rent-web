@@ -1,39 +1,66 @@
 :root {
+  /* Typography */
   --font-sans: "DM Sans", "Trebuchet MS", sans-serif;
-  
-  --color-primary: #d4a017;
-  --color-primary-hover: #c4920f;
-  --color-secondary: #8c6f3f;
-  --color-secondary-hover: #7a5f32;
 
-  --color-accent: var(--color-primary);
-  --color-accent-hover: var(--color-primary-hover);
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
 
-  --color-bg-page: #f8f7f3;
-  --color-bg-surface: #ffffff;
-  --color-bg-warm: #fffdf5;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
 
-  --color-border: #f0ece0;
-  --color-border-warm: #f0e8c8;
+  --letter-spacing-sm: 0.5px;
+  --letter-spacing-md: 1px;
 
-  --color-text-primary: #2c2820;
-  --color-text-body: #555550;
-  --color-text-muted: #888880;
-  --color-text-label: #b8a882;
-  --color-text-faint: #d0ccc0;
-  --color-text-on-accent: #3a2700;
+  /* Spacing (4px scale) */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 24px;
+  --spacing-6: 32px;
 
-  --color-warning: #9a6f00;
-  --color-danger: #a33030;
-  --color-success: #2e7d4f;
-
-  --radius-xs: 6px;
-  --radius-sm: 7px;
+  /* Radius */
+  --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
+  --radius-lg: 12px;
   --radius-pill: 999px;
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.03);
-  --transition-fast: all 0.15s ease;
+  /* Colors - Base */
+  --color-primary: #d4a017;
+  --color-primary-hover: #c4920f;
+
+  --color-success: #2e7d4f;
+  --color-warning: #9a6f00;
+  --color-danger: #a33030;
+
+  /* Backgrounds */
+  --color-bg-page: #f8f7f3;
+  --color-bg-surface: #ffffff;
+  --color-bg-muted: #fafaf7;
+
+  /* Borders */
+  --color-border: #e0dccf;
+  --color-border-strong: #d0ccc0;
+
+  /* Text */
+  --color-text-primary: #2c2820;
+  --color-text-secondary: #555550;
+  --color-text-muted: #888880;
+  --color-text-faint: #b8a882;
+
+  --color-text-on-primary: #3a2700;
+  --color-text-on-success: #ffffff;
+  --color-text-on-danger: #ffffff;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.08);
+
+  /* Effects */
+  --focus-ring: 0 0 0 3px rgba(212, 160, 23, 0.2);
+  --transition-fast: 0.15s ease;
 }

@@ -42,11 +42,11 @@ export default function PaymentHistory({ pagos }: Props) {
           <tbody>
             {pagos.map((pago, idx) => (
               <tr key={idx}>
-                <td style={{ fontWeight: 600, color: "#2c2820" }}>
+                <td className="pd-payments__period">
                   {pago.periodo}
                 </td>
                 <td>{formatDate(pago.fechaPago)}</td>
-                <td style={{ fontWeight: 600 }}>
+                <td className="pd-payments__amount">
                   {formatCurrency(pago.monto)}
                 </td>
                 <td>
