@@ -1,4 +1,5 @@
 import type { PropiedadDetalle } from "../../service/propiedades";
+import { formatTipoUnidad } from "../../utils/propertyDetail";
 
 interface Props {
   detalle: PropiedadDetalle;
@@ -16,6 +17,12 @@ export default function SpecsCard({ detalle }: Props) {
         <div className="pd-specs__item">
           <span className="pd-specs__item-val">{detalle.superficie}</span>
           <span className="pd-specs__item-lbl">m²</span>
+        </div>
+        <div className="pd-specs__item pd-specs__item--full">
+          <span className="pd-specs__item-lbl">Tipo</span>
+          <span className="pd-specs__item-val">
+            {formatTipoUnidad(detalle.tipoUnidad)}
+          </span>
         </div>
       </div>
     </div>

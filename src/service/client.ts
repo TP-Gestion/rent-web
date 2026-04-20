@@ -16,4 +16,11 @@ export interface ApiResponse<T> {
   errors: ApiError[];
 }
 
+export async function wrapResponse<T>(
+  promise: Promise<{ data: T }>,
+): Promise<ApiResponse<T>> {
+  const { data } = await promise;
+  return { data, errors: [] };
+}
+
 export { apiClient };

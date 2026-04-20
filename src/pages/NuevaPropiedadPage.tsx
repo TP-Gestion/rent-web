@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import axios from "axios";
 import {
   crearPropiedadSchema,
   FormValues,
@@ -14,10 +15,10 @@ import "./NuevaPropiedadPage.css";
 import z from "zod";
 
 const TIPO_OPTIONS = [
-  { value: "departamento", label: "Departamento" },
-  { value: "casa", label: "Casa" },
-  { value: "oficina", label: "Oficina" },
-  { value: "local", label: "Local comercial" },
+  { value: "DEPARTAMENTO", label: "Departamento" },
+  { value: "CASA", label: "Casa" },
+  { value: "OFICINA", label: "Oficina" },
+  { value: "LOCAL_COMERCIAL", label: "Local comercial" },
 ];
 
 const INITIAL_VALUES: FormValues = {
@@ -86,9 +87,15 @@ const PropiedadCreadaFeedback = ({
   );
 };
 
-const isExistingPropertyError = (
-  data?: { errors: { code: string }[] } | undefined,
-) => data?.errors?.some((e) => e.code === "PROP001");
+const isConflictError = (error: unknown): boolean =>
+  axios.isAxiosError(error) && error.response?.status === 409;
+
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.message ?? "Error inesperado del servidor.";
+  }
+  return (error as Error)?.message ?? "Error inesperado del servidor.";
+};
 
 export default function NuevaPropiedadPage() {
   const navigate = useNavigate();
@@ -108,13 +115,23 @@ export default function NuevaPropiedadPage() {
   );
 
   useEffect(() => {
-    if (!mutation.isSuccess) return;
-    if (isExistingPropertyError(mutation.data)) {
+    if (!mutation.isError) return;
+    if (isConflictError(mutation.error)) {
       const msg = "Revisá este campo.";
-      setErrors((prev) => ({ ...prev, edificio: msg, piso: msg }));
-      setTouched((prev) => ({ ...prev, edificio: true, piso: true }));
+      setErrors((prev) => ({
+        ...prev,
+        edificio: msg,
+        piso: msg,
+        direccion: msg,
+      }));
+      setTouched((prev) => ({
+        ...prev,
+        edificio: true,
+        piso: true,
+        direccion: true,
+      }));
     }
-  }, [mutation.isSuccess, mutation.data]);
+  }, [mutation.isError, mutation.error]);
 
   const change = (field: keyof FormValues, value: string | boolean) => {
     const next = { ...values, [field]: value };
@@ -145,10 +162,17 @@ export default function NuevaPropiedadPage() {
       setTouched(allTouched);
       return;
     }
-    const { enAlquiler, montoAlquiler, expensas, ambientes, ...rest } =
-      result.data;
+    const {
+      enAlquiler,
+      montoAlquiler,
+      expensas,
+      ambientes,
+      superficie,
+      ...rest
+    } = result.data;
     mutation.mutate({
       ...rest,
+      superficie: Number(superficie),
       ambientes: Number(ambientes),
       ...(montoAlquiler ? { montoAlquiler: Number(montoAlquiler) } : {}),
       ...(expensas ? { expensas: Number(expensas) } : {}),
@@ -170,10 +194,7 @@ export default function NuevaPropiedadPage() {
     mutation.reset();
   };
 
-  const showExistingPropertyMessage =
-    mutation.isSuccess && isExistingPropertyError(mutation.data);
-  const hasApiErrors = (mutation.data?.errors?.length ?? 0) > 0;
-  const isSuccess = mutation.isSuccess && !hasApiErrors;
+  const isSuccess = mutation.isSuccess;
 
   if (isSuccess) {
     return (
@@ -186,12 +207,8 @@ export default function NuevaPropiedadPage() {
   }
 
   const errorMessage = mutation.isError
-    ? ((mutation.error as Error)?.message ?? "Error inesperado del servidor.")
-    : showExistingPropertyMessage
-      ? mutation.data!.errors[0].message
-      : hasApiErrors
-        ? mutation.data!.errors[0].message
-        : null;
+    ? getErrorMessage(mutation.error)
+    : null;
 
   return (
     <div className="np-page">
@@ -207,8 +224,8 @@ export default function NuevaPropiedadPage() {
 
       <div className="np-card">
         <form className="np-form" onSubmit={handleSubmit} noValidate>
-          {(mutation.isError ||
-            (hasApiErrors && !showExistingPropertyMessage)) &&
+          {mutation.isError &&
+            !isConflictError(mutation.error) &&
             errorMessage && (
               <div className="np-feedback np-feedback--error" role="alert">
                 <span className="np-feedback__icon">✕</span>
@@ -221,14 +238,13 @@ export default function NuevaPropiedadPage() {
               </div>
             )}
 
-          {showExistingPropertyMessage && (
+          {mutation.isError && isConflictError(mutation.error) && (
             <div className="np-feedback np-feedback--error" role="alert">
               <span className="np-feedback__icon">✕</span>
               <div>
                 <p className="np-feedback__title">Propiedad duplicada</p>
                 <p className="np-feedback__body">
-                  Ya existe una propiedad registrada para ese piso y edificio.
-                  Verifique los datos.
+                  {getErrorMessage(mutation.error)}
                 </p>
               </div>
             </div>

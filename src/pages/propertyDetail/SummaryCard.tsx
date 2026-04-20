@@ -5,32 +5,34 @@ interface Props {
   detalle: PropiedadDetalle;
 }
 
+const ESTADO_PAGO_LABEL: Record<string, string> = {
+  PAGADO: "Al día",
+  PENDIENTE: "Pendiente",
+  VENCIDO: "Vencido",
+};
+
 export default function SummaryCard({ detalle }: Props) {
-  const total =
-    detalle.montoMensualExpensa +
-    detalle.montoMensualGasto +
-    detalle.gananciaMensualAlquiler;
+  const estadoCls = `pd-pay-status pd-pay-status--${detalle.estadoPago.toLowerCase()}`;
 
   return (
     <div className="pd-card">
-      <h2 className="pd-card__title">Resumen de Alquiler</h2>
+      <div className="pd-card__title-row">
+        <h2 className="pd-card__title">Resumen de Alquiler</h2>
+        <span className={estadoCls}>
+          {ESTADO_PAGO_LABEL[detalle.estadoPago] ?? detalle.estadoPago}
+        </span>
+      </div>
       <div className="pd-summary__rows">
         <div className="pd-summary__item">
-          <span className="pd-summary__item-label">Ganancia</span>
+          <span className="pd-summary__item-label">Alquiler</span>
           <span className="pd-summary__item-value">
-            {formatCurrency(detalle.gananciaMensualAlquiler)}
+            {formatCurrency(detalle.montoAlquiler)}
           </span>
         </div>
         <div className="pd-summary__item">
           <span className="pd-summary__item-label">Expensas</span>
           <span className="pd-summary__item-value">
-            {formatCurrency(detalle.montoMensualExpensa)}
-          </span>
-        </div>
-        <div className="pd-summary__item">
-          <span className="pd-summary__item-label">Gastos</span>
-          <span className="pd-summary__item-value">
-            {formatCurrency(detalle.montoMensualGasto)}
+            {formatCurrency(detalle.expensas)}
           </span>
         </div>
         <div className="pd-summary__item">
@@ -41,15 +43,10 @@ export default function SummaryCard({ detalle }: Props) {
         </div>
       </div>
       <div className="pd-summary__total">
-        <div>
-          <div className="pd-summary__total-label">Total Mensual</div>
-          {detalle.montoAdeudado > 0 && (
-            <div className="pd-summary__total-debt">
-              Adeudado: {formatCurrency(detalle.montoAdeudado)}
-            </div>
-          )}
-        </div>
-        <span className="pd-summary__total-value">{formatCurrency(total)}</span>
+        <div className="pd-summary__total-label">Total Mensual</div>
+        <span className="pd-summary__total-value">
+          {formatCurrency(detalle.montoTotal)}
+        </span>
       </div>
     </div>
   );
