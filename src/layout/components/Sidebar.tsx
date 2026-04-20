@@ -142,4 +142,3 @@ export default function Sidebar({ activePath = '/tenants', onNavigate, mobileOpe
     </aside>
   )
 }
-
