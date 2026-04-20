@@ -320,7 +320,7 @@ export default function NuevaPropiedadPage() {
             <div className="np-section-title">Cobros mensuales</div>
             <div className="np-grid-2">
               <InputField
-                label="Alquiler mensual (USD)"
+                label="Alquiler mensual"
                 placeholder="Monto a cobrar al inquilino"
                 type="number"
                 min="1"
@@ -330,7 +330,7 @@ export default function NuevaPropiedadPage() {
                 error={errors.montoAlquiler}
               />
               <InputField
-                label="Expensas (USD)"
+                label="Expensas"
                 placeholder="Monto base de servicios comunes"
                 type="number"
                 min="1"
