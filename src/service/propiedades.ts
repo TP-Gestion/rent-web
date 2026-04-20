@@ -51,3 +51,10 @@ export async function getDetallePropiedad(
     apiClient.get<PropiedadDetalle>(`/properties/${idPropiedad}`),
   );
 }
+
+export type PropiedadListItem = PropiedadDetalle;
+
+export async function getPropiedades(): Promise<PropiedadListItem[]> {
+  const { data } = await apiClient.get<PropiedadListItem[]>("/properties");
+  return data;
+}

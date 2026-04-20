@@ -1,75 +1,102 @@
-import type { Tenant, TenantStatus } from '../../propiedadService'
-import { AVATAR_COLORS, BADGE_STYLES } from './dataTable.constants'
-import { formatArsAmount, getInitials } from './dataTable.utils'
+import type { PropiedadListItem } from "../../service/propiedades";
+import type { EstadoDisplay } from "./dataTable.constants";
+import { AVATAR_COLORS, BADGE_STYLES } from "./dataTable.constants";
+import { formatArsAmount, getInitials } from "./dataTable.utils";
+import { formatTipoUnidad } from "../../utils/propertyDetail";
 
-function StatusBadge({ status }: { status: TenantStatus }) {
-  const style = BADGE_STYLES[status] ?? BADGE_STYLES.pendiente
+function StatusBadge({ status }: { status: EstadoDisplay }) {
+  const style = BADGE_STYLES[status] ?? BADGE_STYLES.PENDIENTE;
 
   return (
-    <span className="status-badge" style={{ '--badge-color': style.color, '--badge-bg': style.bg } as React.CSSProperties}>
+    <span
+      className="status-badge"
+      style={
+        {
+          "--badge-color": style.color,
+          "--badge-bg": style.bg,
+        } as React.CSSProperties
+      }
+    >
       {style.label}
     </span>
-  )
+  );
 }
 
 function Avatar({ name }: { name: string }) {
-  const index = name.charCodeAt(0) % AVATAR_COLORS.length
-  const { bg, color } = AVATAR_COLORS[index]
+  const index = name.charCodeAt(0) % AVATAR_COLORS.length;
+  const { bg, color } = AVATAR_COLORS[index];
 
   return (
-    <div className="avatar" style={{ '--avatar-bg': bg, '--avatar-color': color } as React.CSSProperties} aria-hidden="true">
+    <div
+      className="avatar"
+      style={
+        { "--avatar-bg": bg, "--avatar-color": color } as React.CSSProperties
+      }
+      aria-hidden="true"
+    >
       {getInitials(name)}
     </div>
-  )
+  );
 }
 
 interface TenantRowProps {
-  tenant: Tenant
-  onVerDetalle?: (tenant: Tenant) => void
+  item: PropiedadListItem;
+  onVerDetalle?: (item: PropiedadListItem) => void;
 }
 
-export default function TenantRow({ tenant, onVerDetalle }: TenantRowProps) {
-  const isOverdue = tenant.status === 'vencido'
+export default function TenantRow({ item, onVerDetalle }: TenantRowProps) {
+  const isLibre = item.estadoOcupacion === "LIBRE";
+  const estadoDisplay: EstadoDisplay = isLibre ? "LIBRE" : item.estadoPago;
+  const isOverdue = estadoDisplay === "VENCIDO";
 
   return (
     <tr className="tenant-row">
       <td className="tenant-row__cell tenant-row__tenant-cell">
         <div className="tenant-row__tenant-wrap">
-          <Avatar name={tenant.name} />
+          {!isLibre && <Avatar name={item.nombreInquilino} />}
           <div>
-            <div className="tenant-row__name">{tenant.name}</div>
-            <div className="tenant-row__id">ID: {tenant.id}</div>
+            <div className="tenant-row__name">
+              {isLibre ? "-" : item.nombreInquilino}
+            </div>
           </div>
         </div>
       </td>
 
       <td className="tenant-row__cell">
-        <div className="tenant-row__property">{tenant.property}</div>
-        <div className="tenant-row__property-type">{tenant.propertyType}</div>
+        <div className="tenant-row__property">
+          {item.edificio} - Piso {item.piso}
+        </div>
+        <div className="tenant-row__property-type">
+          {formatTipoUnidad(item.tipoUnidad)}
+        </div>
       </td>
 
       <td className="tenant-row__cell">
-        <StatusBadge status={tenant.status} />
+        <StatusBadge status={estadoDisplay} />
       </td>
 
       <td className="tenant-row__cell">
-        <div className={`tenant-row__due-date${isOverdue ? ' tenant-row__due-date--overdue' : ''}`}>
-          {tenant.dueDate}
+        <div
+          className={`tenant-row__due-date${isOverdue ? " tenant-row__due-date--overdue" : ""}`}
+        >
+          {isLibre ? "-" : (item.fechaVencimiento ?? "—")}
         </div>
       </td>
 
       <td className="tenant-row__cell tenant-row__cell--right">
-        <div className="tenant-row__amount">{formatArsAmount(tenant.amount)}</div>
+        <div className="tenant-row__amount">
+          {formatArsAmount(item.montoTotal)}
+        </div>
       </td>
 
       <td className="tenant-row__cell tenant-row__cell--right">
         <button
-          onClick={() => onVerDetalle && onVerDetalle(tenant)}
+          onClick={() => onVerDetalle && onVerDetalle(item)}
           className="tenant-row__detail-btn"
         >
           VER DETALLE
         </button>
       </td>
     </tr>
-  )
+  );
 }
