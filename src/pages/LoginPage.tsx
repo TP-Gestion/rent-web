@@ -1,16 +1,12 @@
 import { useState } from 'react'
-import { Navigate, useNavigate } from 'react-router'
-import { isAuthenticated, login } from '../auth'
+import { useNavigate } from 'react-router'
+import { login } from '../auth'
 import './LoginPage.css'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-
-  if (isAuthenticated()) {
-    return <Navigate to="/tenants" replace />
-  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -19,7 +15,7 @@ export default function LoginPage() {
     void username
     void password
     login()
-    navigate('/tenants', { replace: true })
+    navigate('/dashboard', { replace: true })
   }
 
   return (

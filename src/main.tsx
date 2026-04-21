@@ -1,10 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
-import { Navigate, Outlet, createBrowserRouter, RouterProvider } from "react-router";
+import { Navigate, createBrowserRouter, RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import { isAuthenticated } from "./auth";
 import AppLayout from "./layout/AppLayout";
+import DashboardPage from "./pages/DashboardPage";
 import TenantsPage from "./pages/TenantsPage";
 import FinancesPage from "./pages/FinancesPage";
 import MaintenancePage from "./pages/MaintenancePage";
@@ -13,12 +14,12 @@ import PropiedadDetallePage from "./pages/propertyDetail";
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
-function RequireAuth() {
+function RequireAuthLayout() {
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
-  return <Outlet />;
+  return <AppLayout />;
 }
 
 const queryClient = new QueryClient({
@@ -40,46 +41,43 @@ const router = createBrowserRouter([
     Component: App,
     children: [
       {
-        path: "login",
+        index: true,
         Component: LoginPage,
       },
       {
-        path: "/",
-        Component: RequireAuth,
+        path: "login",
+        element: <Navigate to="/" replace />,
+      },
+      {
+        Component: RequireAuthLayout,
         children: [
           {
-            path: "/",
-            Component: AppLayout,
-            children: [
-              {
-                index: true,
-                Component: TenantsPage,
-              },
-              {
-                path: "tenants",
-                Component: TenantsPage,
-              },
-              {
-                path: "nueva-propiedad",
-                Component: NuevaPropiedadPage,
-              },
-              {
-                path: "finances",
-                Component: FinancesPage,
-              },
-              {
-                path: "maintenance",
-                Component: MaintenancePage,
-              },
-              {
-                path: "propiedades/:idPropiedad",
-                Component: PropiedadDetallePage,
-              },
-              {
-                path: "*",
-                Component: NotFoundPage,
-              },
-            ],
+            path: "dashboard",
+            Component: DashboardPage,
+          },
+          {
+            path: "tenants",
+            Component: TenantsPage,
+          },
+          {
+            path: "nueva-propiedad",
+            Component: NuevaPropiedadPage,
+          },
+          {
+            path: "finances",
+            Component: FinancesPage,
+          },
+          {
+            path: "maintenance",
+            Component: MaintenancePage,
+          },
+          {
+            path: "propiedades/:idPropiedad",
+            Component: PropiedadDetallePage,
+          },
+          {
+            path: "*",
+            Component: NotFoundPage,
           },
         ],
       },

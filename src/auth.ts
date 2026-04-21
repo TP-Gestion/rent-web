@@ -1,14 +1,13 @@
-const AUTH_KEY = 'rentweb:isAuthenticated'
+let authenticated = false
 
 export function isAuthenticated(): boolean {
-  if (typeof window === 'undefined') return false
-  return window.localStorage.getItem(AUTH_KEY) === 'true'
+  return authenticated
 }
 
 export function login(): void {
-  window.localStorage.setItem(AUTH_KEY, 'true')
+  authenticated = true
 }
 
 export function logout(): void {
-  window.localStorage.removeItem(AUTH_KEY)
+  authenticated = false
 }
