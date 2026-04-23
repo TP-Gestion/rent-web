@@ -27,11 +27,13 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const isRegisterMode = mode === 'register'
 
   const handleModeChange = (nextMode: AuthMode) => {
     setMode(nextMode)
+    setSuccessMessage(null)
     setErrorMessage(null)
     setFieldErrors({})
   }
@@ -51,6 +53,7 @@ export default function LoginPage() {
     }
 
     setErrorMessage(null)
+    setSuccessMessage(null)
     setFieldErrors({})
 
     const loginValues = {
@@ -73,19 +76,29 @@ export default function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      const response = isRegisterMode
-        ? await registerRequest({
-            name: values.name.trim(),
-            email: values.email.trim(),
-            password: values.password,
-          })
-        : await loginRequest({
-            email: values.email.trim(),
-            password: values.password,
-          })
+      if (isRegisterMode) {
+        await registerRequest({
+          name: values.name.trim(),
+          email: values.email.trim(),
+          password: values.password,
+        })
 
-      setAuthenticatedSession(response.data)
-      navigate('/dashboard', { replace: true })
+        setMode('login')
+        setValues((prev) => ({
+          ...prev,
+          name: '',
+          password: '',
+        }))
+        setSuccessMessage('Registro exitoso.')
+      } else {
+        const response = await loginRequest({
+          email: values.email.trim(),
+          password: values.password,
+        })
+
+        setAuthenticatedSession(response.data)
+        navigate('/dashboard', { replace: true })
+      }
     } catch (error) {
       setErrorMessage(getAuthErrorMessage(mode, error))
     } finally {
@@ -109,6 +122,7 @@ export default function LoginPage() {
           values={values}
           fieldErrors={fieldErrors}
           errorMessage={errorMessage}
+          successMessage={successMessage}
           isSubmitting={isSubmitting}
           onValueChange={handleValueChange}
           onSubmit={handleSubmit}

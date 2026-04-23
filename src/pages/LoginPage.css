@@ -129,6 +129,8 @@
 }
 
 .login-form__input {
+  width: 100%;
+  box-sizing: border-box;
   height: 40px;
   border: 1px solid #e8e0cf;
   border-radius: 10px;
@@ -147,6 +149,41 @@
 
 .login-form__input.has-error {
   border-color: #d78f82;
+}
+
+.login-form__password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.login-form__input--password {
+  padding-right: 46px;
+}
+
+.login-form__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  padding: 0;
+  background: transparent;
+  color: #5f5647;
+  cursor: pointer;
+}
+
+.login-form__password-toggle:hover {
+  background: #f2ede2;
+}
+
+.login-form__password-toggle:focus-visible {
+  outline: 2px solid #d4a017;
+  outline-offset: 1px;
 }
 
 .login-form__field-error {
@@ -194,6 +231,17 @@
   border: 1px solid #e8c5bf;
   background-color: #fff3f1;
   color: #7a2e25;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.login-form__success {
+  margin: 6px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #b8d7bf;
+  background-color: #edf9f0;
+  color: #265735;
   font-size: 12px;
   line-height: 1.4;
 }

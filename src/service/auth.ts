@@ -62,7 +62,5 @@ export async function login(
 export async function register(
   body: RegisterRequest,
 ): Promise<ApiResponse<AuthUser>> {
-  const response = await wrapResponse(apiClient.post<AuthUser>("/v1/auth/register", body));
-  saveAuth(response.data);
-  return response;
+  return wrapResponse(apiClient.post<AuthUser>("/v1/auth/register", body));
 }
