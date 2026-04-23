@@ -1,21 +1,96 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { login } from '../auth'
+import { setAuthenticatedSession } from '../authSession'
+import {
+  AuthModeSwitch,
+  LoginForm,
+  type AuthFormValues,
+  type AuthMode,
+  type FieldErrors,
+  type FormField,
+} from '../components/login'
+import { getAuthErrorMessage, getFieldErrors } from '../components/login/utils'
+import { loginSchema, registerSchema } from '../schemas/authSchema'
+import { login as loginRequest, register as registerRequest } from '../service/auth'
 import './LoginPage.css'
+
+const INITIAL_VALUES: AuthFormValues = {
+  name: '',
+  email: '',
+  password: '',
+}
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [mode, setMode] = useState<AuthMode>('login')
+  const [values, setValues] = useState<AuthFormValues>(INITIAL_VALUES)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const isRegisterMode = mode === 'register'
+
+  const handleModeChange = (nextMode: AuthMode) => {
+    setMode(nextMode)
+    setErrorMessage(null)
+    setFieldErrors({})
+  }
+
+  const handleValueChange = (field: FormField, value: string) => {
+    setValues((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    // Login temporal: permite cualquier combinación de usuario y contraseña.
-    void username
-    void password
-    login()
-    navigate('/dashboard', { replace: true })
+    if (isSubmitting) {
+      return
+    }
+
+    setErrorMessage(null)
+    setFieldErrors({})
+
+    const loginValues = {
+      email: values.email.trim(),
+      password: values.password,
+    }
+
+    const validationResult = isRegisterMode
+      ? registerSchema.safeParse({
+          ...loginValues,
+          name: values.name.trim(),
+        })
+      : loginSchema.safeParse(loginValues)
+
+    if (!validationResult.success) {
+      setFieldErrors(getFieldErrors(validationResult.error.issues))
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = isRegisterMode
+        ? await registerRequest({
+            name: values.name.trim(),
+            email: values.email.trim(),
+            password: values.password,
+          })
+        : await loginRequest({
+            email: values.email.trim(),
+            password: values.password,
+          })
+
+      setAuthenticatedSession(response.data)
+      navigate('/dashboard', { replace: true })
+    } catch (error) {
+      setErrorMessage(getAuthErrorMessage(mode, error))
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -27,35 +102,17 @@ export default function LoginPage() {
         <div className="login-card__brand">SOLARIS</div>
         <p className="login-card__subtitle">ADMIN CONSOLE</p>
 
-        <h1 id="login-title" className="login-card__title">Iniciar sesión</h1>
-        <p className="login-card__hint">Ingresá con cualquier usuario y contraseña para continuar.</p>
+        <AuthModeSwitch mode={mode} disabled={isSubmitting} onChange={handleModeChange} />
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          <label className="login-form__label" htmlFor="username">Usuario</label>
-          <input
-            id="username"
-            className="login-form__input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="ej: admin"
-            autoComplete="username"
-          />
-
-          <label className="login-form__label" htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            className="login-form__input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            autoComplete="current-password"
-          />
-
-          <button type="submit" className="login-form__submit">
-            Entrar
-          </button>
-        </form>
+        <LoginForm
+          mode={mode}
+          values={values}
+          fieldErrors={fieldErrors}
+          errorMessage={errorMessage}
+          isSubmitting={isSubmitting}
+          onValueChange={handleValueChange}
+          onSubmit={handleSubmit}
+        />
       </section>
     </div>
   )
