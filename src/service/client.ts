@@ -2,21 +2,21 @@ import axios from "axios";
 
 function getDefaultApiBaseUrl(): string {
   if (typeof window === "undefined") {
-    return "http://localhost:8080";
+    return "http://localhost:8080/api";
   }
 
   const { hostname, origin } = window.location;
   const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
 
   if (isLocalHost) {
-    return "http://localhost:8080";
+    return "http://localhost:8080/api";
   }
 
   return `${origin}/api`;
 }
 
 const envApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
-const apiBaseUrl = envApiBaseUrl || getDefaultApiBaseUrl();
+const apiBaseUrl = (envApiBaseUrl || getDefaultApiBaseUrl()).replace(/\/+$/, "");
 
 const apiClient = axios.create({
   baseURL: apiBaseUrl,

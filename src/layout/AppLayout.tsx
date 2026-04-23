@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router'
-import { logout } from '../auth'
+import { clearAuthenticatedSession } from '../authSession'
 import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 
@@ -11,7 +11,7 @@ export default function AppLayout() {
 
   const handleNavigate = (path: string) => {
     if (path === '/logout') {
-      logout()
+      clearAuthenticatedSession()
       navigate('/login')
       setMobileOpen(false)
       return

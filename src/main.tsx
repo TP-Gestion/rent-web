@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom/client";
 import { Navigate, createBrowserRouter, RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
-import { isAuthenticated } from "./auth";
+import { isSessionAuthenticated } from "./authSession";
 import AppLayout from "./layout/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import TenantsPage from "./pages/TenantsPage";
@@ -15,7 +15,7 @@ import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function RequireAuthLayout() {
-  if (!isAuthenticated()) {
+  if (!isSessionAuthenticated()) {
     return <Navigate to="/" replace />;
   }
 
