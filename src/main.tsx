@@ -13,6 +13,7 @@ import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
 import PropiedadDetallePage from "./pages/propertyDetail";
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import BillingPage from "./pages/BillingPage";
 
 function RequireAuthLayout() {
   if (!isAuthenticated()) {
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
           {
             path: "*",
             Component: NotFoundPage,
+          },
+          {
+            path: "/generar-liquidacion",
+            element: <BillingPage />,
           },
         ],
       },

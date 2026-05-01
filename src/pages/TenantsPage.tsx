@@ -2,7 +2,10 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import StatCard from "../components/tenants/StatCard";
 import DataTable from "../components/tenants/dataTable/DataTable";
-import { MorosityCard, BatchActionsCard } from "../components/tenants/bottomCards";
+import {
+  MorosityCard,
+  BatchActionsCard,
+} from "../components/tenants/bottomCards";
 import type { PropiedadListItem } from "../service/propiedades";
 import {
   EXPENSAS_PERIOD_LABEL,
@@ -96,7 +99,7 @@ export default function TenantsPage() {
   };
 
   const handleGenerarLiquidacion = () => {
-    alert("Generando liquidación...");
+    navigate("/generar-liquidacion");
   };
 
   return (

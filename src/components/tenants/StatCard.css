@@ -78,3 +78,10 @@
   border-radius: 999px;
   white-space: nowrap;
 }
+
+.stat-card__subtitle {
+  font-size: 11px;
+  color: #b8a882;
+  font-weight: 500;
+  margin-top: 2px;
+}
