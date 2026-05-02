@@ -14,7 +14,7 @@ import {
   getExpensasStats,
   getMorosityData,
 } from "../propiedadService";
-import { usePropiedades } from "../hooks/usePropiedades";
+import { usePropertiesSummary } from "../hooks/usePropertiesSummary";
 import "./TenantsPage.css";
 
 interface FilterState {
@@ -42,7 +42,7 @@ function HeaderButton({ label, primary, onClick }: HeaderButtonProps) {
 
 export default function TenantsPage() {
   const navigate = useNavigate();
-  const { data: propiedadesData } = usePropiedades();
+  const { data: propiedadesData } = usePropertiesSummary();
   const propiedades = propiedadesData ?? [];
   const stats = getExpensasStats();
   const morosityData = getMorosityData();
@@ -67,7 +67,8 @@ export default function TenantsPage() {
 
     if (filters.tab !== "todos") {
       filtered = filtered.filter((p) => {
-        const estado = p.estadoOcupacion === "LIBRE" ? "LIBRE" : p.estadoPago;
+        const estado =
+          p.estadoOcupacion === "AVAILABLE" ? "AVAILABLE" : p.estadoPago;
         return estado === filters.tab;
       });
     }

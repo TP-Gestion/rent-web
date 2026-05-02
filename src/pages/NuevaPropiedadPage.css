@@ -283,4 +283,269 @@
   .np-page__title {
     font-size: 26px;
   }
+
+  .np-steps {
+    gap: 4px;
+  }
+
+  .np-step__label {
+    display: none;
+  }
+
+  .np-modal__content {
+    width: calc(100vw - 32px);
+    padding: 20px 16px;
+  }
 }
+
+
+.np-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.np-step-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.np-step-wrapper:last-child {
+  flex: 0;
+}
+
+.np-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.np-step__circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #e8e4d8;
+  background: #fff;
+  color: #b8a882;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.np-step--active .np-step__circle {
+  border-color: #d4a017;
+  background: #d4a017;
+  color: #fff;
+}
+
+.np-step--done .np-step__circle {
+  border-color: #2e7d4f;
+  background: #eaf6ef;
+  color: #2e7d4f;
+}
+
+.np-step__label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #b8a882;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.np-step--active .np-step__label {
+  color: #2c2820;
+}
+
+.np-step--done .np-step__label {
+  color: #2e7d4f;
+}
+
+.np-step__line {
+  flex: 1;
+  height: 2px;
+  background: #e8e4d8;
+  margin: 0 8px;
+  border-radius: 1px;
+  transition: background 0.2s;
+}
+
+.np-step__line--done {
+  background: #2e7d4f;
+}
+
+
+.np-step__hint {
+  font-size: 12.5px;
+  color: #888880;
+  margin: 0;
+  line-height: 1.6;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+
+.np-label--optional {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: #b8a882;
+  margin-left: 4px;
+}
+
+
+.np-btn-ghost {
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #d4a017;
+  background: none;
+  border: 1px dashed #e8c96a;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.15s, border-color 0.15s;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.np-btn-ghost:hover:not(:disabled) {
+  background: #fffdf0;
+  border-color: #d4a017;
+}
+
+.np-btn-ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+
+.np-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.np-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 40, 32, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.np-modal__content {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border-radius: 14px;
+  width: 520px;
+  max-width: calc(100vw - 32px);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+.np-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid #f0ece0;
+}
+
+.np-modal__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #2c2820;
+  margin: 0;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.np-modal__close {
+  font-size: 22px;
+  line-height: 1;
+  color: #b8a882;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.np-modal__close:hover:not(:disabled) {
+  background: #f5f2ea;
+  color: #2c2820;
+}
+
+.np-modal__body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.np-modal__footer {
+  padding: 16px 24px 22px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  border-top: 1px solid #f0ece0;
+}
+
+
+.np-expense-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.np-expense-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #f0ece0;
+  border-radius: 10px;
+  background: #fafaf7;
+}
+
+.np-expense-remove {
+  align-self: flex-end;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #a33030;
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  padding: 2px 0;
+  transition: opacity 0.15s;
+}
+
+.np-expense-remove:hover {
+  opacity: 0.7;
+}
+
+
+.np-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+

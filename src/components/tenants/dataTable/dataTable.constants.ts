@@ -1,4 +1,4 @@
-export type EstadoDisplay = "PAGADO" | "PENDIENTE" | "VENCIDO" | "LIBRE";
+export type EstadoDisplay = "PAID" | "PENDING" | "OVERDUE" | "AVAILABLE";
 
 interface BadgeStyle {
   bg: string;
@@ -7,10 +7,10 @@ interface BadgeStyle {
 }
 
 export const BADGE_STYLES: Record<EstadoDisplay, BadgeStyle> = {
-  PAGADO: { bg: "#e6f6ee", color: "#1a6b3a", label: "PAGADO" },
-  PENDIENTE: { bg: "#fff4d6", color: "#8a5a00", label: "PENDIENTE" },
-  VENCIDO: { bg: "#fdecea", color: "#b02020", label: "VENCIDO" },
-  LIBRE: { bg: "#e8f0fe", color: "#1a56b0", label: "LIBRE" },
+  PAID: { bg: "#e6f6ee", color: "#1a6b3a", label: "PAGADO" },
+  PENDING: { bg: "#fff4d6", color: "#8a5a00", label: "PENDIENTE" },
+  OVERDUE: { bg: "#fdecea", color: "#b02020", label: "VENCIDO" },
+  AVAILABLE: { bg: "#e8f0fe", color: "#1a56b0", label: "LIBRE" },
 };
 
 export interface AvatarColor {
@@ -33,10 +33,10 @@ export interface Tab {
 
 export const TABS: Tab[] = [
   { key: "todos", label: "Todos" },
-  { key: "PAGADO", label: "Pagados" },
-  { key: "PENDIENTE", label: "Pendientes" },
-  { key: "VENCIDO", label: "Vencidos" },
-  { key: "LIBRE", label: "Libres" },
+  { key: "PAID", label: "Pagados" },
+  { key: "PENDING", label: "Pendientes" },
+  { key: "OVERDUE", label: "Vencidos" },
+  { key: "AVAILABLE", label: "Libres" },
 ];
 
 export const COL_HEADERS: string[] = [
