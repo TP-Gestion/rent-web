@@ -1,4 +1,9 @@
-import { ApiResponse, apiClient, wrapResponse } from "./client";
+import {
+  ApiResponse,
+  BackendResponse,
+  apiClient,
+  wrapResponse,
+} from "./client";
 export interface CreatePropiedadRequest {
   edificio: string;
   piso: string;
@@ -24,8 +29,8 @@ export async function crearPropiedad(
   return wrapResponse(apiClient.post<PropiedadCreada>("/properties", body));
 }
 
-export type EstadoOcupacion = "LIBRE" | "OCUPADO";
-export type EstadoPago = "PAGADO" | "PENDIENTE" | "VENCIDO";
+export type EstadoOcupacion = "AVAILABLE" | "OCCUPIED";
+export type EstadoPago = "PAID" | "PENDING" | "OVERDUE";
 
 export interface PropiedadDetalle {
   id: number;
@@ -44,6 +49,38 @@ export interface PropiedadDetalle {
   expensas: number;
 }
 
+interface PropertyDetailsApiData {
+  id: number;
+  building: { id: number; name: string; address: string };
+  floor: string;
+  area: number;
+  rooms: number;
+  unitType: string;
+  occupancyStatus: string;
+  tenant: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  } | null;
+  activeContract: {
+    id: number;
+    propertyId: number;
+    amount: number;
+    dueDate: string;
+    status: string;
+  } | null;
+}
+
+interface PaymentDetailsApiData {
+  rentalContract: { amount: number; dueDate: string; status: string } | null;
+  expenses: Array<{ amount: number }>;
+  totalDue: number;
+  paymentStatus: string;
+  earliestDueDate: string | null;
+}
+
 export async function getDetallePropiedad(
   idPropiedad: string,
 ): Promise<ApiResponse<PropiedadDetalle>> {
@@ -53,15 +90,46 @@ export async function getDetallePropiedad(
     if (item) return { data: item, errors: [] };
     return Promise.reject(new Error("Propiedad no encontrada"));
   }
-  return wrapResponse(
-    apiClient.get<PropiedadDetalle>(`/properties/${idPropiedad}`),
-  );
+
+  const [detailsRes, paymentRes] = await Promise.all([
+    apiClient.get<BackendResponse<PropertyDetailsApiData>>(
+      `/properties/${idPropiedad}/details`,
+    ),
+    apiClient.get<BackendResponse<PaymentDetailsApiData>>(
+      `/properties/${idPropiedad}/payment-details`,
+    ),
+  ]);
+
+  const d = detailsRes.data.data;
+  const p = paymentRes.data.data;
+
+  return {
+    data: {
+      id: d.id,
+      edificio: d.building.name,
+      direccion: d.building.address,
+      piso: d.floor,
+      superficie: d.area,
+      ambientes: d.rooms,
+      tipoUnidad: d.unitType,
+      estadoOcupacion: d.occupancyStatus as EstadoOcupacion,
+      estadoPago: p.paymentStatus as EstadoPago,
+      fechaVencimiento: p.earliestDueDate,
+      montoTotal: p.totalDue,
+      montoAlquiler: p.rentalContract?.amount ?? 0,
+      expensas: p.totalDue - (p.rentalContract?.amount ?? 0),
+      nombreInquilino: d.tenant
+        ? `${d.tenant.firstName} ${d.tenant.lastName}`
+        : "",
+    },
+    errors: [],
+  };
 }
 
 export type PropiedadListItem = PropiedadDetalle;
 
 export async function getPropiedades(): Promise<PropiedadListItem[]> {
-  if (USE_MOCK_BILLABLE_DATA) {
+  if (true) {
     await mockDelay();
     return MOCK_PROPIEDADES;
   }
@@ -69,7 +137,62 @@ export async function getPropiedades(): Promise<PropiedadListItem[]> {
   return data;
 }
 
-export const USE_MOCK_BILLABLE_DATA = true;
+export interface PropertySummaryInquilino {
+  id: number;
+  nombre: string;
+  apellido: string;
+}
+
+export interface PropertySummaryItem {
+  id: number;
+  edificio: string;
+  piso: string;
+  tipoUnidad: string;
+  estadoOcupacion: string;
+  estadoPago: string;
+  inquilino: PropertySummaryInquilino | null;
+  fechaVencimiento: string | null;
+  montoTotal: number;
+}
+
+interface PropertySummaryApiResponse {
+  status: number;
+  message: string;
+  data: PropertySummaryItem[];
+  errors: Record<string, unknown>;
+  timestamp: string;
+}
+
+export async function getPropertiesSummary(): Promise<PropiedadListItem[]> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return MOCK_PROPIEDADES;
+  }
+  const { data } = await apiClient.get<PropertySummaryApiResponse>(
+    "/properties/summary",
+  );
+  return data.data.map((item) => ({
+    id: item.id,
+    edificio: item.edificio,
+    piso: item.piso,
+    tipoUnidad: item.tipoUnidad,
+    estadoOcupacion: item.estadoOcupacion as EstadoOcupacion,
+    estadoPago: item.estadoPago as EstadoPago,
+    nombreInquilino: item.inquilino
+      ? `${item.inquilino.nombre} ${item.inquilino.apellido}`
+      : "",
+    fechaVencimiento: item.fechaVencimiento,
+    montoTotal: item.montoTotal,
+    // Fields not returned by the summary endpoint
+    direccion: "",
+    superficie: 0,
+    ambientes: 0,
+    montoAlquiler: 0,
+    expensas: 0,
+  }));
+}
+
+export const USE_MOCK_BILLABLE_DATA = false;
 
 const mockDelay = () => new Promise((r) => setTimeout(r, 3000));
 
@@ -84,8 +207,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Pedro Pérez",
     edificio: "Torre Solaris I",
     piso: "2A",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "PENDIENTE",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "PENDING",
     fechaVencimiento: `${_period}-10`,
     montoTotal: 205000,
     direccion: "Av. Corrientes 1234, CABA",
@@ -100,8 +223,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Laura Gómez",
     edificio: "Torre Solaris I",
     piso: "PH",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "VENCIDO",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "OVERDUE",
     fechaVencimiento: `${_period}-10`,
     montoTotal: 335000,
     direccion: "Av. Corrientes 1234, CABA",
@@ -116,8 +239,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Martín Rodríguez",
     edificio: "Edificio Palermo Sky",
     piso: "3B",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "PENDIENTE",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "PENDING",
     fechaVencimiento: `${_period}-15`,
     montoTotal: 185000,
     direccion: "Honduras 4567, Palermo, CABA",
@@ -132,8 +255,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Sofía Martínez",
     edificio: "Edificio Palermo Sky",
     piso: "1C",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "VENCIDO",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "OVERDUE",
     fechaVencimiento: `${_period}-15`,
     montoTotal: 220000,
     direccion: "Honduras 4567, Palermo, CABA",
@@ -148,8 +271,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Carlos Sánchez",
     edificio: "Residencial Belgrano Norte",
     piso: "5D",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "PAGADO",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "PAID",
     fechaVencimiento: `${_period}-05`,
     montoTotal: 233000,
     direccion: "Cabildo 2890, Belgrano, CABA",
@@ -164,8 +287,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Ana Torres",
     edificio: "Residencial Belgrano Norte",
     piso: "2F",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "PENDIENTE",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "PENDING",
     fechaVencimiento: `${_period}-05`,
     montoTotal: 197000,
     direccion: "Cabildo 2890, Belgrano, CABA",
@@ -180,8 +303,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Diego López",
     edificio: "Centro Comercial San Martín",
     piso: "Local 3",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "VENCIDO",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "OVERDUE",
     fechaVencimiento: `${_period}-01`,
     montoTotal: 535000,
     direccion: "San Martín 720, Microcentro, CABA",
@@ -196,8 +319,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Valeria Ruiz",
     edificio: "Centro Comercial San Martín",
     piso: "Oficina 12",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "PAGADO",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "PAID",
     fechaVencimiento: `${_period}-01`,
     montoTotal: 303000,
     direccion: "San Martín 720, Microcentro, CABA",
@@ -212,8 +335,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "",
     edificio: "Torre Solaris I",
     piso: "4C",
-    estadoOcupacion: "LIBRE",
-    estadoPago: "PAGADO",
+    estadoOcupacion: "AVAILABLE",
+    estadoPago: "PAID",
     fechaVencimiento: null,
     montoTotal: 0,
     direccion: "Av. Corrientes 1234, CABA",
@@ -228,8 +351,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "",
     edificio: "Edificio Palermo Sky",
     piso: "6A",
-    estadoOcupacion: "LIBRE",
-    estadoPago: "PAGADO",
+    estadoOcupacion: "AVAILABLE",
+    estadoPago: "PAID",
     fechaVencimiento: null,
     montoTotal: 0,
     direccion: "Honduras 4567, Palermo, CABA",
@@ -244,8 +367,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Roberto Ibáñez",
     edificio: "Residencial Belgrano Norte",
     piso: "7B",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "PAGADO",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "PAID",
     fechaVencimiento: `${_period}-05`,
     montoTotal: 245000,
     direccion: "Cabildo 2890, Belgrano, CABA",
@@ -260,8 +383,8 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
     nombreInquilino: "Claudia Ferreyra",
     edificio: "Centro Comercial San Martín",
     piso: "Oficina 7",
-    estadoOcupacion: "OCUPADO",
-    estadoPago: "PENDIENTE",
+    estadoOcupacion: "OCCUPIED",
+    estadoPago: "PENDING",
     fechaVencimiento: `${_period}-01`,
     montoTotal: 280000,
     direccion: "San Martín 720, Microcentro, CABA",
@@ -1007,4 +1130,243 @@ export async function registrarPago(
     body,
   );
   return data;
+}
+
+export interface Building {
+  id: number;
+  name: string;
+  address: string;
+}
+
+export interface CreateBuildingRequest {
+  name: string;
+  address: string;
+}
+
+export type ExpenseType =
+  | "MAINTENANCE"
+  | "REPAIR"
+  | "UTILITIES"
+  | "TAXES"
+  | "ADMINISTRATION";
+
+export interface CreateExpenseRequest {
+  type: ExpenseType;
+  amount: number;
+  description?: string;
+  dueDate: string;
+}
+
+const MOCK_BUILDINGS: Building[] = [
+  { id: 1, name: "Torre Solaris I", address: "Av. Corrientes 1234, CABA" },
+  {
+    id: 2,
+    name: "Edificio Palermo Sky",
+    address: "Honduras 4567, Palermo, CABA",
+  },
+  {
+    id: 3,
+    name: "Residencial Belgrano Norte",
+    address: "Cabildo 2890, Belgrano, CABA",
+  },
+  {
+    id: 4,
+    name: "Centro Comercial San Martín",
+    address: "San Martín 720, Microcentro, CABA",
+  },
+];
+let _mockBuildingNextId = 5;
+
+export async function getBuildings(): Promise<Building[]> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return [...MOCK_BUILDINGS];
+  }
+  const { data } = await apiClient.get<{ data: Building[] }>("/buildings");
+  return data.data;
+}
+
+export async function createBuilding(
+  body: CreateBuildingRequest,
+): Promise<ApiResponse<Building>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    const newBuilding: Building = { id: _mockBuildingNextId++, ...body };
+    MOCK_BUILDINGS.push(newBuilding);
+    return { data: newBuilding, errors: [] };
+  }
+  const { data } = await apiClient.post<{ data: Building }>("/buildings", body);
+  return { data: data.data, errors: [] };
+}
+
+export async function createBuildingExpense(
+  buildingId: number,
+  body: CreateExpenseRequest,
+): Promise<ApiResponse<void>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return { data: undefined as unknown as void, errors: [] };
+  }
+  return wrapResponse(
+    apiClient.post<void>(`/buildings/${buildingId}/expenses`, body),
+  );
+}
+
+export interface Tenant {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+
+export interface CreateTenantRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+
+const MOCK_TENANTS: Tenant[] = [
+  {
+    id: 1,
+    firstName: "Pedro",
+    lastName: "Pérez",
+    email: "pedro.perez@email.com",
+    phone: "1145238891",
+  },
+  {
+    id: 2,
+    firstName: "Laura",
+    lastName: "Gómez",
+    email: "lgomez@correo.com",
+    phone: "1156781234",
+  },
+  {
+    id: 3,
+    firstName: "Martín",
+    lastName: "Rodríguez",
+    email: "m.rodriguez@gmail.com",
+    phone: "1123456789",
+  },
+  {
+    id: 4,
+    firstName: "Sofía",
+    lastName: "Martínez",
+    email: "sofia.m@outlook.com",
+    phone: "1198765432",
+  },
+  {
+    id: 5,
+    firstName: "Carlos",
+    lastName: "Sánchez",
+    email: "c.sanchez@empresa.com",
+    phone: "1133445566",
+  },
+  {
+    id: 6,
+    firstName: "Ana",
+    lastName: "Torres",
+    email: "a.torres@hotmail.com",
+    phone: "1177889900",
+  },
+  {
+    id: 7,
+    firstName: "Diego",
+    lastName: "López",
+    email: "dlopez@comercio.com.ar",
+    phone: "1141002233",
+  },
+  {
+    id: 8,
+    firstName: "Valeria",
+    lastName: "Ruiz",
+    email: "vruiz@estudio.com.ar",
+    phone: "1141003344",
+  },
+];
+let _mockTenantNextId = 9;
+
+export async function getTenants(): Promise<Tenant[]> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return [...MOCK_TENANTS];
+  }
+  const { data } = await apiClient.get<{ data: Tenant[] }>("/tenants");
+  return data.data;
+}
+
+export async function createTenant(
+  body: CreateTenantRequest,
+): Promise<ApiResponse<Tenant>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    const newTenant: Tenant = { id: _mockTenantNextId++, ...body };
+    MOCK_TENANTS.push(newTenant);
+    return { data: newTenant, errors: [] };
+  }
+  const { data } = await apiClient.post<BackendResponse<Tenant>>(
+    "/tenants",
+    body,
+  );
+  return { data: data.data, errors: [] };
+}
+
+export interface CreatePropertyV2Request {
+  buildingId: number;
+  floor: string;
+  area: number;
+  rooms: number;
+  unitType: string;
+}
+
+export interface CreatedPropertyV2 {
+  id: number;
+}
+
+let _mockPropertyNextId = 100;
+
+export async function createPropertyV2(
+  body: CreatePropertyV2Request,
+): Promise<ApiResponse<CreatedPropertyV2>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return { data: { id: _mockPropertyNextId++ }, errors: [] };
+  }
+  const { data } = await apiClient.post<{ data: CreatedPropertyV2 }>(
+    "/properties",
+    body,
+  );
+  return { data: data.data, errors: [] };
+}
+
+export async function assignTenantToProperty(
+  propertyId: number,
+  tenantId: number,
+): Promise<ApiResponse<void>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return { data: undefined as unknown as void, errors: [] };
+  }
+  return wrapResponse(
+    apiClient.patch<void>(`/properties/${propertyId}/tenant/${tenantId}`),
+  );
+}
+
+export interface CreateRentalContractRequest {
+  amount: number;
+  dueDate: string;
+}
+
+export async function createRentalContract(
+  propertyId: number,
+  body: CreateRentalContractRequest,
+): Promise<ApiResponse<void>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return { data: undefined as unknown as void, errors: [] };
+  }
+  return wrapResponse(
+    apiClient.post<void>(`/properties/${propertyId}/rental-contract`, body),
+  );
 }

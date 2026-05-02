@@ -24,7 +24,7 @@ export default function DetailHeader({
           <span className="pd-subtitle">{detalle.edificio}</span>
         </div>
         <div className="pd-header__right">
-          {detalle.estadoOcupacion === "OCUPADO" && onRegistrarPago && (
+          {detalle.estadoOcupacion === "OCCUPIED" && onRegistrarPago && (
             <button
               className="pd-btn pd-btn--primary"
               type="button"

@@ -5,7 +5,7 @@ import { formatArsAmount, getInitials } from "./dataTable.utils";
 import { formatTipoUnidad } from "../../../utils/propertyDetail";
 
 function StatusBadge({ status }: { status: EstadoDisplay }) {
-  const style = BADGE_STYLES[status] ?? BADGE_STYLES.PENDIENTE;
+  const style = BADGE_STYLES[status] ?? BADGE_STYLES.PENDING;
 
   return (
     <span
@@ -23,7 +23,8 @@ function StatusBadge({ status }: { status: EstadoDisplay }) {
 }
 
 function Avatar({ name }: { name: string }) {
-  const index = name.charCodeAt(0) % AVATAR_COLORS.length;
+  const code = name.length > 0 ? name.charCodeAt(0) : 0;
+  const index = code % AVATAR_COLORS.length;
   const { bg, color } = AVATAR_COLORS[index];
 
   return (
@@ -44,18 +45,20 @@ interface TenantRowProps {
 }
 
 export default function TenantRow({ item, onVerDetalle }: TenantRowProps) {
-  const isLibre = item.estadoOcupacion === "LIBRE";
-  const estadoDisplay: EstadoDisplay = isLibre ? "LIBRE" : item.estadoPago;
-  const isOverdue = estadoDisplay === "VENCIDO";
+  const isLibre = item.estadoOcupacion === "AVAILABLE";
+  const estadoDisplay: EstadoDisplay = isLibre ? "AVAILABLE" : item.estadoPago;
+  const isOverdue = estadoDisplay === "OVERDUE";
 
   return (
     <tr className="tenant-row">
       <td className="tenant-row__cell tenant-row__tenant-cell">
         <div className="tenant-row__tenant-wrap">
-          {!isLibre && <Avatar name={item.nombreInquilino} />}
+          {!isLibre && item.nombreInquilino && (
+            <Avatar name={item.nombreInquilino} />
+          )}
           <div>
             <div className="tenant-row__name">
-              {isLibre ? "-" : item.nombreInquilino}
+              {item.nombreInquilino || "-"}
             </div>
           </div>
         </div>
