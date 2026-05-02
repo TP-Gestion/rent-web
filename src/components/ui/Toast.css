@@ -1,0 +1,78 @@
+.toast-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.13);
+  pointer-events: auto;
+  animation: toast-in 0.22s ease;
+  min-width: 260px;
+  max-width: 380px;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-item--success {
+  background: #eaf6ef;
+  color: #2e7d4f;
+  border: 1px solid #b8e0c8;
+}
+
+.toast-item--error {
+  background: #fdf0f0;
+  color: #a33030;
+  border: 1px solid #f0c4c4;
+}
+
+.toast-item__icon {
+  font-size: 15px;
+  font-weight: 800;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+
+.toast-item__message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-item__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.45;
+  padding: 0;
+  color: inherit;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.toast-item__close:hover {
+  opacity: 1;
+}

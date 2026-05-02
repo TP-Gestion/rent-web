@@ -71,4 +71,42 @@ const crearPropiedadSchema = z
 
 export type FormValues = z.infer<typeof crearPropiedadSchema>;
 
+export const buildingSchema = z.object({
+  name: z.string().min(1, "El nombre es obligatorio"),
+  address: z.string().min(1, "La dirección es obligatoria"),
+});
+
+export const tenantSchema = z.object({
+  firstName: z.string().min(1, "El nombre es obligatorio"),
+  lastName: z.string().min(1, "El apellido es obligatorio"),
+  email: z.string().min(1, "El email es obligatorio").email("Email inválido"),
+  phone: z
+    .string()
+    .length(10, "Debe tener exactamente 10 dígitos")
+    .regex(/^\d+$/, "Solo se permiten números"),
+});
+
+export const unitSchema = z.object({
+  floor: z.string().min(1, "El piso / unidad es obligatorio"),
+  area: z
+    .string()
+    .min(1, "La superficie es obligatoria")
+    .refine((v) => !isNaN(Number(v)) && Number(v) > 0, "Debe ser mayor a 0"),
+  rooms: z
+    .string()
+    .min(1, "Los ambientes son obligatorios")
+    .refine(
+      (v) => Number.isInteger(Number(v)) && Number(v) > 0,
+      "Debe ser un entero mayor a 0",
+    ),
+  unitType: z.string().min(1, "Seleccione un tipo de unidad"),
+});
+
+export const contractSchema = z.object({
+  contractAmount: z
+    .string()
+    .min(1, "El monto es obligatorio")
+    .refine((v) => !isNaN(Number(v)) && Number(v) > 0, "Debe ser mayor a 0"),
+  contractDueDate: z.string().min(1, "La fecha de vencimiento es obligatoria"),
+});
 export { crearPropiedadSchema };

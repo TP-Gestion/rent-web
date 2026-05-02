@@ -1,7 +1,25 @@
 import axios from "axios";
 
+function getDefaultApiBaseUrl(): string {
+  if (typeof window === "undefined") {
+    return "http://localhost:8080";
+  }
+
+  const { hostname, origin } = window.location;
+  const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
+
+  if (isLocalHost) {
+    return "http://localhost:8080";
+  }
+
+  return `${origin}/api`;
+}
+
+const envApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+const apiBaseUrl = envApiBaseUrl || getDefaultApiBaseUrl();
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080",
+  baseURL: apiBaseUrl,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -14,6 +32,14 @@ export interface ApiError {
 export interface ApiResponse<T> {
   data: T;
   errors: ApiError[];
+}
+
+export interface BackendResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+  errors: Record<string, unknown>;
+  timestamp: string;
 }
 
 export async function wrapResponse<T>(

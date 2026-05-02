@@ -1,0 +1,32 @@
+/* Reuse shared table/badge/pagination base from DataTable */
+.billing-table__check-cell {
+  width: 44px;
+  padding-left: 16px !important;
+}
+
+.billing-table__checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: #d4a017;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.billing-table__row {
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.billing-table__row--selected {
+  background-color: #fffbe6;
+}
+
+.billing-table__row--selected:hover {
+  background-color: #fff5d0 !important;
+}
+
+.billing-table__inquilino {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #2c2820;
+}
