@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export const registrarPagoSchema = z.object({
-  periodos: z
+  periods: z
     .array(z.string())
     .min(1, "Debe seleccionar al menos un período a pagar"),
-  fechaPago: z.string().min(1, "Debe ingresar una fecha de pago"),
-  medioPago: z.string().min(1, "Debe seleccionar un medio de pago válido"),
-  referencia: z.string().optional(),
-  observaciones: z.string().optional(),
+  paymentDate: z.string().min(1, "Debe ingresar una fecha de pago"),
+  paymentMethod: z.string().min(1, "Debe seleccionar un medio de pago válido"),
+  reference: z.string().optional(),
+  notes: z.string().optional(),
 });
 
-export type RegistrarPagoFormValues = z.infer<typeof registrarPagoSchema>;
-export type RegistrarPagoFormErrors = Partial<
-  Record<keyof RegistrarPagoFormValues, string>
+export type RegisterPaymentFormValues = z.infer<typeof registrarPagoSchema>;
+export type RegisterPaymentFormErrors = Partial<
+  Record<keyof RegisterPaymentFormValues, string>
 >;

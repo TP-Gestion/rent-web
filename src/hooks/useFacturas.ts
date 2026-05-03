@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { getFacturasPropiedad } from "../service/propiedades";
+import { getPropertyBillings as getPropertyBillings } from "../service/propiedades";
 import type { ApiResponse } from "../service/client";
-import type { Factura } from "../service/propiedades";
+import type { Billing } from "../service/propiedades";
 
 export function useFacturas(idPropiedad: string) {
-  return useQuery<ApiResponse<Factura[]>>({
+  return useQuery<ApiResponse<Billing[]>>({
     queryKey: ["facturas", idPropiedad],
-    queryFn: () => getFacturasPropiedad(idPropiedad),
+    queryFn: () => getPropertyBillings(idPropiedad),
     enabled: !!idPropiedad,
   });
 }

@@ -1,22 +1,22 @@
-import { useMemo, useState } from "react"
-import type { PropiedadListItem } from "../../service/propiedades"
-import { formatCurrency } from "../../utils/propertyDetail"
+import { useMemo, useState } from "react";
+import type { PropiedadListItem } from "../../service/propiedades";
+import { formatCurrency } from "../../utils/propertyDetail";
 
 interface ExpenseRow {
-  id: string
-  propertyId: string
-  building: string
-  floor: string
-  concept: string
-  category: string
-  amount: number
-  frequency: "UNICA" | "MENSUAL"
-  duration: string
-  status: "ACTIVO" | "PAUSADO"
+  id: string;
+  propertyId: string;
+  building: string;
+  floor: string;
+  concept: string;
+  category: string;
+  amount: number;
+  frequency: "UNICA" | "MENSUAL";
+  duration: string;
+  status: "ACTIVO" | "PAUSADO";
 }
 
 interface ExpenseMaintenanceSectionProps {
-  properties: PropiedadListItem[]
+  properties: PropiedadListItem[];
 }
 
 function getInitialRows(properties: PropiedadListItem[]): ExpenseRow[] {
@@ -28,39 +28,50 @@ function getInitialRows(properties: PropiedadListItem[]): ExpenseRow[] {
     concept: `Gasto operativo ${property.edificio}`,
     category: "SERVICIOS",
     amount: Math.max(1, Math.round(property.expensas * 0.35)),
-    frequency: property.estadoOcupacion === "OCUPADO" ? "MENSUAL" : "UNICA",
-    duration: property.estadoOcupacion === "OCUPADO" ? "INDEFINIDA" : "1 MES",
+    frequency: property.estadoOcupacion === "OCCUPIED" ? "MENSUAL" : "UNICA",
+    duration: property.estadoOcupacion === "OCCUPIED" ? "INDEFINIDA" : "1 MES",
     status: "ACTIVO",
-  }))
+  }));
 }
 
-export default function ExpenseMaintenanceSection({ properties }: ExpenseMaintenanceSectionProps) {
-  const [rows, setRows] = useState<ExpenseRow[]>(() => getInitialRows(properties))
-  const [buildingFilter, setBuildingFilter] = useState("TODOS")
-  const [search, setSearch] = useState("")
-  const [editingId, setEditingId] = useState<string | null>(null)
+export default function ExpenseMaintenanceSection({
+  properties,
+}: ExpenseMaintenanceSectionProps) {
+  const [rows, setRows] = useState<ExpenseRow[]>(() =>
+    getInitialRows(properties),
+  );
+  const [buildingFilter, setBuildingFilter] = useState("TODOS");
+  const [search, setSearch] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const buildingOptions = useMemo(() => {
-    const uniqueBuildings = Array.from(new Set(rows.map((row) => row.building)))
-    return ["TODOS", ...uniqueBuildings]
-  }, [rows])
+    const uniqueBuildings = Array.from(
+      new Set(rows.map((row) => row.building)),
+    );
+    return ["TODOS", ...uniqueBuildings];
+  }, [rows]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
-      const matchesBuilding = buildingFilter === "TODOS" || row.building === buildingFilter
+      const matchesBuilding =
+        buildingFilter === "TODOS" || row.building === buildingFilter;
       const matchesSearch =
         search.trim() === "" ||
         row.concept.toLowerCase().includes(search.toLowerCase()) ||
-        `${row.building} ${row.floor}`.toLowerCase().includes(search.toLowerCase())
-      return matchesBuilding && matchesSearch
-    })
-  }, [rows, buildingFilter, search])
+        `${row.building} ${row.floor}`
+          .toLowerCase()
+          .includes(search.toLowerCase());
+      return matchesBuilding && matchesSearch;
+    });
+  }, [rows, buildingFilter, search]);
 
-  const editingRow = rows.find((row) => row.id === editingId) ?? null
+  const editingRow = rows.find((row) => row.id === editingId) ?? null;
 
   const updateRow = (id: string, updates: Partial<ExpenseRow>) => {
-    setRows((prev) => prev.map((row) => (row.id === id ? { ...row, ...updates } : row)))
-  }
+    setRows((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, ...updates } : row)),
+    );
+  };
 
   return (
     <div className="mnt-section-card">
@@ -69,7 +80,8 @@ export default function ExpenseMaintenanceSection({ properties }: ExpenseMainten
           <div className="mnt-eyebrow">Gestor operativo</div>
           <h2 className="mnt-title">Modificar gastos</h2>
           <p className="mnt-subtitle">
-            Revisa y edita gastos de los edificios. Esta vista es la base para conectar luego con la API de gastos.
+            Revisa y edita gastos de los edificios. Esta vista es la base para
+            conectar luego con la API de gastos.
           </p>
         </div>
       </div>
@@ -123,13 +135,21 @@ export default function ExpenseMaintenanceSection({ properties }: ExpenseMainten
             ) : (
               filteredRows.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.building} · Piso {row.floor}</td>
+                  <td>
+                    {row.building} · Piso {row.floor}
+                  </td>
                   <td>{row.concept}</td>
                   <td>{row.category}</td>
                   <td>{formatCurrency(row.amount)}</td>
-                  <td>{row.frequency === "MENSUAL" ? `Mensual · ${row.duration}` : "Unica vez"}</td>
                   <td>
-                    <span className={`mnt-badge${row.status === "ACTIVO" ? " mnt-badge--ok" : " mnt-badge--paused"}`}>
+                    {row.frequency === "MENSUAL"
+                      ? `Mensual · ${row.duration}`
+                      : "Unica vez"}
+                  </td>
+                  <td>
+                    <span
+                      className={`mnt-badge${row.status === "ACTIVO" ? " mnt-badge--ok" : " mnt-badge--paused"}`}
+                    >
                       {row.status}
                     </span>
                   </td>
@@ -153,7 +173,11 @@ export default function ExpenseMaintenanceSection({ properties }: ExpenseMainten
         <div className="mnt-editor">
           <div className="mnt-editor__header">
             <h3 className="mnt-editor__title">Editar gasto</h3>
-            <button type="button" className="mnt-link-btn" onClick={() => setEditingId(null)}>
+            <button
+              type="button"
+              className="mnt-link-btn"
+              onClick={() => setEditingId(null)}
+            >
               Cerrar
             </button>
           </div>
@@ -163,7 +187,9 @@ export default function ExpenseMaintenanceSection({ properties }: ExpenseMainten
               <input
                 className="mnt-input"
                 value={editingRow.concept}
-                onChange={(event) => updateRow(editingRow.id, { concept: event.target.value })}
+                onChange={(event) =>
+                  updateRow(editingRow.id, { concept: event.target.value })
+                }
               />
             </div>
             <div className="mnt-field">
@@ -174,7 +200,9 @@ export default function ExpenseMaintenanceSection({ properties }: ExpenseMainten
                 min="1"
                 value={editingRow.amount}
                 onChange={(event) =>
-                  updateRow(editingRow.id, { amount: Math.max(1, Number(event.target.value || 0)) })
+                  updateRow(editingRow.id, {
+                    amount: Math.max(1, Number(event.target.value || 0)),
+                  })
                 }
               />
             </div>
@@ -186,7 +214,10 @@ export default function ExpenseMaintenanceSection({ properties }: ExpenseMainten
                 onChange={(event) =>
                   updateRow(editingRow.id, {
                     frequency: event.target.value as ExpenseRow["frequency"],
-                    duration: event.target.value === "MENSUAL" ? editingRow.duration : "1 MES",
+                    duration:
+                      event.target.value === "MENSUAL"
+                        ? editingRow.duration
+                        : "1 MES",
                   })
                 }
               >
@@ -200,20 +231,30 @@ export default function ExpenseMaintenanceSection({ properties }: ExpenseMainten
                 className="mnt-input"
                 value={editingRow.duration}
                 disabled={editingRow.frequency === "UNICA"}
-                onChange={(event) => updateRow(editingRow.id, { duration: event.target.value })}
+                onChange={(event) =>
+                  updateRow(editingRow.id, { duration: event.target.value })
+                }
               />
             </div>
           </div>
           <div className="mnt-editor__actions">
-            <button type="button" className="mnt-btn mnt-btn--secondary" onClick={() => setEditingId(null)}>
+            <button
+              type="button"
+              className="mnt-btn mnt-btn--secondary"
+              onClick={() => setEditingId(null)}
+            >
               Cancelar
             </button>
-            <button type="button" className="mnt-btn mnt-btn--primary" onClick={() => setEditingId(null)}>
+            <button
+              type="button"
+              className="mnt-btn mnt-btn--primary"
+              onClick={() => setEditingId(null)}
+            >
               Guardar cambios
             </button>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
