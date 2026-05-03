@@ -36,7 +36,13 @@ export default function UpcomingDueCard({
                 <div className="dashboard-due-row__sub">{item.tenant || "Sin inquilino asignado"}</div>
               </div>
               <span
-                className={`dashboard-due-row__chip${item.status === "OVERDUE" ? " dashboard-due-row__chip--danger" : ""}`}
+                className={
+                  `dashboard-due-row__chip${
+                    (item.daysToDue != null ? item.daysToDue < 0 : item.status === "OVERDUE")
+                      ? " dashboard-due-row__chip--danger"
+                      : ""
+                  }`
+              }
               >
                 {getDueLabel(item.daysToDue)}
               </span>
