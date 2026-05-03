@@ -6,9 +6,9 @@ interface Props {
 }
 
 const ESTADO_PAGO_LABEL: Record<string, string> = {
-  PAGADO: "Al día",
-  PENDIENTE: "Pendiente",
-  VENCIDO: "Vencido",
+  PAID: "Al día",
+  PENDING: "Pendiente",
+  OVERDUE: "Vencido",
 };
 
 export default function SummaryCard({ detalle }: Props) {

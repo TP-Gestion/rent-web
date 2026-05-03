@@ -6,7 +6,7 @@ interface Props {
 }
 
 export default function TenantCard({ detalle }: Props) {
-  const hasTenant = detalle.estadoOcupacion === "OCUPADO";
+  const hasTenant = detalle.estadoOcupacion === "OCCUPIED";
 
   return (
     <div className="pd-card">

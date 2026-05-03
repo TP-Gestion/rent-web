@@ -3,9 +3,14 @@ import type { PropiedadDetalle } from "../../service/propiedades";
 interface Props {
   detalle: PropiedadDetalle;
   onBack: () => void;
+  onRegistrarPago?: () => void;
 }
 
-export default function DetailHeader({ detalle, onBack }: Props) {
+export default function DetailHeader({
+  detalle,
+  onBack,
+  onRegistrarPago,
+}: Props) {
   return (
     <div>
       <button className="pd-back-btn" onClick={onBack} type="button">
@@ -19,7 +24,16 @@ export default function DetailHeader({ detalle, onBack }: Props) {
           <span className="pd-subtitle">{detalle.edificio}</span>
         </div>
         <div className="pd-header__right">
-          <button className="pd-btn pd-btn--primary" type="button">
+          {detalle.estadoOcupacion === "OCCUPIED" && onRegistrarPago && (
+            <button
+              className="pd-btn pd-btn--primary"
+              type="button"
+              onClick={onRegistrarPago}
+            >
+              Registrar pago
+            </button>
+          )}
+          <button className="pd-btn pd-btn--secondary" type="button">
             Emitir Factura
           </button>
           <button className="pd-btn pd-btn--secondary" type="button">

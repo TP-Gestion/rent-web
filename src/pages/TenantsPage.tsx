@@ -2,7 +2,10 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import StatCard from "../components/tenants/StatCard";
 import DataTable from "../components/tenants/dataTable/DataTable";
-import { MorosityCard, BatchActionsCard } from "../components/tenants/bottomCards";
+import {
+  MorosityCard,
+  BatchActionsCard,
+} from "../components/tenants/bottomCards";
 import type { PropiedadListItem } from "../service/propiedades";
 import {
   EXPENSAS_PERIOD_LABEL,
@@ -11,7 +14,7 @@ import {
   getExpensasStats,
   getMorosityData,
 } from "../propiedadService";
-import { usePropiedades } from "../hooks/usePropiedades";
+import { usePropertiesSummary } from "../hooks/usePropertiesSummary";
 import "./TenantsPage.css";
 
 interface FilterState {
@@ -39,7 +42,7 @@ function HeaderButton({ label, primary, onClick }: HeaderButtonProps) {
 
 export default function TenantsPage() {
   const navigate = useNavigate();
-  const { data: propiedadesData } = usePropiedades();
+  const { data: propiedadesData } = usePropertiesSummary();
   const propiedades = propiedadesData ?? [];
   const stats = getExpensasStats();
   const morosityData = getMorosityData();
@@ -64,7 +67,8 @@ export default function TenantsPage() {
 
     if (filters.tab !== "todos") {
       filtered = filtered.filter((p) => {
-        const estado = p.estadoOcupacion === "LIBRE" ? "LIBRE" : p.estadoPago;
+        const estado =
+          p.estadoOcupacion === "AVAILABLE" ? "AVAILABLE" : p.estadoPago;
         return estado === filters.tab;
       });
     }
@@ -96,7 +100,7 @@ export default function TenantsPage() {
   };
 
   const handleGenerarLiquidacion = () => {
-    alert("Generando liquidación...");
+    navigate("/generar-liquidacion");
   };
 
   return (

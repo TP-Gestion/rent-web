@@ -13,6 +13,7 @@ import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
 import PropiedadDetallePage from "./pages/propertyDetail";
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import BillingPage from "./pages/BillingPage";
 
 function RequireAuthLayout() {
   if (!isSessionAuthenticated()) {
@@ -25,8 +26,8 @@ function RequireAuthLayout() {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
+      staleTime: 0,
+      gcTime: 0,
       retry: 2,
       refetchOnWindowFocus: false,
     },
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
           {
             path: "*",
             Component: NotFoundPage,
+          },
+          {
+            path: "/generar-liquidacion",
+            element: <BillingPage />,
           },
         ],
       },

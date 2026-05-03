@@ -34,6 +34,14 @@ export interface ApiResponse<T> {
   errors: ApiError[];
 }
 
+export interface BackendResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+  errors: Record<string, unknown>;
+  timestamp: string;
+}
+
 export async function wrapResponse<T>(
   promise: Promise<{ data: T }>,
 ): Promise<ApiResponse<T>> {

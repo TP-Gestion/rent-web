@@ -49,7 +49,8 @@ function buildDueLabel(daysToDue: number | null): string {
 }
 
 function resolveAmount(item: PropiedadListItem): number {
-  if (Number.isFinite(item.montoTotal) && item.montoTotal > 0) return item.montoTotal;
+  if (Number.isFinite(item.montoTotal) && item.montoTotal > 0)
+    return item.montoTotal;
   return (item.montoAlquiler || 0) + (item.expensas || 0);
 }
 
@@ -62,13 +63,23 @@ export default function DashboardPage() {
 
   const metrics = useMemo(() => {
     const totalUnits = propiedades.length;
-    const occupied = propiedades.filter((p) => p.estadoOcupacion === "OCUPADO").length;
+    const occupied = propiedades.filter(
+      (p) => p.estadoOcupacion === "OCCUPIED",
+    ).length;
     const available = totalUnits - occupied;
-    const overdue = propiedades.filter((p) => p.estadoPago === "VENCIDO").length;
-    const pending = propiedades.filter((p) => p.estadoPago === "PENDIENTE").length;
+    const overdue = propiedades.filter(
+      (p) => p.estadoPago === "OVERDUE",
+    ).length;
+    const pending = propiedades.filter(
+      (p) => p.estadoPago === "PENDING",
+    ).length;
 
-    const billedAmount = propiedades.reduce((sum, item) => sum + resolveAmount(item), 0);
-    const occupancyRate = totalUnits > 0 ? Math.round((occupied / totalUnits) * 100) : 0;
+    const billedAmount = propiedades.reduce(
+      (sum, item) => sum + resolveAmount(item),
+      0,
+    );
+    const occupancyRate =
+      totalUnits > 0 ? Math.round((occupied / totalUnits) * 100) : 0;
 
     return {
       totalUnits,
@@ -119,7 +130,8 @@ export default function DashboardPage() {
       label: "Riesgo de cobro",
       value: `${metrics.overdue} vencidos`,
       badge: `${metrics.pending} pendientes`,
-      variant: metrics.overdue > 0 ? ("warning" as const) : ("success" as const),
+      variant:
+        metrics.overdue > 0 ? ("warning" as const) : ("success" as const),
     },
   ];
 
@@ -145,7 +157,9 @@ export default function DashboardPage() {
             <UpcomingDueCard
               items={upcomingDueItems}
               onSeeAll={() => navigate("/tenants")}
-              onOpenProperty={(propertyId) => navigate(`/propiedades/${propertyId}`)}
+              onOpenProperty={(propertyId) =>
+                navigate(`/propiedades/${propertyId}`)
+              }
               getDueLabel={buildDueLabel}
             />
 
