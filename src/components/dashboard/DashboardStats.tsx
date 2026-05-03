@@ -1,4 +1,4 @@
-import StatCard from "../tenants/StatCard";
+import StatCard from "./StatCard";
 import type { DashboardStat } from "./types";
 
 interface DashboardStatsProps {

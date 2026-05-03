@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import AlertBanner from "../components/billing/AlertBanner";
-import StatCard from "../components/tenants/StatCard";
+import StatCard from "../components/dashboard/StatCard";
 import BillingTable from "../components/billing/BillingTable";
 import { useBillableProperties } from "../hooks/useBillableProperties";
 import { useGenerateBillings } from "../hooks/useGenerateBillings";
