@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  registrarPago,
-  type RegistrarPagoRequest,
-  type RegistrarPagoResponse,
+  registerPayment,
+  type RegisterPaymentRequest,
+  type RegisterPaymentResponse,
 } from "../service/propiedades";
 import type { ApiResponse } from "../service/client";
 
@@ -10,11 +10,11 @@ export function useRegistrarPago(idPropiedad: string) {
   const queryClient = useQueryClient();
 
   return useMutation<
-    ApiResponse<RegistrarPagoResponse>,
+    ApiResponse<RegisterPaymentResponse>,
     Error,
-    RegistrarPagoRequest
+    RegisterPaymentRequest
   >({
-    mutationFn: (body) => registrarPago(idPropiedad, body),
+    mutationFn: (body) => registerPayment(idPropiedad, body),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["propiedad-detalle", idPropiedad],

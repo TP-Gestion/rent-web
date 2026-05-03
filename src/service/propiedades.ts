@@ -192,7 +192,7 @@ export async function getPropertiesSummary(): Promise<PropiedadListItem[]> {
   }));
 }
 
-export const USE_MOCK_BILLABLE_DATA = false;
+export const USE_MOCK_BILLABLE_DATA = true;
 
 const mockDelay = () => new Promise((r) => setTimeout(r, 3000));
 
@@ -402,10 +402,13 @@ const MOCK_BILLABLE_ITEMS_RAW: Omit<ApiBillableItem, never>[] = [
     unit: "2A",
     building: "Torre Solaris I",
     address: "Av. Corrientes 1234, CABA",
-    tenantName: "Pedro Pérez",
-    tenantEmail: "pedro.perez@email.com",
-    tenantPhone: "+54 11 4523-8891",
-    previousStatus: "PENDIENTE",
+    tenant: {
+      firstName: "Pedro",
+      lastName: "Pérez",
+      email: "pedro.perez@email.com",
+      phone: "+54 11 4523-8891",
+    },
+    previousStatus: "PENDING",
     rentAmount: 180000,
     expenses: 25000,
     additionalCharges: 0,
@@ -418,10 +421,13 @@ const MOCK_BILLABLE_ITEMS_RAW: Omit<ApiBillableItem, never>[] = [
     unit: "PH",
     building: "Torre Solaris I",
     address: "Av. Corrientes 1234, CABA",
-    tenantName: "Laura Gómez",
-    tenantEmail: "lgomez@correo.com",
-    tenantPhone: "+54 11 5678-1234",
-    previousStatus: "DEUDA",
+    tenant: {
+      firstName: "Laura",
+      lastName: "Gómez",
+      email: "lgomez@correo.com",
+      phone: "+54 11 5678-1234",
+    },
+    previousStatus: "OVERDUE",
     debtAmount: 95000,
     rentAmount: 210000,
     expenses: 30000,
@@ -435,10 +441,13 @@ const MOCK_BILLABLE_ITEMS_RAW: Omit<ApiBillableItem, never>[] = [
     unit: "3B",
     building: "Edificio Palermo Sky",
     address: "Honduras 4567, Palermo, CABA",
-    tenantName: "Martín Rodríguez",
-    tenantEmail: "m.rodriguez@gmail.com",
-    tenantPhone: "+54 11 2345-6789",
-    previousStatus: "PENDIENTE",
+    tenant: {
+      firstName: "Martín",
+      lastName: "Rodríguez",
+      email: "m.rodriguez@gmail.com",
+      phone: "+54 11 2345-6789",
+    },
+    previousStatus: "PENDING",
     rentAmount: 155000,
     expenses: 18000,
     additionalCharges: 12000,
@@ -451,10 +460,13 @@ const MOCK_BILLABLE_ITEMS_RAW: Omit<ApiBillableItem, never>[] = [
     unit: "1C",
     building: "Edificio Palermo Sky",
     address: "Honduras 4567, Palermo, CABA",
-    tenantName: "Sofía Martínez",
-    tenantEmail: "sofia.m@outlook.com",
-    tenantPhone: "+54 11 9876-5432",
-    previousStatus: "DEUDA",
+    tenant: {
+      firstName: "Sofía",
+      lastName: "Martínez",
+      email: "sofia.m@outlook.com",
+      phone: "+54 11 9876-5432",
+    },
+    previousStatus: "OVERDUE",
     debtAmount: 60000,
     rentAmount: 140000,
     expenses: 20000,
@@ -468,10 +480,13 @@ const MOCK_BILLABLE_ITEMS_RAW: Omit<ApiBillableItem, never>[] = [
     unit: "5D",
     building: "Residencial Belgrano Norte",
     address: "Cabildo 2890, Belgrano, CABA",
-    tenantName: "Carlos Sánchez",
-    tenantEmail: "c.sanchez@empresa.com",
-    tenantPhone: "+54 11 3344-5566",
-    previousStatus: "AL_DIA",
+    tenant: {
+      firstName: "Carlos",
+      lastName: "Sánchez",
+      email: "c.sanchez@empresa.com",
+      phone: "+54 11 3344-5566",
+    },
+    previousStatus: "PAID",
     rentAmount: 200000,
     expenses: 28000,
     additionalCharges: 5000,
@@ -484,10 +499,13 @@ const MOCK_BILLABLE_ITEMS_RAW: Omit<ApiBillableItem, never>[] = [
     unit: "2F",
     building: "Residencial Belgrano Norte",
     address: "Cabildo 2890, Belgrano, CABA",
-    tenantName: "Ana Torres",
-    tenantEmail: "a.torres@hotmail.com",
-    tenantPhone: "+54 11 7788-9900",
-    previousStatus: "PENDIENTE",
+    tenant: {
+      firstName: "Ana",
+      lastName: "Torres",
+      email: "a.torres@hotmail.com",
+      phone: "+54 11 7788-9900",
+    },
+    previousStatus: "PENDING",
     rentAmount: 175000,
     expenses: 22000,
     additionalCharges: 0,
@@ -500,10 +518,13 @@ const MOCK_BILLABLE_ITEMS_RAW: Omit<ApiBillableItem, never>[] = [
     unit: "Local 3",
     building: "Centro Comercial San Martín",
     address: "San Martín 720, Microcentro, CABA",
-    tenantName: "Diego López",
-    tenantEmail: "dlopez@comercio.com.ar",
-    tenantPhone: "+54 11 4100-2233",
-    previousStatus: "DEUDA",
+    tenant: {
+      firstName: "Diego",
+      lastName: "López",
+      email: "dlopez@comercio.com.ar",
+      phone: "+54 11 4100-2233",
+    },
+    previousStatus: "OVERDUE",
     debtAmount: 150000,
     rentAmount: 320000,
     expenses: 45000,
@@ -517,10 +538,13 @@ const MOCK_BILLABLE_ITEMS_RAW: Omit<ApiBillableItem, never>[] = [
     unit: "Oficina 12",
     building: "Centro Comercial San Martín",
     address: "San Martín 720, Microcentro, CABA",
-    tenantName: "Valeria Ruiz",
-    tenantEmail: "vruiz@estudio.com.ar",
-    tenantPhone: "+54 11 4100-3344",
-    previousStatus: "AL_DIA",
+    tenant: {
+      firstName: "Valeria",
+      lastName: "Ruiz",
+      email: "vruiz@estudio.com.ar",
+      phone: "+54 11 4100-3344",
+    },
+    previousStatus: "PAID",
     rentAmount: 260000,
     expenses: 35000,
     additionalCharges: 8000,
@@ -535,10 +559,13 @@ export interface ApiBillableItem {
   unit: string;
   building: string;
   address: string;
-  tenantName: string;
-  tenantEmail: string;
-  tenantPhone: string;
-  previousStatus: "AL_DIA" | "DEUDA" | "PENDIENTE";
+  tenant: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+  previousStatus: "PAID" | "OVERDUE" | "PENDING";
   debtAmount?: number;
   rentAmount: number;
   expenses: number;
@@ -563,7 +590,6 @@ export async function getBillableProperties(): Promise<
 
 export interface GenerateBillingsRequest {
   propertyIds: string[];
-  dueDate: string;
 }
 
 export interface GenerateBillingsResponse {
@@ -588,545 +614,545 @@ export async function generateBillings(
   return data;
 }
 
-export type EstadoFactura = "PAGADO" | "PENDIENTE" | "VENCIDO";
-export type MedioPago =
-  | "TRANSFERENCIA"
-  | "EFECTIVO"
-  | "CHEQUE"
-  | "DEBITO"
-  | "CREDITO";
+export type BillingStatus = "PAID" | "PENDING" | "OVERDUE";
+export type PaymentMethod =
+  | "BANK_TRANSFER"
+  | "CASH"
+  | "CHECK"
+  | "DEBIT"
+  | "CREDIT";
 
-export interface Factura {
+export interface Billing {
   id: string;
-  periodo: string;
-  estado: EstadoFactura;
-  monto: number;
-  fechaVencimiento: string;
-  fechaPago?: string;
+  period: string;
+  status: BillingStatus;
+  amount: number;
+  dueDate: string;
+  paymentDate?: string;
 }
 
-export interface PagoHistorial {
+export interface PaymentRecord {
   id: string;
-  fecha: string;
-  monto: number;
-  medioPago: MedioPago;
-  referencia?: string;
-  observaciones?: string;
-  periodos: string[];
+  date: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  reference?: string;
+  notes?: string;
+  periods: string[];
 }
 
-export interface RegistrarPagoRequest {
-  monto: number;
-  medioPago: MedioPago;
-  fechaPago: string;
-  referencia?: string;
-  observaciones?: string;
-  periodosSeleccionados: string[];
+export interface RegisterPaymentRequest {
+  amount: number;
+  paymentMethod: PaymentMethod;
+  paymentDate: string;
+  reference?: string;
+  notes?: string;
+  selectedPeriods: string[];
 }
 
-export interface RegistrarPagoResponse {
+export interface RegisterPaymentResponse {
   id: string;
 }
 
-const MOCK_FACTURAS: Record<string, Factura[]> = {
+const MOCK_FACTURAS: Record<string, Billing[]> = {
   "1": [
     {
       id: "f1-5",
-      periodo: "2026-05",
-      estado: "PENDIENTE",
-      monto: 205000,
-      fechaVencimiento: "2026-05-10",
+      period: "2026-05",
+      status: "PENDING",
+      amount: 205000,
+      dueDate: "2026-05-10",
     },
     {
       id: "f1-4",
-      periodo: "2026-04",
-      estado: "PAGADO",
-      monto: 205000,
-      fechaVencimiento: "2026-04-10",
-      fechaPago: "2026-04-03",
+      period: "2026-04",
+      status: "PAID",
+      amount: 205000,
+      dueDate: "2026-04-10",
+      paymentDate: "2026-04-03",
     },
     {
       id: "f1-3",
-      periodo: "2026-03",
-      estado: "PAGADO",
-      monto: 195000,
-      fechaVencimiento: "2026-03-10",
-      fechaPago: "2026-03-05",
+      period: "2026-03",
+      status: "PAID",
+      amount: 195000,
+      dueDate: "2026-03-10",
+      paymentDate: "2026-03-05",
     },
   ],
   "2": [
     {
       id: "f2-5",
-      periodo: "2026-05",
-      estado: "PENDIENTE",
-      monto: 335000,
-      fechaVencimiento: "2026-05-10",
+      period: "2026-05",
+      status: "PENDING",
+      amount: 335000,
+      dueDate: "2026-05-10",
     },
     {
       id: "f2-4",
-      periodo: "2026-04",
-      estado: "VENCIDO",
-      monto: 335000,
-      fechaVencimiento: "2026-04-10",
+      period: "2026-04",
+      status: "OVERDUE",
+      amount: 335000,
+      dueDate: "2026-04-10",
     },
     {
       id: "f2-3",
-      periodo: "2026-03",
-      estado: "VENCIDO",
-      monto: 335000,
-      fechaVencimiento: "2026-03-10",
+      period: "2026-03",
+      status: "OVERDUE",
+      amount: 335000,
+      dueDate: "2026-03-10",
     },
     {
       id: "f2-2",
-      periodo: "2026-02",
-      estado: "PAGADO",
-      monto: 320000,
-      fechaVencimiento: "2026-02-10",
-      fechaPago: "2026-02-05",
+      period: "2026-02",
+      status: "PAID",
+      amount: 320000,
+      dueDate: "2026-02-10",
+      paymentDate: "2026-02-05",
     },
   ],
   "3": [
     {
       id: "f3-5",
-      periodo: "2026-05",
-      estado: "PENDIENTE",
-      monto: 185000,
-      fechaVencimiento: "2026-05-10",
+      period: "2026-05",
+      status: "PENDING",
+      amount: 185000,
+      dueDate: "2026-05-10",
     },
     {
       id: "f3-4",
-      periodo: "2026-04",
-      estado: "PAGADO",
-      monto: 185000,
-      fechaVencimiento: "2026-04-10",
-      fechaPago: "2026-04-10",
+      period: "2026-04",
+      status: "PAID",
+      amount: 185000,
+      dueDate: "2026-04-10",
+      paymentDate: "2026-04-10",
     },
   ],
   "4": [
     {
       id: "f4-5",
-      periodo: "2026-05",
-      estado: "PENDIENTE",
-      monto: 220000,
-      fechaVencimiento: "2026-05-10",
+      period: "2026-05",
+      status: "PENDING",
+      amount: 220000,
+      dueDate: "2026-05-10",
     },
     {
       id: "f4-4",
-      periodo: "2026-04",
-      estado: "VENCIDO",
-      monto: 220000,
-      fechaVencimiento: "2026-04-10",
+      period: "2026-04",
+      status: "OVERDUE",
+      amount: 220000,
+      dueDate: "2026-04-10",
     },
     {
       id: "f4-3",
-      periodo: "2026-03",
-      estado: "PAGADO",
-      monto: 210000,
-      fechaVencimiento: "2026-03-10",
-      fechaPago: "2026-03-08",
+      period: "2026-03",
+      status: "PAID",
+      amount: 210000,
+      dueDate: "2026-03-10",
+      paymentDate: "2026-03-08",
     },
   ],
   "5": [
     {
       id: "f5-5",
-      periodo: "2026-05",
-      estado: "PAGADO",
-      monto: 233000,
-      fechaVencimiento: "2026-05-10",
-      fechaPago: "2026-05-01",
+      period: "2026-05",
+      status: "PAID",
+      amount: 233000,
+      dueDate: "2026-05-10",
+      paymentDate: "2026-05-01",
     },
     {
       id: "f5-4",
-      periodo: "2026-04",
-      estado: "PAGADO",
-      monto: 233000,
-      fechaVencimiento: "2026-04-10",
-      fechaPago: "2026-04-02",
+      period: "2026-04",
+      status: "PAID",
+      amount: 233000,
+      dueDate: "2026-04-10",
+      paymentDate: "2026-04-02",
     },
   ],
   "6": [
     {
       id: "f6-5",
-      periodo: "2026-05",
-      estado: "PENDIENTE",
-      monto: 197000,
-      fechaVencimiento: "2026-05-10",
+      period: "2026-05",
+      status: "PENDING",
+      amount: 197000,
+      dueDate: "2026-05-10",
     },
     {
       id: "f6-4",
-      periodo: "2026-04",
-      estado: "PAGADO",
-      monto: 197000,
-      fechaVencimiento: "2026-04-10",
-      fechaPago: "2026-04-05",
+      period: "2026-04",
+      status: "PAID",
+      amount: 197000,
+      dueDate: "2026-04-10",
+      paymentDate: "2026-04-05",
     },
   ],
   "7": [
     {
       id: "f7-05",
-      periodo: "2026-05",
-      estado: "PENDIENTE",
-      monto: 535000,
-      fechaVencimiento: "2026-05-10",
+      period: "2026-05",
+      status: "PENDING",
+      amount: 535000,
+      dueDate: "2026-05-10",
     },
     {
       id: "f7-04",
-      periodo: "2026-04",
-      estado: "VENCIDO",
-      monto: 535000,
-      fechaVencimiento: "2026-04-10",
+      period: "2026-04",
+      status: "OVERDUE",
+      amount: 535000,
+      dueDate: "2026-04-10",
     },
     {
       id: "f7-03",
-      periodo: "2026-03",
-      estado: "VENCIDO",
-      monto: 535000,
-      fechaVencimiento: "2026-03-10",
+      period: "2026-03",
+      status: "OVERDUE",
+      amount: 535000,
+      dueDate: "2026-03-10",
     },
     {
       id: "f7-02",
-      periodo: "2026-02",
-      estado: "VENCIDO",
-      monto: 500000,
-      fechaVencimiento: "2026-02-10",
+      period: "2026-02",
+      status: "OVERDUE",
+      amount: 500000,
+      dueDate: "2026-02-10",
     },
     {
       id: "f7-01",
-      periodo: "2026-01",
-      estado: "VENCIDO",
-      monto: 500000,
-      fechaVencimiento: "2026-01-10",
+      period: "2026-01",
+      status: "OVERDUE",
+      amount: 500000,
+      dueDate: "2026-01-10",
     },
     {
       id: "f7-2512",
-      periodo: "2025-12",
-      estado: "VENCIDO",
-      monto: 480000,
-      fechaVencimiento: "2025-12-10",
+      period: "2025-12",
+      status: "OVERDUE",
+      amount: 480000,
+      dueDate: "2025-12-10",
     },
     {
       id: "f7-2511",
-      periodo: "2025-11",
-      estado: "VENCIDO",
-      monto: 480000,
-      fechaVencimiento: "2025-11-10",
+      period: "2025-11",
+      status: "OVERDUE",
+      amount: 480000,
+      dueDate: "2025-11-10",
     },
     {
       id: "f7-2510",
-      periodo: "2025-10",
-      estado: "VENCIDO",
-      monto: 460000,
-      fechaVencimiento: "2025-10-10",
+      period: "2025-10",
+      status: "OVERDUE",
+      amount: 460000,
+      dueDate: "2025-10-10",
     },
     {
       id: "f7-2509",
-      periodo: "2025-09",
-      estado: "VENCIDO",
-      monto: 460000,
-      fechaVencimiento: "2025-09-10",
+      period: "2025-09",
+      status: "OVERDUE",
+      amount: 460000,
+      dueDate: "2025-09-10",
     },
     {
       id: "f7-2508",
-      periodo: "2025-08",
-      estado: "VENCIDO",
-      monto: 440000,
-      fechaVencimiento: "2025-08-10",
+      period: "2025-08",
+      status: "OVERDUE",
+      amount: 440000,
+      dueDate: "2025-08-10",
     },
     {
       id: "f7-2507",
-      periodo: "2025-07",
-      estado: "VENCIDO",
-      monto: 440000,
-      fechaVencimiento: "2025-07-10",
+      period: "2025-07",
+      status: "OVERDUE",
+      amount: 440000,
+      dueDate: "2025-07-10",
     },
     {
       id: "f7-2506",
-      periodo: "2025-06",
-      estado: "VENCIDO",
-      monto: 420000,
-      fechaVencimiento: "2025-06-10",
+      period: "2025-06",
+      status: "OVERDUE",
+      amount: 420000,
+      dueDate: "2025-06-10",
     },
     {
       id: "f7-2505",
-      periodo: "2025-05",
-      estado: "VENCIDO",
-      monto: 420000,
-      fechaVencimiento: "2025-05-10",
+      period: "2025-05",
+      status: "OVERDUE",
+      amount: 420000,
+      dueDate: "2025-05-10",
     },
     {
       id: "f7-2504",
-      periodo: "2025-04",
-      estado: "VENCIDO",
-      monto: 400000,
-      fechaVencimiento: "2025-04-10",
+      period: "2025-04",
+      status: "OVERDUE",
+      amount: 400000,
+      dueDate: "2025-04-10",
     },
     {
       id: "f7-2503",
-      periodo: "2025-03",
-      estado: "VENCIDO",
-      monto: 400000,
-      fechaVencimiento: "2025-03-10",
+      period: "2025-03",
+      status: "OVERDUE",
+      amount: 400000,
+      dueDate: "2025-03-10",
     },
     {
       id: "f7-2502",
-      periodo: "2025-02",
-      estado: "VENCIDO",
-      monto: 380000,
-      fechaVencimiento: "2025-02-10",
+      period: "2025-02",
+      status: "OVERDUE",
+      amount: 380000,
+      dueDate: "2025-02-10",
     },
     {
       id: "f7-2501",
-      periodo: "2025-01",
-      estado: "VENCIDO",
-      monto: 380000,
-      fechaVencimiento: "2025-01-10",
+      period: "2025-01",
+      status: "OVERDUE",
+      amount: 380000,
+      dueDate: "2025-01-10",
     },
     {
       id: "f7-2412",
-      periodo: "2024-12",
-      estado: "VENCIDO",
-      monto: 360000,
-      fechaVencimiento: "2024-12-10",
+      period: "2024-12",
+      status: "OVERDUE",
+      amount: 360000,
+      dueDate: "2024-12-10",
     },
     {
       id: "f7-2411",
-      periodo: "2024-11",
-      estado: "VENCIDO",
-      monto: 360000,
-      fechaVencimiento: "2024-11-10",
+      period: "2024-11",
+      status: "OVERDUE",
+      amount: 360000,
+      dueDate: "2024-11-10",
     },
     {
       id: "f7-2410",
-      periodo: "2024-10",
-      estado: "PAGADO",
-      monto: 340000,
-      fechaVencimiento: "2024-10-10",
-      fechaPago: "2024-10-08",
+      period: "2024-10",
+      status: "PAID",
+      amount: 340000,
+      dueDate: "2024-10-10",
+      paymentDate: "2024-10-08",
     },
   ],
   "8": [
     {
       id: "f8-5",
-      periodo: "2026-05",
-      estado: "PAGADO",
-      monto: 303000,
-      fechaVencimiento: "2026-05-10",
-      fechaPago: "2026-05-01",
+      period: "2026-05",
+      status: "PAID",
+      amount: 303000,
+      dueDate: "2026-05-10",
+      paymentDate: "2026-05-01",
     },
     {
       id: "f8-4",
-      periodo: "2026-04",
-      estado: "PAGADO",
-      monto: 303000,
-      fechaVencimiento: "2026-04-10",
-      fechaPago: "2026-04-02",
+      period: "2026-04",
+      status: "PAID",
+      amount: 303000,
+      dueDate: "2026-04-10",
+      paymentDate: "2026-04-02",
     },
   ],
   "11": [
     {
       id: "f11-5",
-      periodo: "2026-05",
-      estado: "PAGADO",
-      monto: 245000,
-      fechaVencimiento: "2026-05-10",
-      fechaPago: "2026-05-01",
+      period: "2026-05",
+      status: "PAID",
+      amount: 245000,
+      dueDate: "2026-05-10",
+      paymentDate: "2026-05-01",
     },
     {
       id: "f11-4",
-      periodo: "2026-04",
-      estado: "PAGADO",
-      monto: 245000,
-      fechaVencimiento: "2026-04-10",
-      fechaPago: "2026-04-03",
+      period: "2026-04",
+      status: "PAID",
+      amount: 245000,
+      dueDate: "2026-04-10",
+      paymentDate: "2026-04-03",
     },
   ],
   "12": [
     {
       id: "f12-5",
-      periodo: "2026-05",
-      estado: "PENDIENTE",
-      monto: 280000,
-      fechaVencimiento: "2026-05-10",
+      period: "2026-05",
+      status: "PENDING",
+      amount: 280000,
+      dueDate: "2026-05-10",
     },
     {
       id: "f12-4",
-      periodo: "2026-04",
-      estado: "PAGADO",
-      monto: 280000,
-      fechaVencimiento: "2026-04-10",
-      fechaPago: "2026-04-05",
+      period: "2026-04",
+      status: "PAID",
+      amount: 280000,
+      dueDate: "2026-04-10",
+      paymentDate: "2026-04-05",
     },
   ],
 };
 
-const MOCK_PAGOS: Record<string, PagoHistorial[]> = {
+const MOCK_PAGOS: Record<string, PaymentRecord[]> = {
   "1": [
     {
       id: "p1-1",
-      fecha: "2026-04-03",
-      monto: 205000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX100001",
-      periodos: ["2026-04"],
+      date: "2026-04-03",
+      amount: 205000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX100001",
+      periods: ["2026-04"],
     },
     {
       id: "p1-2",
-      fecha: "2026-03-05",
-      monto: 195000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX100002",
-      periodos: ["2026-03"],
+      date: "2026-03-05",
+      amount: 195000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX100002",
+      periods: ["2026-03"],
     },
   ],
   "2": [
     {
       id: "p2-1",
-      fecha: "2026-02-05",
-      monto: 320000,
-      medioPago: "EFECTIVO",
-      periodos: ["2026-02"],
+      date: "2026-02-05",
+      amount: 320000,
+      paymentMethod: "CASH",
+      periods: ["2026-02"],
     },
   ],
   "3": [
     {
       id: "p3-1",
-      fecha: "2026-04-10",
-      monto: 185000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX300001",
-      periodos: ["2026-04"],
+      date: "2026-04-10",
+      amount: 185000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX300001",
+      periods: ["2026-04"],
     },
   ],
   "4": [
     {
       id: "p4-1",
-      fecha: "2026-03-08",
-      monto: 210000,
-      medioPago: "CHEQUE",
-      referencia: "CH-4402",
-      periodos: ["2026-03"],
+      date: "2026-03-08",
+      amount: 210000,
+      paymentMethod: "CHECK",
+      reference: "CH-4402",
+      periods: ["2026-03"],
     },
   ],
   "5": [
     {
       id: "p5-1",
-      fecha: "2026-05-01",
-      monto: 233000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX500001",
-      periodos: ["2026-05"],
+      date: "2026-05-01",
+      amount: 233000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX500001",
+      periods: ["2026-05"],
     },
     {
       id: "p5-2",
-      fecha: "2026-04-02",
-      monto: 233000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX500002",
-      periodos: ["2026-04"],
+      date: "2026-04-02",
+      amount: 233000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX500002",
+      periods: ["2026-04"],
     },
   ],
   "6": [
     {
       id: "p6-1",
-      fecha: "2026-04-05",
-      monto: 197000,
-      medioPago: "DEBITO",
-      periodos: ["2026-04"],
+      date: "2026-04-05",
+      amount: 197000,
+      paymentMethod: "DEBIT",
+      periods: ["2026-04"],
     },
   ],
   "7": [
     {
       id: "p7-1",
-      fecha: "2026-01-10",
-      monto: 480000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX700001",
-      periodos: ["2026-01"],
+      date: "2026-01-10",
+      amount: 480000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX700001",
+      periods: ["2026-01"],
     },
   ],
   "8": [
     {
       id: "p8-1",
-      fecha: "2026-05-01",
-      monto: 303000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX800001",
-      periodos: ["2026-05"],
+      date: "2026-05-01",
+      amount: 303000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX800001",
+      periods: ["2026-05"],
     },
     {
       id: "p8-2",
-      fecha: "2026-04-02",
-      monto: 303000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX800002",
-      periodos: ["2026-04"],
+      date: "2026-04-02",
+      amount: 303000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX800002",
+      periods: ["2026-04"],
     },
   ],
   "11": [
     {
       id: "p11-1",
-      fecha: "2026-05-01",
-      monto: 245000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX1100001",
-      periodos: ["2026-05"],
+      date: "2026-05-01",
+      amount: 245000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX1100001",
+      periods: ["2026-05"],
     },
     {
       id: "p11-2",
-      fecha: "2026-04-03",
-      monto: 245000,
-      medioPago: "TRANSFERENCIA",
-      referencia: "TX1100002",
-      periodos: ["2026-04"],
+      date: "2026-04-03",
+      amount: 245000,
+      paymentMethod: "BANK_TRANSFER",
+      reference: "TX1100002",
+      periods: ["2026-04"],
     },
   ],
   "12": [
     {
       id: "p12-1",
-      fecha: "2026-04-05",
-      monto: 280000,
-      medioPago: "EFECTIVO",
-      periodos: ["2026-04"],
+      date: "2026-04-05",
+      amount: 280000,
+      paymentMethod: "CASH",
+      periods: ["2026-04"],
     },
   ],
 };
 
-export async function getFacturasPropiedad(
+export async function getPropertyBillings(
   idPropiedad: string,
-): Promise<ApiResponse<Factura[]>> {
+): Promise<ApiResponse<Billing[]>> {
   if (USE_MOCK_BILLABLE_DATA) {
     await mockDelay();
     return { data: MOCK_FACTURAS[idPropiedad] ?? [], errors: [] };
   }
-  const { data } = await apiClient.get<ApiResponse<Factura[]>>(
-    `/properties/${idPropiedad}/facturas`,
+  const { data } = await apiClient.get<ApiResponse<Billing[]>>(
+    `/properties/${idPropiedad}/billings`,
   );
   return data;
 }
 
-export async function getPagosPropiedad(
+export async function getPropertyPayments(
   idPropiedad: string,
-): Promise<ApiResponse<PagoHistorial[]>> {
+): Promise<ApiResponse<PaymentRecord[]>> {
   if (USE_MOCK_BILLABLE_DATA) {
     await mockDelay();
     return { data: MOCK_PAGOS[idPropiedad] ?? [], errors: [] };
   }
-  const { data } = await apiClient.get<ApiResponse<PagoHistorial[]>>(
-    `/properties/${idPropiedad}/pagos`,
+  const { data } = await apiClient.get<ApiResponse<PaymentRecord[]>>(
+    `/properties/${idPropiedad}/payments`,
   );
   return data;
 }
 
-export async function registrarPago(
+export async function registerPayment(
   idPropiedad: string,
-  body: RegistrarPagoRequest,
-): Promise<ApiResponse<RegistrarPagoResponse>> {
+  body: RegisterPaymentRequest,
+): Promise<ApiResponse<RegisterPaymentResponse>> {
   if (USE_MOCK_BILLABLE_DATA) {
     await mockDelay();
     return { data: { id: `pago-${Date.now()}` }, errors: [] };
   }
-  const { data } = await apiClient.post<ApiResponse<RegistrarPagoResponse>>(
-    `/properties/${idPropiedad}/pagos`,
+  const { data } = await apiClient.post<ApiResponse<RegisterPaymentResponse>>(
+    `/properties/${idPropiedad}/payments`,
     body,
   );
   return data;

@@ -4,7 +4,7 @@ import type { BuildingOption } from "../tenants/dataTable/dataTable.constants";
 import "../tenants/dataTable/DataTable.css";
 import "./BillingTable.css";
 
-export type EstadoAnterior = "AL_DIA" | "DEUDA" | "PENDIENTE";
+export type EstadoAnterior = "PAID" | "OVERDUE" | "PENDING";
 
 export interface BillingItem {
   id: string;
@@ -29,17 +29,17 @@ const ESTADO_BADGE: Record<
   EstadoAnterior,
   { label: (deuda?: number) => string; bg: string; color: string }
 > = {
-  AL_DIA: {
+  PAID: {
     label: () => "AL DÍA",
     bg: "#e6f6ee",
     color: "#1a6b3a",
   },
-  DEUDA: {
+  OVERDUE: {
     label: (deuda) => (deuda != null ? `DEUDA: ${formatArs(deuda)}` : "DEUDA"),
     bg: "#fdecea",
     color: "#b02020",
   },
-  PENDIENTE: {
+  PENDING: {
     label: () => "PENDIENTE",
     bg: "#fff4d6",
     color: "#8a5a00",
