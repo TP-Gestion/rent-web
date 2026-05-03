@@ -1,25 +1,25 @@
 import { useState } from "react";
-import type { Factura } from "../../service/propiedades";
+import type { Billing } from "../../service/propiedades";
 import { formatCurrency, formatDate } from "../../utils/propertyDetail";
 import DataTablePagination from "../../components/tenants/dataTable/DataTablePagination";
 
 const PAGE_SIZE = 8;
 
 interface Props {
-  facturas: Factura[];
+  facturas: Billing[];
   isLoading?: boolean;
 }
 
 const ESTADO_LABEL: Record<string, string> = {
-  PAGADO: "Pagado",
-  PENDIENTE: "Pendiente",
-  VENCIDO: "Vencido",
+  PAID: "Pagado",
+  PENDING: "Pendiente",
+  OVERDUE: "Vencido",
 };
 
 const ESTADO_CSS: Record<string, string> = {
-  PAGADO: "pd-pay-status--pagado",
-  PENDIENTE: "pd-pay-status--parcial",
-  VENCIDO: "pd-pay-status--adeudado",
+  PAID: "pd-pay-status--pagado",
+  PENDING: "pd-pay-status--parcial",
+  OVERDUE: "pd-pay-status--adeudado",
 };
 
 function EmptyPaymentHistory() {
@@ -65,21 +65,23 @@ export default function PaymentHistory({ facturas, isLoading }: Props) {
             <tbody>
               {paged.map((f) => (
                 <tr key={f.id}>
-                  <td style={{ fontWeight: 600 }}>{f.periodo}</td>
-                  <td>{formatDate(f.fechaVencimiento)}</td>
+                  <td style={{ fontWeight: 600 }}>{f.period}</td>
+                  <td>{formatDate(f.dueDate)}</td>
                   <td>
-                    {f.fechaPago ? (
-                      formatDate(f.fechaPago)
+                    {f.paymentDate ? (
+                      formatDate(f.paymentDate)
                     ) : (
                       <span style={{ color: "#b8a882" }}>—</span>
                     )}
                   </td>
-                  <td style={{ fontWeight: 600 }}>{formatCurrency(f.monto)}</td>
+                  <td style={{ fontWeight: 600 }}>
+                    {formatCurrency(f.amount)}
+                  </td>
                   <td>
                     <span
-                      className={`pd-pay-status ${ESTADO_CSS[f.estado] ?? ""}`}
+                      className={`pd-pay-status ${ESTADO_CSS[f.status] ?? ""}`}
                     >
-                      {ESTADO_LABEL[f.estado] ?? f.estado}
+                      {ESTADO_LABEL[f.status] ?? f.status}
                     </span>
                   </td>
                 </tr>

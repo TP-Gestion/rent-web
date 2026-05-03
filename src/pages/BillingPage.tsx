@@ -6,23 +6,19 @@ import BillingTable from "../components/billing/BillingTable";
 import { useBillableProperties } from "../hooks/useBillableProperties";
 import { useGenerateBillings } from "../hooks/useGenerateBillings";
 import { exportBillingToExcel } from "../utils/billingExport";
-import { formatArs, PERIOD, BATCH_ID, addDays } from "../utils/billingHelpers";
+import { formatArs, BATCH_ID } from "../utils/billingHelpers";
 import type { BillingItem } from "../components/billing/BillingTable";
 import "./BillingPage.css";
 
 function BillingSuccessScreen({
   count,
-  batchId,
   items,
   selectedIds,
-  dueDate,
   onGoHome,
 }: {
   count: number;
-  batchId: string;
   items: BillingItem[];
   selectedIds: Set<string>;
-  dueDate: string;
   onGoHome: () => void;
 }) {
   return (
@@ -41,9 +37,7 @@ function BillingSuccessScreen({
       <div className="billing-success__actions">
         <button
           className="billing-btn billing-btn--primary"
-          onClick={() =>
-            exportBillingToExcel(items, selectedIds, batchId, dueDate)
-          }
+          onClick={() => exportBillingToExcel(items, selectedIds)}
         >
           ↓&nbsp; Descargar reporte
         </button>
@@ -57,7 +51,6 @@ function BillingSuccessScreen({
 
 export default function BillingPage() {
   const navigate = useNavigate();
-  const dueDate = addDays(7);
   const {
     data: billableItems = [],
     isLoading,
@@ -115,7 +108,6 @@ export default function BillingPage() {
 
     generateMutation.mutate({
       propertyIds: idsToSubmit,
-      dueDate,
     });
   };
 
@@ -125,10 +117,8 @@ export default function BillingPage() {
       <div className="billing-page">
         <BillingSuccessScreen
           count={result.count}
-          batchId={result.batchId}
           items={billableItems}
           selectedIds={selectedIds}
-          dueDate={dueDate}
           onGoHome={() => navigate("/tenants")}
         />
       </div>

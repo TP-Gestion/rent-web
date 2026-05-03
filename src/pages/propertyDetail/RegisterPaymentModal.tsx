@@ -1,43 +1,43 @@
 import { useState, useEffect } from "react";
 import type {
-  Factura,
-  MedioPago,
-  RegistrarPagoRequest,
+  Billing,
+  PaymentMethod,
+  RegisterPaymentRequest,
 } from "../../service/propiedades";
 import { formatCurrency } from "../../utils/propertyDetail";
 import {
   registrarPagoSchema,
-  type RegistrarPagoFormErrors,
+  type RegisterPaymentFormErrors,
 } from "../../schemas/registrarPagoSchema";
 import MultiSelect from "../../components/ui/MultiSelect";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  facturas: Factura[];
+  facturas: Billing[];
   isLoadingFacturas: boolean;
-  onSubmit: (data: RegistrarPagoRequest) => void;
+  onSubmit: (data: RegisterPaymentRequest) => void;
   isPending: boolean;
 }
 
-const MEDIO_OPTIONS: { value: MedioPago; label: string }[] = [
-  { value: "TRANSFERENCIA", label: "Transferencia bancaria" },
-  { value: "EFECTIVO", label: "Efectivo" },
-  { value: "CHEQUE", label: "Cheque" },
-  { value: "DEBITO", label: "Débito automático" },
-  { value: "CREDITO", label: "Tarjeta de crédito" },
+const MEDIO_OPTIONS: { value: PaymentMethod; label: string }[] = [
+  { value: "BANK_TRANSFER", label: "Transferencia bancaria" },
+  { value: "CASH", label: "Efectivo" },
+  { value: "CHECK", label: "Cheque" },
+  { value: "DEBIT", label: "Débito automático" },
+  { value: "CREDIT", label: "Tarjeta de crédito" },
 ];
 
 const ESTADO_LABEL: Record<string, string> = {
-  PAGADO: "Pagado",
-  PENDIENTE: "Pendiente",
-  VENCIDO: "Vencido",
+  PAID: "Pagado",
+  PENDING: "Pendiente",
+  OVERDUE: "Vencido",
 };
 
 const ESTADO_CSS: Record<string, string> = {
-  PAGADO: "pd-pay-status--pagado",
-  PENDIENTE: "pd-pay-status--parcial",
-  VENCIDO: "pd-pay-status--adeudado",
+  PAID: "pd-pay-status--pagado",
+  PENDING: "pd-pay-status--parcial",
+  OVERDUE: "pd-pay-status--adeudado",
 };
 
 export default function RegisterPaymentModal({
@@ -52,14 +52,14 @@ export default function RegisterPaymentModal({
   const [fechaPago, setFechaPago] = useState(
     new Date().toISOString().slice(0, 10),
   );
-  const [medioPago, setMedioPago] = useState<MedioPago | "">("");
+  const [medioPago, setMedioPago] = useState<PaymentMethod | "">("");
   const [referencia, setReferencia] = useState("");
   const [observaciones, setObservaciones] = useState("");
-  const [errors, setErrors] = useState<RegistrarPagoFormErrors>({});
+  const [errors, setErrors] = useState<RegisterPaymentFormErrors>({});
 
   const montoTotal = facturas
-    .filter((f) => selectedPeriods.includes(f.periodo))
-    .reduce((acc, f) => acc + f.monto, 0);
+    .filter((f) => selectedPeriods.includes(f.period))
+    .reduce((acc, f) => acc + f.amount, 0);
 
   useEffect(() => {
     if (isOpen) {
@@ -74,7 +74,7 @@ export default function RegisterPaymentModal({
 
   useEffect(() => {
     setFechaPago(new Date().toISOString().slice(0, 10));
-    setErrors((prev) => ({ ...prev, fechaPago: undefined }));
+    setErrors((prev) => ({ ...prev, paymentDate: undefined }));
   }, [selectedPeriods]);
 
   if (!isOpen) return null;
@@ -84,34 +84,34 @@ export default function RegisterPaymentModal({
   const minFechaPago =
     selectedPeriods.length > 0
       ? facturas
-          .filter((f) => selectedPeriods.includes(f.periodo))
-          .map((f) => f.fechaVencimiento)
+          .filter((f) => selectedPeriods.includes(f.period))
+          .map((f) => f.dueDate)
           .sort()
           .slice(-1)[0]
       : undefined;
 
   const handleSubmit = () => {
     const result = registrarPagoSchema.safeParse({
-      periodos: selectedPeriods,
-      fechaPago,
-      medioPago,
-      referencia,
-      observaciones,
+      periods: selectedPeriods,
+      paymentDate: fechaPago,
+      paymentMethod: medioPago,
+      reference: referencia,
+      notes: observaciones,
     });
 
-    const newErrors: RegistrarPagoFormErrors = {};
+    const newErrors: RegisterPaymentFormErrors = {};
 
     if (!result.success) {
       for (const issue of result.error.issues) {
-        const key = issue.path[0] as keyof RegistrarPagoFormErrors;
+        const key = issue.path[0] as keyof RegisterPaymentFormErrors;
         if (!newErrors[key]) newErrors[key] = issue.message;
       }
     }
 
     if (fechaPago && fechaPago > today) {
-      newErrors.fechaPago = "La fecha de pago no puede ser futura";
+      newErrors.paymentDate = "La fecha de pago no puede ser futura";
     } else if (minFechaPago && fechaPago < minFechaPago) {
-      newErrors.fechaPago = `La fecha de pago no puede ser anterior al vencimiento (${minFechaPago})`;
+      newErrors.paymentDate = `La fecha de pago no puede ser anterior al vencimiento (${minFechaPago})`;
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -120,23 +120,23 @@ export default function RegisterPaymentModal({
     }
 
     const {
-      periodos,
-      medioPago: medio,
-      referencia: ref,
-      observaciones: obs,
+      periods,
+      paymentMethod: method,
+      reference: ref,
+      notes: note,
     } = result.data!;
     onSubmit({
-      monto: montoTotal,
-      medioPago: medio as MedioPago,
-      fechaPago,
-      referencia: ref || undefined,
-      observaciones: obs || undefined,
-      periodosSeleccionados: periodos,
+      amount: montoTotal,
+      paymentMethod: method as PaymentMethod,
+      paymentDate: fechaPago,
+      reference: ref || undefined,
+      notes: note || undefined,
+      selectedPeriods: periods,
     });
   };
 
   const noSelectableFact =
-    facturas.filter((f) => f.estado !== "PAGADO").length === 0;
+    facturas.filter((f) => f.status !== "PAID").length === 0;
 
   return (
     <div className="pm-overlay" onClick={onClose}>
@@ -161,30 +161,30 @@ export default function RegisterPaymentModal({
             ) : (
               <MultiSelect
                 options={facturas.map((f) => ({
-                  value: f.periodo,
-                  label: f.periodo,
-                  sublabel: formatCurrency(f.monto),
-                  disabled: f.estado === "PAGADO",
+                  value: f.period,
+                  label: f.period,
+                  sublabel: formatCurrency(f.amount),
+                  disabled: f.status === "PAID",
                   badge: (
                     <span
-                      className={`pd-pay-status ${ESTADO_CSS[f.estado] ?? ""}`}
+                      className={`pd-pay-status ${ESTADO_CSS[f.status] ?? ""}`}
                     >
-                      {ESTADO_LABEL[f.estado] ?? f.estado}
+                      {ESTADO_LABEL[f.status] ?? f.status}
                     </span>
                   ),
                 }))}
                 value={selectedPeriods}
                 onChange={(vals) => {
                   setSelectedPeriods(vals);
-                  if (errors.periodos)
-                    setErrors((e) => ({ ...e, periodos: undefined }));
+                  if (errors.periods)
+                    setErrors((e) => ({ ...e, periods: undefined }));
                 }}
                 placeholder="Seleccioná los períodos a pagar"
-                hasError={!!errors.periodos}
+                hasError={!!errors.periods}
               />
             )}
-            {errors.periodos && (
-              <p className="pm-field__error">{errors.periodos}</p>
+            {errors.periods && (
+              <p className="pm-field__error">{errors.periods}</p>
             )}
           </div>
 
@@ -211,19 +211,19 @@ export default function RegisterPaymentModal({
                 Fecha de pago <span className="pm-required">*</span>
               </label>
               <input
-                className={`pm-field__input${errors.fechaPago ? " pm-field__input--error" : ""}`}
+                className={`pm-field__input${errors.paymentDate ? " pm-field__input--error" : ""}`}
                 type="date"
                 value={fechaPago}
                 max={today}
                 min={minFechaPago}
                 onChange={(e) => {
                   setFechaPago(e.target.value);
-                  if (errors.fechaPago)
-                    setErrors((prev) => ({ ...prev, fechaPago: undefined }));
+                  if (errors.paymentDate)
+                    setErrors((prev) => ({ ...prev, paymentDate: undefined }));
                 }}
               />
-              {errors.fechaPago && (
-                <p className="pm-field__error">{errors.fechaPago}</p>
+              {errors.paymentDate && (
+                <p className="pm-field__error">{errors.paymentDate}</p>
               )}
             </div>
 
@@ -232,12 +232,15 @@ export default function RegisterPaymentModal({
                 Medio de pago <span className="pm-required">*</span>
               </label>
               <select
-                className={`pm-field__input${errors.medioPago ? " pm-field__input--error" : ""}`}
+                className={`pm-field__input${errors.paymentMethod ? " pm-field__input--error" : ""}`}
                 value={medioPago}
                 onChange={(e) => {
-                  setMedioPago(e.target.value as MedioPago);
-                  if (errors.medioPago)
-                    setErrors((prev) => ({ ...prev, medioPago: undefined }));
+                  setMedioPago(e.target.value as PaymentMethod);
+                  if (errors.paymentMethod)
+                    setErrors((prev) => ({
+                      ...prev,
+                      paymentMethod: undefined,
+                    }));
                 }}
               >
                 <option value="">Seleccioná un medio de pago</option>
@@ -247,8 +250,8 @@ export default function RegisterPaymentModal({
                   </option>
                 ))}
               </select>
-              {errors.medioPago && (
-                <p className="pm-field__error">{errors.medioPago}</p>
+              {errors.paymentMethod && (
+                <p className="pm-field__error">{errors.paymentMethod}</p>
               )}
             </div>
 
