@@ -2,7 +2,7 @@
   background-color: #ffffff;
   border: 1px solid #f0ece0;
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -10,11 +10,16 @@
   position: relative;
   overflow: hidden;
   cursor: default;
-  transition: box-shadow 0.12s ease, transform 0.12s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.12s ease, transform 0.12s ease, border-color 0.12s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   width: 100%;
   box-sizing: border-box;
   height: 100%;
+}
+
+.stat-card:hover {
+  border-color: #e8dcc8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .stat-card--default {
@@ -22,16 +27,19 @@
   --badge-color: #3a7a3a;
   --accent-bar: #d4a017;
 }
+
 .stat-card--warning {
-  --badge-background: #fff8e6;
-  --badge-color: #9a6f00;
-  --accent-bar: #d4a017;
+  --badge-background: #fdf0f0;
+  --badge-color: #a33030;
+  --accent-bar: #ec7308;
 }
+
 .stat-card--danger {
   --badge-background: #fdf0f0;
   --badge-color: #a33030;
   --accent-bar: #c0392b;
 }
+
 .stat-card--success {
   --badge-background: #eaf6ef;
   --badge-color: #2e7d4f;
