@@ -1,14 +1,10 @@
-import { useState } from "react"
 import { usePropiedades } from "../hooks/usePropiedades"
 import {
   ExpenseMaintenanceSection,
-  LiquidationSettingsSection,
-  MaintenanceTabs,
 } from "../components/maintenance"
 import "./MaintenancePage.css"
 
 export default function MaintenancePage() {
-  const [activeTab, setActiveTab] = useState<"expenses" | "liquidation">("expenses")
   const { data: properties = [], isLoading, isError } = usePropiedades()
 
   return (
@@ -20,9 +16,6 @@ export default function MaintenancePage() {
           Gestiona ajustes operativos: edicion de gastos cargados y configuracion de fecha de liquidacion.
         </p>
       </div>
-
-      <MaintenanceTabs activeTab={activeTab} onChange={setActiveTab} />
-
       {isLoading && (
         <div className="mnt-loading">Cargando datos de propiedades...</div>
       )}
@@ -31,13 +24,10 @@ export default function MaintenancePage() {
         <div className="mnt-error">No se pudo cargar la informacion necesaria.</div>
       )}
 
-      {!isLoading && !isError && activeTab === "expenses" && (
+      {!isLoading && !isError  && (
         <ExpenseMaintenanceSection properties={properties} />
       )}
 
-      {!isLoading && !isError && activeTab === "liquidation" && (
-        <LiquidationSettingsSection properties={properties} />
-      )}
     </div>
   )
 }
