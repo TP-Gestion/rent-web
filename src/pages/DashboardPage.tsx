@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import {
   DashboardHero,
   DashboardStats,
-  QuickActionsCard,
   RecentActivityCard,
   RisksCard,
   UpcomingDueCard,
@@ -78,6 +77,15 @@ export default function DashboardPage() {
       (sum, item) => sum + resolveAmount(item),
       0,
     );
+    const collectedAmount = propiedades
+      .filter((p) => p.estadoPago === "PAID")
+      .reduce((sum, item) => sum + resolveAmount(item), 0);
+    const pendingAmount = propiedades
+      .filter((p) => p.estadoPago === "PENDING")
+      .reduce((sum, item) => sum + resolveAmount(item), 0);
+    const overdueAmount = propiedades
+      .filter((p) => p.estadoPago === "OVERDUE")
+      .reduce((sum, item) => sum + resolveAmount(item), 0);
     const occupancyRate =
       totalUnits > 0 ? Math.round((occupied / totalUnits) * 100) : 0;
 
@@ -88,6 +96,9 @@ export default function DashboardPage() {
       overdue,
       pending,
       billedAmount,
+      collectedAmount,
+      pendingAmount,
+      overdueAmount,
       occupancyRate,
     };
   }, [propiedades]);
@@ -121,15 +132,27 @@ export default function DashboardPage() {
       variant: "success" as const,
     },
     {
-      label: "Facturación mensual",
+      label: "Facturación esperada",
       value: formatCurrency(metrics.billedAmount),
       badge: EXPENSAS_PERIOD_LABEL,
       variant: "default" as const,
     },
     {
-      label: "Riesgo de cobro",
-      value: `${metrics.overdue} vencidos`,
-      badge: `${metrics.pending} pendientes`,
+      label: "Cobrado",
+      value: formatCurrency(metrics.collectedAmount),
+      badge: "Ult. periodo",
+      variant: "success" as const,
+    },
+    {
+      label: "Pendiente",
+      value: formatCurrency(metrics.pendingAmount),
+      badge: `${metrics.pending} unidades`,
+      variant: "default" as const,
+    },
+    {
+      label: "Vencido",
+      value: formatCurrency(metrics.overdueAmount),
+      badge: `${metrics.overdue} unidades`,
       variant:
         metrics.overdue > 0 ? ("warning" as const) : ("success" as const),
     },
@@ -151,8 +174,6 @@ export default function DashboardPage() {
 
       {!isLoading && !isError && (
         <>
-          <DashboardStats stats={stats} />
-
           <section className="dashboard-page__main-grid">
             <UpcomingDueCard
               items={upcomingDueItems}
@@ -163,12 +184,9 @@ export default function DashboardPage() {
               getDueLabel={buildDueLabel}
             />
 
-            <QuickActionsCard
-              onNewProperty={() => navigate("/nueva-propiedad")}
-              onNewExpense={() => navigate("/finances")}
-              onLiquidation={() => navigate("/maintenance")}
-              onReminders={() => navigate("/tenants")}
-            />
+            <div>
+              <DashboardStats stats={stats} />
+            </div>
           </section>
 
           <section className="dashboard-page__bottom-grid">
