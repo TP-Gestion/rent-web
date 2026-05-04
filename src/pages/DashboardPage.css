@@ -6,7 +6,7 @@
   font-family: "DM Sans", "Trebuchet MS", sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 28px;
 }
 
 .dashboard-page__hero {
@@ -49,7 +49,7 @@
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid #ede7d9;
-  background: #fffcf5;
+  background: #fffbef;
 }
 
 .dashboard-page__feedback {
@@ -66,41 +66,71 @@
   color: #7a3225;
 }
 
-.dashboard-page__stats-grid {
+/* ========================================== */
+/* PRIMARY KPI SECTION - 3 COLUMNAS COMPACTAS */
+/* ========================================== */
+.dashboard-page__kpi-section {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  align-items: start;
-}
-
-.dashboard-page__main-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-  grid-auto-rows: 1fr;
   align-items: stretch;
+  width: 100%;
 }
 
-/* Ensure right column stacks stats and uses full width */
-.dashboard-page__main-grid > div,
-.dashboard-page__main-grid > .dashboard-card {
+.dashboard-page__upcoming-section {
+  width: 100%;
+}
+
+/* ========================================== */
+/* SECONDARY METRICS - COMPACT & DISCRETE    */
+/* ========================================== */
+.dashboard-page__secondary-metrics-compact {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+
+.dashboard-page__secondary-card-compact {
+  background-color: #ffffff;
+  border: 1px solid #e8dcc8;
+  border-radius: 10px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: stretch;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
-/* Make stats grid fill the column height and keep cards compact */
-.dashboard-page__stats-grid {
-  height: 100%;
-  grid-auto-rows: 1fr;
-  gap: 8px;
+.dashboard-page__secondary-label-compact {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9f9377;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
+.dashboard-page__secondary-value-compact {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3d3630;
+  line-height: 1.1;
+}
+
+.dashboard-page__secondary-badge-compact {
+  font-size: 9px;
+  font-weight: 600;
+  color: #8b7f74;
+  margin-top: 2px;
+}
+
+/* BOTTOM GRID - Alerts & Activity */
 .dashboard-page__bottom-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+  width: 100%;
 }
 
 .dashboard-card {
@@ -196,6 +226,94 @@
 .dashboard-actions {
   display: grid;
   gap: 8px;
+}
+
+.dashboard-activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboard-activity-list li {
+  font-size: 13px;
+  color: #555550;
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.dashboard-activity-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #b8a882;
+  font-weight: 700;
+}
+
+.dashboard-alert-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboard-alert-list li {
+  font-size: 13px;
+  color: #555550;
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.dashboard-alert-list li::before {
+  content: "⚠";
+  position: absolute;
+  left: 0;
+}
+
+/* ========================================== */
+/* RESPONSIVE DESIGN                         */
+/* ========================================== */
+@media (max-width: 1200px) {
+  .dashboard-page__kpi-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-page__secondary-metrics-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    gap: 20px;
+  }
+
+  .dashboard-page__kpi-section {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-page__secondary-metrics-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard-page__secondary-card-compact {
+    padding: 10px 12px;
+  }
+
+  .dashboard-page__bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-page__title {
+    font-size: 24px;
+  }
 }
 
 .dashboard-actions button {

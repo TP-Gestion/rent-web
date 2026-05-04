@@ -2,11 +2,10 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import {
   DashboardHero,
-  DashboardStats,
+  StatCardLarge,
+  UpcomingDueCardGrouped,
   RecentActivityCard,
   RisksCard,
-  UpcomingDueCard,
-  type DashboardStat,
   type UpcomingDueItem,
 } from "../components/dashboard";
 import { usePropiedades } from "../hooks/usePropiedades";
@@ -29,10 +28,13 @@ function formatCurrency(value: number): string {
 function getDaysToDue(dateValue: string | null): number | null {
   if (!dateValue) return null;
 
-  const dueDate = new Date(dateValue);
-  if (Number.isNaN(dueDate.getTime())) return null;
+  // Parse date in YYYY-MM-DD format as local date, not UTC
+  const [year, month, day] = dateValue.split('-').map(Number);
+  if (!year || !month || !day) return null;
 
+  const dueDate = new Date(year, month - 1, day);
   const today = new Date();
+  
   today.setHours(0, 0, 0, 0);
   dueDate.setHours(0, 0, 0, 0);
 
@@ -113,50 +115,10 @@ export default function DashboardPage() {
         status: item.estadoPago,
         daysToDue: getDaysToDue(item.fechaVencimiento),
       }))
-      .filter((item) => item.daysToDue !== null && item.daysToDue <= 7)
+      .filter((item) => item.daysToDue !== null && item.daysToDue >= -7 && item.daysToDue <= 7)
       .sort((a, b) => (a.daysToDue ?? 0) - (b.daysToDue ?? 0))
-      .slice(0, 6);
+      .slice(0, 10);
   }, [propiedades]);
-
-  const stats: DashboardStat[] = [
-    {
-      label: "Unidades",
-      value: String(metrics.totalUnits),
-      badge: `${metrics.occupied} ocupadas`,
-      variant: "default" as const,
-    },
-    {
-      label: "Ocupación",
-      value: `${metrics.occupancyRate}%`,
-      badge: `${metrics.available} libres`,
-      variant: "success" as const,
-    },
-    {
-      label: "Facturación esperada",
-      value: formatCurrency(metrics.billedAmount),
-      badge: EXPENSAS_PERIOD_LABEL,
-      variant: "default" as const,
-    },
-    {
-      label: "Cobrado",
-      value: formatCurrency(metrics.collectedAmount),
-      badge: "Ult. periodo",
-      variant: "success" as const,
-    },
-    {
-      label: "Pendiente",
-      value: formatCurrency(metrics.pendingAmount),
-      badge: `${metrics.pending} unidades`,
-      variant: "default" as const,
-    },
-    {
-      label: "Vencido",
-      value: formatCurrency(metrics.overdueAmount),
-      badge: `${metrics.overdue} unidades`,
-      variant:
-        metrics.overdue > 0 ? ("warning" as const) : ("success" as const),
-    },
-  ];
 
   return (
     <div className="dashboard-page">
@@ -174,8 +136,61 @@ export default function DashboardPage() {
 
       {!isLoading && !isError && (
         <>
-          <section className="dashboard-page__main-grid">
-            <UpcomingDueCard
+          {/* PRIMARY KPIs - 3 COLUMNAS COMPACTAS */}
+          <section className="dashboard-page__kpi-section">
+            <StatCardLarge
+              label="Ocupación"
+              value={`${metrics.occupancyRate}%`}
+              badge={`${metrics.occupied}/${metrics.totalUnits}`}
+              progressValue={metrics.occupancyRate}
+              indicator={metrics.occupancyRate >= 80 ? "up" : metrics.occupancyRate >= 50 ? "neutral" : "down"}
+              indicatorLabel={metrics.occupancyRate >= 80 ? "Saludable" : metrics.occupancyRate >= 50 ? "Normal" : "Bajo"}
+              variant="success"
+            />
+            <StatCardLarge
+              label="Cobrado"
+              value={formatCurrency(metrics.collectedAmount)}
+              badge="Último período"
+              indicator={metrics.collectedAmount >= metrics.billedAmount * 0.8 ? "up" : "neutral"}
+              indicatorLabel={metrics.collectedAmount >= metrics.billedAmount * 0.8 ? "En línea" : "Por debajo"}
+              variant="success"
+            />
+            <StatCardLarge
+              label="⚠️ Vencido"
+              value={formatCurrency(metrics.overdueAmount)}
+              badge={`${metrics.overdue} unidades`}
+              indicator={metrics.overdue > 0 ? "down" : "neutral"}
+              indicatorLabel={metrics.overdue > 0 ? "Requiere atención" : "Sin vencidos"}
+              variant={metrics.overdue > 0 ? "warning" : "success"}
+            />
+          </section>
+
+          {/* SECONDARY METRICS - COMPACT & DISCRETE */}
+          <section className="dashboard-page__secondary-metrics-compact">
+            <div className="dashboard-page__secondary-card-compact">
+              <div className="dashboard-page__secondary-label-compact">Unidades</div>
+              <div className="dashboard-page__secondary-value-compact">{metrics.totalUnits}</div>
+              <div className="dashboard-page__secondary-badge-compact">{metrics.occupied} ocupadas</div>
+            </div>
+            <div className="dashboard-page__secondary-card-compact">
+              <div className="dashboard-page__secondary-label-compact">Facturación Esperada</div>
+              <div className="dashboard-page__secondary-value-compact">{formatCurrency(metrics.billedAmount)}</div>
+              <div className="dashboard-page__secondary-badge-compact">{EXPENSAS_PERIOD_LABEL}</div>
+            </div>
+            <div className="dashboard-page__secondary-card-compact">
+              <div className="dashboard-page__secondary-label-compact">Pendiente de Cobro</div>
+              <div className="dashboard-page__secondary-value-compact">{formatCurrency(metrics.pendingAmount)}</div>
+              <div className="dashboard-page__secondary-badge-compact">{metrics.pending} unidades</div>
+            </div>
+            <div className="dashboard-page__secondary-card-compact">
+              <div className="dashboard-page__secondary-label-compact">Morosidad</div>
+              <div className="dashboard-page__secondary-value-compact">{getMorosityData().percentage}%</div>
+              <div className="dashboard-page__secondary-badge-compact">{getMorosityData().trendLabel}</div>
+            </div>
+          </section>
+
+          <section className="dashboard-page__upcoming-section">
+            <UpcomingDueCardGrouped
               items={upcomingDueItems}
               onSeeAll={() => navigate("/tenants")}
               onOpenProperty={(propertyId) =>
@@ -183,12 +198,9 @@ export default function DashboardPage() {
               }
               getDueLabel={buildDueLabel}
             />
-
-            <div>
-              <DashboardStats stats={stats} />
-            </div>
           </section>
 
+          {/* ALERTS & ACTIVITY - 2 Columns */}
           <section className="dashboard-page__bottom-grid">
             <RisksCard
               morosityPercentage={morosityData.percentage}

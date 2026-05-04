@@ -1,0 +1,153 @@
+.stat-card-large {
+  background-color: #ffffff;
+  border: 1px solid #e8dcc8;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-family: "DM Sans", "Trebuchet MS", sans-serif;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 140px;
+}
+
+.stat-card-large--default {
+  --accent-color: #d4a017;
+  --badge-background: #f5f0e3;
+  --badge-color: #8b7500;
+}
+
+.stat-card-large--warning {
+  --accent-color: #c0392b;
+  --badge-background: #fce8e1;
+  --badge-color: #000000;
+  border: 1px solid #c0392b;
+}
+
+.stat-card-large--danger {
+  --accent-color: #c0392b;
+  --badge-background: #fce8e1;
+  --badge-color: #000000;
+  border: 2px solid #c0392b;
+}
+
+.stat-card-large--success {
+  --accent-color: #27ae60;
+  --badge-background: #e3f3e8;
+  --badge-color: #000000;
+}
+
+.stat-card-large::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent-color);
+  border-radius: 14px 14px 0 0;
+}
+
+.stat-card-large__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stat-card-large__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #8b7f74;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.stat-card-large__indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.stat-card-large__indicator-symbol {
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.stat-card-large__badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--badge-color);
+  background-color: var(--badge-background);
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stat-card-large__value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #2c2820;
+  line-height: 1;
+  letter-spacing: -1px;
+  margin: 6px 0 0;
+}
+
+.stat-card-large--danger .stat-card-large__value {
+  color: #2c2820;
+}
+
+.stat-card-large--warning .stat-card-large__value {
+  color: #2c2820;
+}
+
+.stat-card-large__progress {
+  height: 8px;
+  background-color: #ede7d9;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.stat-card-large__progress-bar {
+  height: 100%;
+  background: var(--accent-color);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .stat-card-large {
+    padding: 16px;
+    min-height: 130px;
+  }
+
+  .stat-card-large__value {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stat-card-large {
+    padding: 14px;
+    min-height: 120px;
+  }
+
+  .stat-card-large__value {
+    font-size: 28px;
+  }
+
+  .stat-card-large__label {
+    font-size: 11px;
+  }
+}
