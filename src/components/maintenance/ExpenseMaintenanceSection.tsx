@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import type { PropiedadListItem } from "../../service/propiedades";
 import { formatCurrency } from "../../utils/propertyDetail";
 
@@ -43,6 +43,13 @@ export default function ExpenseMaintenanceSection({
   const [buildingFilter, setBuildingFilter] = useState("TODOS");
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (editingId && editorRef.current) {
+      editorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [editingId]);
 
   const buildingOptions = useMemo(() => {
     const uniqueBuildings = Array.from(
@@ -80,8 +87,7 @@ export default function ExpenseMaintenanceSection({
           <div className="mnt-eyebrow">Gestor operativo</div>
           <h2 className="mnt-title">Modificar gastos</h2>
           <p className="mnt-subtitle">
-            Revisa y edita gastos de los edificios. Esta vista es la base para
-            conectar luego con la API de gastos.
+            Revisa y edita gastos de los edificios.
           </p>
         </div>
       </div>
@@ -170,7 +176,7 @@ export default function ExpenseMaintenanceSection({
       </div>
 
       {editingRow && (
-        <div className="mnt-editor">
+        <div className="mnt-editor" ref={editorRef}>
           <div className="mnt-editor__header">
             <h3 className="mnt-editor__title">Editar gasto</h3>
             <button

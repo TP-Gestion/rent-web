@@ -10,11 +10,7 @@ export default function MaintenancePage() {
   return (
     <div className="mnt-page">
       <div className="mnt-page__header">
-        <div className="mnt-page__section-label">Centro de mantenimiento</div>
         <h1 className="mnt-page__title">Mantenimiento financiero</h1>
-        <p className="mnt-page__subtitle">
-          Gestiona ajustes operativos: edicion de gastos cargados y configuracion de fecha de liquidacion.
-        </p>
       </div>
       {isLoading && (
         <div className="mnt-loading">Cargando datos de propiedades...</div>
