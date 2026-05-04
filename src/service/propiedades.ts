@@ -192,7 +192,7 @@ export async function getPropertiesSummary(): Promise<PropiedadListItem[]> {
   }));
 }
 
-export const USE_MOCK_BILLABLE_DATA = true;
+export const USE_MOCK_BILLABLE_DATA = false;
 
 const mockDelay = () => new Promise((r) => setTimeout(r, 3000));
 

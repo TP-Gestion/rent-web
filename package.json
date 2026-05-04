@@ -19,6 +19,8 @@
     "@toolpad/core": "0.16.0",
     "@types/node": "^24.6.2",
     "axios": "^1.12.2",
+    "jspdf": "^4.2.1",
+    "jszip": "^3.10.1",
     "jwt-decode": "^4.0.0",
     "react": "^19",
     "react-dom": "^19",
