@@ -2,7 +2,7 @@
   background-color: #ffffff;
   border: 1px solid #f0ece0;
   border-radius: 12px;
-  padding: 16px 18px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -10,8 +10,11 @@
   position: relative;
   overflow: hidden;
   cursor: default;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition: box-shadow 0.12s ease, transform 0.12s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
 }
 
 .stat-card--default {
@@ -46,7 +49,7 @@
 }
 
 .stat-card__label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   color: #b8a882;
   letter-spacing: 1.2px;
@@ -57,15 +60,15 @@
 .stat-card__value-row {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .stat-card__value {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   color: #2c2820;
-  line-height: 1.1;
+  line-height: 1.05;
   letter-spacing: -0.5px;
 }
 
@@ -74,13 +77,13 @@
   font-weight: 600;
   color: var(--badge-color);
   background-color: var(--badge-background);
-  padding: 2px 7px;
+  padding: 4px 8px;
   border-radius: 999px;
   white-space: nowrap;
 }
 
 .stat-card__subtitle {
-  font-size: 11px;
+  font-size: 12px;
   color: #6f6a60;
   font-weight: 500;
   margin-top: 2px;
