@@ -1,4 +1,4 @@
-export const PER_PAGE = 10;
+export const PER_PAGE = 15;
 
 export const EXPENSAS_PERIOD_LABEL = "MARZO 2026";
 

@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import AlertBanner from "../components/billing/AlertBanner";
-import StatCard from "../components/tenants/StatCard";
+import StatCard from "../components/dashboard/StatCard";
 import BillingTable from "../components/billing/BillingTable";
 import { useBillableProperties } from "../hooks/useBillableProperties";
 import { useGenerateBillings } from "../hooks/useGenerateBillings";
 import { exportBillingToExcel } from "../utils/billingExport";
+import { exportBillingToPdfZip } from "../utils/billingPdfExport";
 import { formatArs, BATCH_ID } from "../utils/billingHelpers";
 import type { BillingItem } from "../components/billing/BillingTable";
 import "./BillingPage.css";
@@ -37,11 +38,17 @@ function BillingSuccessScreen({
       <div className="billing-success__actions">
         <button
           className="billing-btn billing-btn--primary"
+          onClick={() => exportBillingToPdfZip(items, selectedIds)}
+        >
+          ↓&nbsp; Descargar facturas
+        </button>
+        <button
+          className="billing-btn billing-btn--secondary"
           onClick={() => exportBillingToExcel(items, selectedIds)}
         >
           ↓&nbsp; Descargar reporte
         </button>
-        <button className="billing-btn" onClick={onGoHome}>
+        <button className="billing-btn billing-btn--ghost" onClick={onGoHome}>
           Volver al inicio
         </button>
       </div>
@@ -136,7 +143,7 @@ export default function BillingPage() {
             COBRO DE EXPENSAS — MES ACTUAL
           </h1>
           <div className="billing-page__subtitle">
-            Proceso de facturación masiva&nbsp;&nbsp;|&nbsp;&nbsp;Lote ID:{" "}
+            Proceso de facturación masiva&nbsp;&nbsp;|&nbsp;&nbsp;Lote:{" "}
             <span className="billing-page__lote-id">{BATCH_ID}</span>
           </div>
         </div>

@@ -1,10 +1,12 @@
+
 .dashboard-page {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1500px;
   margin: 0 auto;
   font-family: "DM Sans", "Trebuchet MS", sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 28px;
 }
 
 .dashboard-page__hero {
@@ -36,7 +38,7 @@
   margin: 8px 0 0;
   color: #6f6a60;
   font-size: 14px;
-  max-width: 650px;
+  max-width: 700px;
 }
 
 .dashboard-page__period {
@@ -47,7 +49,7 @@
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid #ede7d9;
-  background: #fffcf5;
+  background: #fffbef;
 }
 
 .dashboard-page__feedback {
@@ -64,29 +66,79 @@
   color: #7a3225;
 }
 
-.dashboard-page__stats-grid {
+/* ========================================== */
+/* PRIMARY KPI SECTION - 3 COLUMNAS COMPACTAS */
+/* ========================================== */
+.dashboard-page__kpi-section {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.dashboard-page__upcoming-section {
+  width: 100%;
+}
+
+/* ========================================== */
+/* SECONDARY METRICS - COMPACT & DISCRETE    */
+/* ========================================== */
+.dashboard-page__secondary-metrics-compact {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.dashboard-page__main-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
   gap: 16px;
+  width: 100%;
 }
 
+
+.dashboard-page__secondary-card-compact {
+  background-color: #ffffff;
+  border: 1px solid #e8dcc8;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.dashboard-page__secondary-label-compact {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9f9377;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.dashboard-page__secondary-value-compact {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3d3630;
+  line-height: 1.1;
+}
+
+.dashboard-page__secondary-badge-compact {
+  font-size: 9px;
+  font-weight: 600;
+  color: #8b7f74;
+  margin-top: 2px;
+}
+
+/* BOTTOM GRID - Alerts & Activity */
 .dashboard-page__bottom-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+  width: 100%;
 }
 
 .dashboard-card {
-  border: 1px solid #eee6d8;
+  border: 1px solid #f0ece0;
   background: #ffffff;
   border-radius: 12px;
   padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .dashboard-card--wide {
@@ -107,14 +159,18 @@
 }
 
 .dashboard-card__header button {
-  border: none;
-  background: #f4f0e6;
-  color: #5a4f39;
+  border: 1px solid #f0ece0;
+  background: #ffffff;
+  color: #555550;
   font-size: 12px;
   font-weight: 600;
   border-radius: 8px;
   padding: 8px 10px;
   cursor: pointer;
+}
+
+.dashboard-card__header button:hover {
+  background: #fafaf7;
 }
 
 .dashboard-card__empty {
@@ -172,6 +228,94 @@
   gap: 8px;
 }
 
+.dashboard-activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboard-activity-list li {
+  font-size: 13px;
+  color: #555550;
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.dashboard-activity-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #b8a882;
+  font-weight: 700;
+}
+
+.dashboard-alert-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboard-alert-list li {
+  font-size: 13px;
+  color: #555550;
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.dashboard-alert-list li::before {
+  content: "⚠";
+  position: absolute;
+  left: 0;
+}
+
+/* ========================================== */
+/* RESPONSIVE DESIGN                         */
+/* ========================================== */
+@media (max-width: 1200px) {
+  .dashboard-page__kpi-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-page__secondary-metrics-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    gap: 20px;
+  }
+
+  .dashboard-page__kpi-section {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-page__secondary-metrics-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard-page__secondary-card-compact {
+    padding: 10px 12px;
+  }
+
+  .dashboard-page__bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-page__title {
+    font-size: 24px;
+  }
+}
+
 .dashboard-actions button {
   border: 1px solid #ece3d1;
   background: #fffdf8;
@@ -182,6 +326,10 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.dashboard-actions button:hover {
+  background: #faf7ef;
 }
 
 .dashboard-alert-list,

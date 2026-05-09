@@ -1,5 +1,6 @@
 .expensas-page {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1500px;
   margin: 0 auto;
   font-family: "DM Sans", "Trebuchet MS", sans-serif;
   display: flex;
@@ -76,36 +77,9 @@
   background-color: #c4920f;
 }
 
-.expensas-page__stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.expensas-page__bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-@media (max-width: 1000px) {
-  .expensas-page__stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .expensas-page__bottom-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 640px) {
-  .expensas-page__stats-grid {
-    grid-template-columns: 1fr;
-  }
-
   .expensas-page__header-actions {
     width: 100%;
     justify-content: flex-start;
-    flex-wrap: wrap;
   }
 }

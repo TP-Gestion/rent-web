@@ -1,18 +1,10 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
-import StatCard from "../components/tenants/StatCard";
 import DataTable from "../components/tenants/dataTable/DataTable";
-import {
-  MorosityCard,
-  BatchActionsCard,
-} from "../components/tenants/bottomCards";
 import type { PropiedadListItem } from "../service/propiedades";
 import {
   EXPENSAS_PERIOD_LABEL,
   PER_PAGE,
-  getBatchActionsData,
-  getExpensasStats,
-  getMorosityData,
 } from "../propiedadService";
 import { usePropertiesSummary } from "../hooks/usePropertiesSummary";
 import "./TenantsPage.css";
@@ -44,9 +36,7 @@ export default function TenantsPage() {
   const navigate = useNavigate();
   const { data: propiedadesData } = usePropertiesSummary();
   const propiedades = propiedadesData ?? [];
-  const stats = getExpensasStats();
-  const morosityData = getMorosityData();
-  const batchActionsData = getBatchActionsData();
+
 
   const buildingOptions = useMemo(() => {
     const unique = [...new Set(propiedades.map((p) => p.edificio))];
@@ -96,11 +86,15 @@ export default function TenantsPage() {
   };
 
   const handleExportar = () => {
-    alert("Exportando reporte de Marzo 2026...");
+    alert("Extrayendo reporte de Marzo 2026...");
   };
 
   const handleGenerarLiquidacion = () => {
     navigate("/generar-liquidacion");
+  };
+
+  const handleEnviarRecordatorios = () => {
+    alert("Enviando recordatorios a los inquilinos con saldo pendiente...");
   };
 
   return (
@@ -117,30 +111,21 @@ export default function TenantsPage() {
           </div>
         </div>
         <div className="expensas-page__header-actions">
-          <HeaderButton label="↓  Exportar reporte" onClick={handleExportar} />
           <HeaderButton
-            label="＋ Nueva Propiedad"
+            label="Nueva propiedad"
             onClick={() => navigate("/nueva-propiedad")}
           />
           <HeaderButton
-            label="+ Generar liquidación"
+            label="Generar liquidación"
             primary
             onClick={handleGenerarLiquidacion}
           />
-        </div>
-      </div>
-
-      {/* ── Stat Cards ── */}
-      <div className="expensas-page__stats-grid">
-        {stats.map((s) => (
-          <StatCard
-            key={s.label}
-            label={s.label}
-            value={s.value}
-            badge={s.badge}
-            variant={s.variant}
+          <HeaderButton label="Extraer reporte" onClick={handleExportar} />
+          <HeaderButton
+            label="Enviar recordatorios"
+            onClick={handleEnviarRecordatorios}
           />
-        ))}
+        </div>
       </div>
 
       {/* ── Data Table ── */}
@@ -152,26 +137,6 @@ export default function TenantsPage() {
         onVerDetalle={handleVerDetalle}
         onFilterChange={handleFilterChange}
       />
-
-      {/* ── Bottom Cards ── */}
-      <div className="expensas-page__bottom-grid">
-        <MorosityCard
-          percentage={morosityData.percentage}
-          trend={morosityData.trend}
-          trendLabel={morosityData.trendLabel}
-          description={morosityData.description}
-          onVerInforme={() => alert("Abriendo informe de morosidad...")}
-          onConfigurar={() => alert("Abriendo configuración de alertas...")}
-        />
-        <BatchActionsCard
-          pendingCount={batchActionsData.pendingCount}
-          lastSyncLabel={batchActionsData.lastSyncLabel}
-          onSendReminders={() =>
-            alert("Enviando recordatorios a 14 inquilinos...")
-          }
-          onReconcileBank={() => alert("Iniciando conciliación bancaria...")}
-        />
-      </div>
     </div>
   );
 }

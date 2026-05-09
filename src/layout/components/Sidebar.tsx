@@ -21,15 +21,6 @@ const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
-    label: 'Properties',
-    href: '/properties',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M8 1L1 6v9h5v-4h4v4h5V6L8 1z" fill="currentColor" opacity="0.85" />
-      </svg>
-    ),
-  },
-  {
     label: 'Tenants',
     href: '/tenants',
     icon: (
