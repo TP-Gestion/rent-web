@@ -54,7 +54,7 @@ export function clearAuth(): void {
 export async function login(
   body: AuthRequest,
 ): Promise<ApiResponse<AuthUser>> {
-  const response = await wrapResponse(apiClient.post<AuthUser>("/v1/auth/login", body));
+  const response = await wrapResponse(apiClient.post<AuthUser>("/auth/login", body));
   saveAuth(response.data);
   return response;
 }
@@ -62,5 +62,5 @@ export async function login(
 export async function register(
   body: RegisterRequest,
 ): Promise<ApiResponse<AuthUser>> {
-  return wrapResponse(apiClient.post<AuthUser>("/v1/auth/register", body));
+  return wrapResponse(apiClient.post<AuthUser>("/auth/register", body));
 }

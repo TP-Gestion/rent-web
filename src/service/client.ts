@@ -2,17 +2,17 @@ import axios from "axios";
 
 function getDefaultApiBaseUrl(): string {
   if (typeof window === "undefined") {
-    return "http://localhost:8080/api";
+    return "http://localhost:8080/api/v1";
   }
 
   const { hostname, origin } = window.location;
   const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
 
   if (isLocalHost) {
-    return "http://localhost:8080/api";
+    return "http://localhost:8080/api/v1";
   }
 
-  return `${origin}/api`;
+  return `${origin}/api/v1`;
 }
 
 const envApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();

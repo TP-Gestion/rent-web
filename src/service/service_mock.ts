@@ -7,7 +7,7 @@ import type {
   Tenant,
 } from "./propiedades";
 
-export const USE_MOCK_BILLABLE_DATA = true;
+export const USE_MOCK_BILLABLE_DATA = false;
 
 export const mockDelay = () => new Promise((r) => setTimeout(r, 3000));
 
