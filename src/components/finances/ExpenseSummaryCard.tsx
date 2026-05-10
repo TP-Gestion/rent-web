@@ -1,8 +1,7 @@
-import type { PropiedadListItem } from '../../service/propiedades'
-import { formatCurrency, formatTipoUnidad } from '../../utils/propertyDetail'
+import type { Building } from '../../service/propiedades'
 
 interface ExpenseSummaryCardProps {
-  selectedProperty?: PropiedadListItem
+  selectedBuilding?: Building
   categoryLabel?: string
   frequencyLabel?: string
   durationLabel?: string
@@ -19,7 +18,7 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function ExpenseSummaryCard({
-  selectedProperty,
+  selectedBuilding,
   categoryLabel,
   frequencyLabel,
   durationLabel,
@@ -37,18 +36,18 @@ export default function ExpenseSummaryCard({
         </div>
       </div>
 
-      {!selectedProperty ? (
+      {!selectedBuilding ? (
         <div className="fin-empty-state">
-          Seleccioná una propiedad para ver el detalle financiero y el impacto mensual.
+          Seleccioná un edificio para ver el detalle financiero y el impacto mensual.
         </div>
       ) : (
         <div className="fin-summary">
           <div className="fin-summary__property">
             <div className="fin-summary__property-title">
-              {selectedProperty.edificio} · Piso {selectedProperty.piso}
+              {selectedBuilding.name}
             </div>
             <div className="fin-summary__property-subtitle">
-              {formatTipoUnidad(selectedProperty.tipoUnidad)}
+              {selectedBuilding.address}
             </div>
           </div>
 
@@ -56,10 +55,8 @@ export default function ExpenseSummaryCard({
           <SummaryRow label="Categoría" value={categoryLabel ?? 'Pendiente'} />
           <SummaryRow label="Duración" value={durationLabel ?? 'Pendiente'} />
           <SummaryRow label="Monto" value={amountLabel ?? 'Pendiente'} />
-          <SummaryRow label="Alquiler" value={formatCurrency(selectedProperty.montoAlquiler)} />
-          <SummaryRow label="Expensas base" value={formatCurrency(selectedProperty.expensas)} />
-          <SummaryRow label="Total mensual" value={formatCurrency(selectedProperty.montoTotal)} />
-          <SummaryRow label="Estado" value={selectedProperty.estadoPago} />
+          <SummaryRow label="ID edificio" value={String(selectedBuilding.id)} />
+          <SummaryRow label="Dirección" value={selectedBuilding.address} />
         </div>
       )}
 

@@ -117,7 +117,7 @@ export default function ExpenseFormCard({
       <form className="fin-form" onSubmit={onSubmit} noValidate>
         <div className="fin-grid-2">
           <SelectField
-            label="Propiedad *"
+            label="Edificio *"
             placeholder={propertyPlaceholder}
             options={propertyOptions}
             value={values.propertyId}

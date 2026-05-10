@@ -1,5 +1,5 @@
 interface ExpenseSuccessCardProps {
-  propertyLabel: string
+  buildingLabel: string
   categoryLabel: string
   frequencyLabel: string
   durationLabel: string
@@ -18,7 +18,7 @@ function SuccessRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function ExpenseSuccessCard({
-  propertyLabel,
+  buildingLabel,
   categoryLabel,
   frequencyLabel,
   durationLabel,
@@ -35,7 +35,7 @@ export default function ExpenseSuccessCard({
       </p>
 
       <div className="fin-success__details">
-        <SuccessRow label="Propiedad" value={propertyLabel} />
+        <SuccessRow label="Edificio" value={buildingLabel} />
         <SuccessRow label="Categoría" value={categoryLabel} />
         <SuccessRow label="Frecuencia" value={frequencyLabel} />
         <SuccessRow label="Duración" value={durationLabel} />

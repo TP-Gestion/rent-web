@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { usePropiedades } from '../hooks/usePropiedades'
-import type { PropiedadListItem } from '../service/propiedades'
+import { useBuildings } from '../hooks/useBuildings'
+import type { Building } from '../service/propiedades'
 import {
   crearGastoSchema,
   EXPENSE_CATEGORY_OPTIONS,
@@ -58,7 +58,7 @@ function getOptionLabel(value: string, options: { value: string; label: string }
 }
 
 interface SavedExpense {
-  propertyLabel: string
+  buildingLabel: string
   categoryLabel: string
   frequencyLabel: string
   durationLabel: string
@@ -67,7 +67,7 @@ interface SavedExpense {
 
 export default function FinancesPage() {
   const navigate = useNavigate()
-  const { data: propiedadesData = [], isLoading, isError } = usePropiedades()
+  const { data: buildingsData = [], isLoading, isError } = useBuildings()
   const [values, setValues] = useState<ExpenseFormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<Partial<Record<keyof ExpenseFormValues, string>>>({})
   const [touched, setTouched] = useState<Partial<Record<keyof ExpenseFormValues, boolean>>>({})
@@ -75,28 +75,28 @@ export default function FinancesPage() {
 
   const propertyOptions = useMemo(
     () =>
-      propiedadesData.map((propiedad: PropiedadListItem) => ({
-        value: String(propiedad.id),
-        label: `${propiedad.edificio} · Piso ${propiedad.piso}`,
+      buildingsData.map((building: Building) => ({
+        value: String(building.id),
+        label: `${building.name} · ${building.address}`,
       })),
-    [propiedadesData],
+    [buildingsData],
   )
 
-  const selectedProperty = useMemo(
-    () => propiedadesData.find((propiedad) => String(propiedad.id) === values.propertyId),
-    [propiedadesData, values.propertyId],
+  const selectedBuilding = useMemo(
+    () => buildingsData.find((building) => String(building.id) === values.propertyId),
+    [buildingsData, values.propertyId],
   )
 
   const canSubmit = crearGastoSchema.safeParse(values).success
 
   const propertyPlaceholder = isLoading
-    ? 'Cargando propiedades...'
+    ? 'Cargando edificios...'
     : propertyOptions.length > 0
-      ? 'Seleccioná una propiedad'
-      : 'No hay propiedades cargadas'
+      ? 'Seleccioná un edificio'
+      : 'No hay edificios cargados'
 
-  const selectedPropertyLabel = selectedProperty
-    ? `${selectedProperty.edificio} · Piso ${selectedProperty.piso}`
+  const selectedBuildingLabel = selectedBuilding
+    ? `${selectedBuilding.name} · ${selectedBuilding.address}`
     : 'Pendiente'
 
   const categoryLabel = getOptionLabel(values.category, EXPENSE_CATEGORY_OPTIONS)
@@ -160,7 +160,7 @@ export default function FinancesPage() {
     }
 
     setLastSavedExpense({
-      propertyLabel: selectedPropertyLabel,
+      buildingLabel: selectedBuildingLabel,
       categoryLabel,
       frequencyLabel,
       durationLabel,
@@ -176,20 +176,20 @@ export default function FinancesPage() {
           <div className="fin-page__section-label">Administración financiera</div>
           <h1 className="fin-page__title">Carga de gastos</h1>
           <p className="fin-page__subtitle">
-            Registrá gastos operativos o extraordinarios vinculados a una propiedad con control visual y validación de campos en tiempo real.
+            Registrá gastos operativos o extraordinarios vinculados a un edificio con control visual y validación de campos en tiempo real.
           </p>
         </div>
         <div className="fin-page__period-chip">PERIODO ACTIVO · MARZO 2026</div>
       </div>
 
       {isError && (
-        <div className="fin-feedback fin-feedback--error">No se pudieron cargar las propiedades disponibles.</div>
+        <div className="fin-feedback fin-feedback--error">No se pudieron cargar los edificios disponibles.</div>
       )}
 
       {lastSavedExpense && (
         <div className="fin-success-shell">
           <ExpenseSuccessCard
-            propertyLabel={lastSavedExpense.propertyLabel}
+            buildingLabel={lastSavedExpense.buildingLabel}
             categoryLabel={lastSavedExpense.categoryLabel}
             frequencyLabel={lastSavedExpense.frequencyLabel}
             durationLabel={lastSavedExpense.durationLabel}
@@ -215,7 +215,7 @@ export default function FinancesPage() {
         />
 
         <ExpenseSummaryCard
-          selectedProperty={selectedProperty}
+          selectedBuilding={selectedBuilding}
           categoryLabel={categoryLabel}
           frequencyLabel={frequencyLabel}
           durationLabel={durationLabel}

@@ -1,49 +1,36 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import type { PropiedadListItem } from "../../service/propiedades";
+import type { Building } from "../../service/propiedades";
+import type { CommonExpense } from "../../service/maintenance";
+import { useCommonExpenses } from "../../hooks/useCommonExpenses";
 import { formatCurrency } from "../../utils/propertyDetail";
 
-interface ExpenseRow {
-  id: string;
-  propertyId: string;
-  building: string;
-  floor: string;
-  concept: string;
-  category: string;
-  amount: number;
-  frequency: "UNICA" | "MENSUAL";
-  duration: string;
-  status: "ACTIVO" | "PAUSADO";
+interface ExpenseRow extends CommonExpense {
+  buildingName: string;
+  buildingId: number;
+  isEditing?: boolean;
 }
 
 interface ExpenseMaintenanceSectionProps {
-  properties: PropiedadListItem[];
-}
-
-function getInitialRows(properties: PropiedadListItem[]): ExpenseRow[] {
-  return properties.slice(0, 24).map((property) => ({
-    id: `g-${property.id}`,
-    propertyId: String(property.id),
-    building: property.edificio,
-    floor: property.piso,
-    concept: `Gasto operativo ${property.edificio}`,
-    category: "SERVICIOS",
-    amount: Math.max(1, Math.round(property.expensas * 0.35)),
-    frequency: property.estadoOcupacion === "OCCUPIED" ? "MENSUAL" : "UNICA",
-    duration: property.estadoOcupacion === "OCCUPIED" ? "INDEFINIDA" : "1 MES",
-    status: "ACTIVO",
-  }));
+  buildings: Building[];
 }
 
 export default function ExpenseMaintenanceSection({
-  properties,
+  buildings,
 }: ExpenseMaintenanceSectionProps) {
-  const [rows, setRows] = useState<ExpenseRow[]>(() =>
-    getInitialRows(properties),
+  const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(
+    buildings.length > 0 ? buildings[0].id : null,
   );
-  const [buildingFilter, setBuildingFilter] = useState("TODOS");
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
+
+  const { data: expensesResponse = { data: [], errors: [] }, isLoading: isLoadingExpenses } =
+    useCommonExpenses(selectedBuildingId);
+
+  const selectedBuilding = useMemo(
+    () => buildings.find((b) => b.id === selectedBuildingId),
+    [buildings, selectedBuildingId],
+  );
 
   useEffect(() => {
     if (editingId && editorRef.current) {
@@ -51,34 +38,27 @@ export default function ExpenseMaintenanceSection({
     }
   }, [editingId]);
 
-  const buildingOptions = useMemo(() => {
-    const uniqueBuildings = Array.from(
-      new Set(rows.map((row) => row.building)),
-    );
-    return ["TODOS", ...uniqueBuildings];
-  }, [rows]);
+  const rows: ExpenseRow[] = useMemo(
+    () =>
+      (expensesResponse.data || []).map((expense) => ({
+        ...expense,
+        buildingName: selectedBuilding?.name || "Edificio",
+        buildingId: selectedBuildingId || 0,
+      })),
+    [expensesResponse.data, selectedBuilding?.name, selectedBuildingId],
+  );
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
-      const matchesBuilding =
-        buildingFilter === "TODOS" || row.building === buildingFilter;
       const matchesSearch =
         search.trim() === "" ||
-        row.concept.toLowerCase().includes(search.toLowerCase()) ||
-        `${row.building} ${row.floor}`
-          .toLowerCase()
-          .includes(search.toLowerCase());
-      return matchesBuilding && matchesSearch;
+        row.description.toLowerCase().includes(search.toLowerCase()) ||
+        row.buildingName.toLowerCase().includes(search.toLowerCase());
+      return matchesSearch;
     });
-  }, [rows, buildingFilter, search]);
+  }, [rows, search]);
 
-  const editingRow = rows.find((row) => row.id === editingId) ?? null;
-
-  const updateRow = (id: string, updates: Partial<ExpenseRow>) => {
-    setRows((prev) =>
-      prev.map((row) => (row.id === id ? { ...row, ...updates } : row)),
-    );
-  };
+  const editingRow = rows.find((row) => row.expenseId.toString() === editingId) ?? null;
 
   return (
     <div className="mnt-section-card">
@@ -97,12 +77,16 @@ export default function ExpenseMaintenanceSection({
           <label className="mnt-label">Edificio</label>
           <select
             className="mnt-select"
-            value={buildingFilter}
-            onChange={(event) => setBuildingFilter(event.target.value)}
+            value={selectedBuildingId || ""}
+            onChange={(event) => {
+              const id = Number(event.target.value);
+              setSelectedBuildingId(id || null);
+              setEditingId(null);
+            }}
           >
-            {buildingOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
+            {buildings.map((building) => (
+              <option key={building.id} value={building.id}>
+                {building.name} · {building.address}
               </option>
             ))}
           </select>
@@ -111,7 +95,7 @@ export default function ExpenseMaintenanceSection({
           <label className="mnt-label">Buscar</label>
           <input
             className="mnt-input"
-            placeholder="Concepto o unidad"
+            placeholder="Descripción o concepto"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -122,48 +106,40 @@ export default function ExpenseMaintenanceSection({
         <table className="mnt-table">
           <thead>
             <tr>
-              <th>Unidad</th>
-              <th>Concepto</th>
-              <th>Categoria</th>
+              <th>Descripción</th>
+              <th>Tipo</th>
               <th>Monto</th>
-              <th>Frecuencia</th>
-              <th>Estado</th>
-              <th>Accion</th>
+              <th>Vencimiento</th>
+              <th>Propiedades afectadas</th>
+              <th>Acción</th>
             </tr>
           </thead>
           <tbody>
-            {filteredRows.length === 0 ? (
+            {isLoadingExpenses ? (
               <tr>
-                <td colSpan={7} className="mnt-table__empty">
-                  No hay gastos para los filtros seleccionados.
+                <td colSpan={6} className="mnt-table__empty">
+                  Cargando gastos comunes...
+                </td>
+              </tr>
+            ) : filteredRows.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="mnt-table__empty">
+                  No hay gastos comunes para este edificio o búsqueda.
                 </td>
               </tr>
             ) : (
               filteredRows.map((row) => (
-                <tr key={row.id}>
-                  <td>
-                    {row.building} · Piso {row.floor}
-                  </td>
-                  <td>{row.concept}</td>
-                  <td>{row.category}</td>
-                  <td>{formatCurrency(row.amount)}</td>
-                  <td>
-                    {row.frequency === "MENSUAL"
-                      ? `Mensual · ${row.duration}`
-                      : "Unica vez"}
-                  </td>
-                  <td>
-                    <span
-                      className={`mnt-badge${row.status === "ACTIVO" ? " mnt-badge--ok" : " mnt-badge--paused"}`}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
+                <tr key={row.expenseId}>
+                  <td>{row.description}</td>
+                  <td>{row.type}</td>
+                  <td>{formatCurrency(row.totalAmount)}</td>
+                  <td>{row.dueDate}</td>
+                  <td>{row.affectedProperties}</td>
                   <td>
                     <button
                       type="button"
                       className="mnt-link-btn"
-                      onClick={() => setEditingId(row.id)}
+                      onClick={() => setEditingId(row.expenseId.toString())}
                     >
                       Editar
                     </button>
@@ -178,7 +154,7 @@ export default function ExpenseMaintenanceSection({
       {editingRow && (
         <div className="mnt-editor" ref={editorRef}>
           <div className="mnt-editor__header">
-            <h3 className="mnt-editor__title">Editar gasto</h3>
+            <h3 className="mnt-editor__title">Editar gasto común</h3>
             <button
               type="button"
               className="mnt-link-btn"
@@ -189,57 +165,41 @@ export default function ExpenseMaintenanceSection({
           </div>
           <div className="mnt-editor__grid">
             <div className="mnt-field">
-              <label className="mnt-label">Concepto</label>
+              <label className="mnt-label">Descripción</label>
               <input
                 className="mnt-input"
-                value={editingRow.concept}
-                onChange={(event) =>
-                  updateRow(editingRow.id, { concept: event.target.value })
-                }
+                type="text"
+                value={editingRow.description}
+                disabled
               />
             </div>
             <div className="mnt-field">
-              <label className="mnt-label">Monto</label>
+              <label className="mnt-label">Monto Total</label>
               <input
                 className="mnt-input"
                 type="number"
                 min="1"
-                value={editingRow.amount}
-                onChange={(event) =>
-                  updateRow(editingRow.id, {
-                    amount: Math.max(1, Number(event.target.value || 0)),
-                  })
-                }
+                value={editingRow.totalAmount}
+                disabled
               />
             </div>
             <div className="mnt-field">
-              <label className="mnt-label">Frecuencia</label>
-              <select
-                className="mnt-select"
-                value={editingRow.frequency}
-                onChange={(event) =>
-                  updateRow(editingRow.id, {
-                    frequency: event.target.value as ExpenseRow["frequency"],
-                    duration:
-                      event.target.value === "MENSUAL"
-                        ? editingRow.duration
-                        : "1 MES",
-                  })
-                }
-              >
-                <option value="UNICA">Unica vez</option>
-                <option value="MENSUAL">Mensual</option>
+              <label className="mnt-label">Tipo</label>
+              <select className="mnt-select" value={editingRow.type} disabled>
+                <option value="UTILITIES">Servicios</option>
+                <option value="MAINTENANCE">Mantenimiento</option>
+                <option value="REPAIR">Reparaciones</option>
+                <option value="TAXES">Impuestos</option>
+                <option value="ADMINISTRATION">Administración</option>
               </select>
             </div>
             <div className="mnt-field">
-              <label className="mnt-label">Duracion</label>
+              <label className="mnt-label">Fecha de vencimiento</label>
               <input
                 className="mnt-input"
-                value={editingRow.duration}
-                disabled={editingRow.frequency === "UNICA"}
-                onChange={(event) =>
-                  updateRow(editingRow.id, { duration: event.target.value })
-                }
+                type="date"
+                value={editingRow.dueDate}
+                disabled
               />
             </div>
           </div>

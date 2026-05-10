@@ -1,11 +1,11 @@
-import { usePropiedades } from "../hooks/usePropiedades"
+import { useBuildings } from "../hooks/useBuildings"
 import {
   ExpenseMaintenanceSection,
 } from "../components/maintenance"
 import "./MaintenancePage.css"
 
 export default function MaintenancePage() {
-  const { data: properties = [], isLoading, isError } = usePropiedades()
+  const { data: buildings = [], isLoading, isError } = useBuildings()
 
   return (
     <div className="mnt-page">
@@ -13,7 +13,7 @@ export default function MaintenancePage() {
         <h1 className="mnt-page__title">Mantenimiento financiero</h1>
       </div>
       {isLoading && (
-        <div className="mnt-loading">Cargando datos de propiedades...</div>
+        <div className="mnt-loading">Cargando datos de edificios...</div>
       )}
 
       {isError && (
@@ -21,7 +21,7 @@ export default function MaintenancePage() {
       )}
 
       {!isLoading && !isError  && (
-        <ExpenseMaintenanceSection properties={properties} />
+        <ExpenseMaintenanceSection buildings={buildings} />
       )}
 
     </div>
