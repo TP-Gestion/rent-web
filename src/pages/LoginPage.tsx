@@ -51,6 +51,8 @@ export default function LoginPage() {
           errorMsg = mode === 'login' 
             ? 'Email o contraseña incorrectos'
             : 'Este email ya está registrado o datos inválidos'
+        } else if (status == 409) {
+          errorMsg = 'Este email ya está registrado'
         } else {
           // Otros errores de servidor
           errorMsg = `Error del servidor: ${status || 'desconocido'}`
