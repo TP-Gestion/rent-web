@@ -1,0 +1,77 @@
+
+.cargar-expensa-page {
+	padding: 24px;
+	font-family: "DM Sans", "Trebuchet MS", sans-serif;
+}
+
+.cargar-expensa-card {
+	max-width: 840px;
+	background: rgba(255,255,255,0.95);
+	border: 1px solid #efe7d4;
+	padding: 28px;
+	border-radius: 12px;
+	box-shadow: 0 18px 40px rgba(58,53,48,0.08);
+}
+
+.cargar-expensa__title {
+	margin: 0 0 8px 0;
+	font-size: 22px;
+	color: #2c2820;
+}
+
+.cargar-expensa__empty {
+	color: #8b8b8b;
+	background: #fff9f6;
+	padding: 12px;
+	border-radius: 8px;
+	border: 1px solid #fde3d2;
+}
+
+.cargar-expensa-form {
+	margin-top: 12px;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 12px;
+}
+
+.cargar-expensa-form label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 12px;
+	color: #6b6b6b;
+	font-weight: 700;
+}
+
+.cargar-expensa-form input,
+.cargar-expensa-form select {
+	height: 40px;
+	border: 1px solid #e8e0cf;
+	border-radius: 8px;
+	padding: 0 10px;
+	background: #fffdfa;
+}
+
+.cargar-expensa-form input[type="number"] {
+	width: 160px;
+}
+
+.cargar-expensa-form button[type="submit"] {
+	margin-top: 6px;
+	height: 42px;
+	padding: 0 18px;
+	border-radius: 10px;
+	background: linear-gradient(135deg, #2c2820 0%, #443d31 100%);
+	color: #fafaf7;
+	border: none;
+	cursor: pointer;
+}
+
+.cargar-expensa__existing {
+	margin-top: 20px;
+}
+
+.cargar-expensa__existing-item {
+	padding: 8px 0;
+	border-bottom: 1px solid #f3efe6;
+}
+

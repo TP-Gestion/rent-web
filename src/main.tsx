@@ -7,7 +7,7 @@ import { isAuthenticated } from "./auth";
 import AppLayout from "./layout/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import TenantsPage from "./pages/TenantsPage";
-import FinancesPage from "./pages/FinancesPage";
+import CargarExpensaPage from "./pages/CargarExpensaPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
 import PropiedadDetallePage from "./pages/propertyDetail";
@@ -66,7 +66,7 @@ const router = createBrowserRouter([
           },
           {
             path: "finances",
-            Component: FinancesPage,
+            Component: CargarExpensaPage,
           },
           {
             path: "maintenance",
