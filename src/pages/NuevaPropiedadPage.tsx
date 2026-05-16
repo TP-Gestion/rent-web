@@ -26,6 +26,7 @@ import {
   contractSchema as step4Schema,
 } from "../schemas/crearPropiedadSchema";
 import "./NuevaPropiedadPage.css";
+import { MAX_UPLOAD_BYTES, ALLOWED_CONTRACT_MIME } from "../config/fileLimits";
 
 const UNIT_TYPE_OPTIONS = [
   { value: "DEPARTAMENTO", label: "Departamento" },
@@ -512,6 +513,8 @@ export default function NuevaPropiedadPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>(1);
   const [data, setData] = useState<WizardData>(INITIAL_DATA);
+  const [contractFile, setContractFile] = useState<File | null>(null);
+  const [contractError, setContractError] = useState<string | null>(null);
   const [step1Error, setStep1Error] = useState<string | undefined>();
   const [step3Errors, setStep3Errors] = useState<
     Partial<
@@ -589,6 +592,8 @@ export default function NuevaPropiedadPage() {
       return;
     }
     setStep3Errors({});
+    if (contractError) return;
+
     altaPropiedad.mutate({
       buildingId: data.buildingId!,
       tenantId: data.tenantId,
@@ -598,6 +603,7 @@ export default function NuevaPropiedadPage() {
       unitType: data.unitType,
       contractAmount: Number(data.contractAmount),
       contractDueDate: data.contractDueDate,
+      contractFile: contractFile,
     });
   };
 
@@ -607,6 +613,27 @@ export default function NuevaPropiedadPage() {
     setStep1Error(undefined);
     setStep3Errors({});
     altaPropiedad.reset();
+  };
+
+  const handleContractFileChange = (f?: File) => {
+    setContractError(null);
+    if (!f) {
+      setContractFile(null);
+      return;
+    }
+    if (f.type !== ALLOWED_CONTRACT_MIME) {
+      setContractError("El contrato debe ser un archivo PDF");
+      setContractFile(null);
+      return;
+    }
+    if (f.size > MAX_UPLOAD_BYTES) {
+      setContractError(
+        `El archivo supera el límite de ${Math.round(MAX_UPLOAD_BYTES / (1024 * 1024))} MB`,
+      );
+      setContractFile(null);
+      return;
+    }
+    setContractFile(f);
   };
 
   if (altaPropiedad.isSuccess) {
@@ -802,6 +829,26 @@ export default function NuevaPropiedadPage() {
                     }
                     error={step3Errors.contractDueDate}
                   />
+                </div>
+                <div className="np-field">
+                  <label className="np-label">
+                    Contrato (archivo, opcional)
+                  </label>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) =>
+                      handleContractFileChange(e.target.files?.[0])
+                    }
+                  />
+                  {contractFile && (
+                    <p className="np-feedback">Archivo: {contractFile.name}</p>
+                  )}
+                  {contractError && (
+                    <p className="np-feedback np-feedback--error">
+                      {contractError}
+                    </p>
+                  )}
                 </div>
               </div>
 
