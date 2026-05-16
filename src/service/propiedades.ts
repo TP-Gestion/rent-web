@@ -47,6 +47,10 @@ export interface PropiedadDetalle {
   tipoUnidad: string;
   montoAlquiler: number;
   expensas: number;
+  activeContractId?: number | null;
+  hasContract?: boolean;
+  activeContractAmount?: number | null;
+  activeContractDueDate?: string | null;
 }
 
 interface PropertyDetailsApiData {
@@ -70,6 +74,7 @@ interface PropertyDetailsApiData {
     amount: number;
     dueDate: string;
     status: string;
+    hasContract: boolean;
   } | null;
 }
 
@@ -118,12 +123,46 @@ export async function getDetallePropiedad(
       montoTotal: p.totalDue,
       montoAlquiler: p.rentalContract?.amount ?? 0,
       expensas: p.totalDue - (p.rentalContract?.amount ?? 0),
+      activeContractId: d.activeContract?.id ?? null,
+      hasContract: d.activeContract?.hasContract ?? false,
+      activeContractAmount: d.activeContract?.amount ?? null,
+      activeContractDueDate: d.activeContract?.dueDate ?? null,
       nombreInquilino: d.tenant
         ? `${d.tenant.firstName} ${d.tenant.lastName}`
         : "",
     },
     errors: [],
   };
+}
+
+export async function downloadRentalContract(
+  idPropiedad: string,
+  contractId: string,
+): Promise<Blob> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return new Blob(["Contrato mock"], { type: "application/pdf" });
+  }
+  const response = await apiClient.get<Blob>(
+    `/properties/${idPropiedad}/rental-contract/${contractId}/file`,
+    { responseType: "blob" },
+  );
+  return response.data;
+}
+
+export async function downloadPaymentReceipt(
+  idPropiedad: string,
+  paymentId: string,
+): Promise<Blob> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return new Blob(["Recibo mock"], { type: "application/pdf" });
+  }
+  const response = await apiClient.get<Blob>(
+    `/properties/${idPropiedad}/payments/${paymentId}/receipt`,
+    { responseType: "blob" },
+  );
+  return response.data;
 }
 
 export type PropiedadListItem = PropiedadDetalle;
@@ -135,6 +174,34 @@ export async function getPropiedades(): Promise<PropiedadListItem[]> {
   }
   const { data } = await apiClient.get<PropiedadListItem[]>("/properties");
   return data;
+}
+
+export interface CreatePropertyV2Request {
+  buildingId: number;
+  floor: string;
+  area: number;
+  rooms: number;
+  unitType: string;
+}
+
+export interface CreatedPropertyV2 {
+  id: number;
+}
+
+let _mockPropertyNextId = 100;
+
+export async function createPropertyV2(
+  body: CreatePropertyV2Request,
+): Promise<ApiResponse<CreatedPropertyV2>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return { data: { id: _mockPropertyNextId++ }, errors: [] };
+  }
+  const { data } = await apiClient.post<{ data: CreatedPropertyV2 }>(
+    "/properties",
+    body,
+  );
+  return { data: data.data, errors: [] };
 }
 
 export interface PropertySummaryInquilino {
@@ -628,6 +695,7 @@ export interface Billing {
   status: BillingStatus;
   amount: number;
   dueDate: string;
+  contract?: File;
   paymentDate?: string;
 }
 
@@ -648,6 +716,7 @@ export interface RegisterPaymentRequest {
   reference?: string;
   notes?: string;
   selectedPeriods: string[];
+  receipt?: File;
 }
 
 export interface RegisterPaymentResponse {
@@ -1151,9 +1220,22 @@ export async function registerPayment(
     await mockDelay();
     return { data: { id: `pago-${Date.now()}` }, errors: [] };
   }
+  const b = body as RegisterPaymentRequest;
+  const fd = new FormData();
+  fd.append("amount", String(b.amount));
+  fd.append("paymentMethod", String(b.paymentMethod));
+  fd.append("paymentDate", b.paymentDate);
+  if (b.reference) fd.append("reference", b.reference);
+  if (b.notes) fd.append("notes", b.notes);
+  if (Array.isArray(b.selectedPeriods)) {
+    for (const p of b.selectedPeriods) fd.append("selectedPeriods", p);
+  }
+  if (b.receipt) fd.append("receipt", b.receipt as Blob);
+
   const { data } = await apiClient.post<ApiResponse<RegisterPaymentResponse>>(
     `/properties/${idPropiedad}/payments`,
-    body,
+    fd,
+    { headers: { "Content-Type": "multipart/form-data" } },
   );
   return data;
 }
@@ -1253,6 +1335,19 @@ export interface CreateTenantRequest {
   phone: string;
 }
 
+export async function createTenant(
+  body: CreateTenantRequest,
+): Promise<ApiResponse<Tenant>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    const newTenant: Tenant = { id: _mockTenantNextId++, ...body };
+    MOCK_TENANTS.push(newTenant);
+    return { data: newTenant, errors: [] };
+  }
+  const { data } = await apiClient.post<{ data: Tenant }>("/tenants", body);
+  return { data: data.data, errors: [] };
+}
+
 const MOCK_TENANTS: Tenant[] = [
   {
     id: 1,
@@ -1322,48 +1417,23 @@ export async function getTenants(): Promise<Tenant[]> {
   return data.data;
 }
 
-export async function createTenant(
-  body: CreateTenantRequest,
-): Promise<ApiResponse<Tenant>> {
+export async function updateRentalContract(
+  contractId: number | string,
+  body: { amount: number; dueDate: string; contract?: File },
+): Promise<ApiResponse<void>> {
   if (USE_MOCK_BILLABLE_DATA) {
     await mockDelay();
-    const newTenant: Tenant = { id: _mockTenantNextId++, ...body };
-    MOCK_TENANTS.push(newTenant);
-    return { data: newTenant, errors: [] };
+    return { data: undefined as unknown as void, errors: [] };
   }
-  const { data } = await apiClient.post<BackendResponse<Tenant>>(
-    "/tenants",
-    body,
-  );
-  return { data: data.data, errors: [] };
-}
+  const fd = new FormData();
+  fd.append("amount", String(body.amount));
+  fd.append("dueDate", body.dueDate);
+  if (body.contract) fd.append("contract", body.contract as Blob);
 
-export interface CreatePropertyV2Request {
-  buildingId: number;
-  floor: string;
-  area: number;
-  rooms: number;
-  unitType: string;
-}
-
-export interface CreatedPropertyV2 {
-  id: number;
-}
-
-let _mockPropertyNextId = 100;
-
-export async function createPropertyV2(
-  body: CreatePropertyV2Request,
-): Promise<ApiResponse<CreatedPropertyV2>> {
-  if (USE_MOCK_BILLABLE_DATA) {
-    await mockDelay();
-    return { data: { id: _mockPropertyNextId++ }, errors: [] };
-  }
-  const { data } = await apiClient.post<{ data: CreatedPropertyV2 }>(
-    "/properties",
-    body,
-  );
-  return { data: data.data, errors: [] };
+  const res = await apiClient.put<void>(`/rental-contracts/${contractId}`, fd, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return wrapResponse(Promise.resolve({ data: res.data }));
 }
 
 export async function assignTenantToProperty(
@@ -1382,6 +1452,7 @@ export async function assignTenantToProperty(
 export interface CreateRentalContractRequest {
   amount: number;
   dueDate: string;
+  contract?: File;
 }
 
 export async function createRentalContract(
@@ -1392,7 +1463,16 @@ export async function createRentalContract(
     await mockDelay();
     return { data: undefined as unknown as void, errors: [] };
   }
-  return wrapResponse(
-    apiClient.post<void>(`/properties/${propertyId}/rental-contract`, body),
+  const fd = new FormData();
+  fd.append("amount", String(body.amount));
+  fd.append("dueDate", body.dueDate);
+
+  if (body.contract) fd.append("contract", body.contract as Blob);
+
+  const res = await apiClient.post<void>(
+    `/properties/${propertyId}/rental-contract`,
+    fd,
+    { headers: { "Content-Type": "multipart/form-data" } },
   );
+  return wrapResponse(Promise.resolve({ data: res.data }));
 }

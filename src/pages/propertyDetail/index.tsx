@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { usePropertyDetail } from "../../hooks/usePropertyDetail";
 import { useFacturas } from "../../hooks/useFacturas";
 import { useRegistrarPago } from "../../hooks/useRegistrarPago";
+import { usePagos } from "../../hooks/usePagos";
 import DetailHeader from "./DetailHeader";
 import DueDateBanner from "./DueDateBanner";
 import SummaryCard from "./SummaryCard";
@@ -89,6 +90,7 @@ export default function PropertyDetailPage() {
   const { data, isLoading, isError } = usePropertyDetail(idPropiedad);
   const { data: facturasData, isLoading: isLoadingFacturas } =
     useFacturas(idPropiedad);
+  const { data: pagosData, isLoading: isLoadingPagos } = usePagos(idPropiedad);
   const registrarPagoMutation = useRegistrarPago(idPropiedad);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -103,6 +105,7 @@ export default function PropertyDetailPage() {
 
   const detalle = data?.data;
   const facturas = facturasData?.data ?? [];
+  const pagos = pagosData?.data ?? [];
 
   if (isLoading) return <SkeletonView />;
   if (isError || !detalle) return <ErrorView onBack={() => navigate(-1)} />;
@@ -118,12 +121,24 @@ export default function PropertyDetailPage() {
       <div className="pd-grid">
         <div className="pd-left-col">
           <SummaryCard detalle={detalle} />
-          <PaymentHistory facturas={facturas} isLoading={isLoadingFacturas} />
+          <PaymentHistory
+            facturas={facturas}
+            isLoading={isLoadingFacturas}
+            pagos={pagos}
+            isLoadingPagos={isLoadingPagos}
+            propertyId={idPropiedad}
+          />
         </div>
         <div className="pd-right-col">
           <TenantCard detalle={detalle} />
           <SpecsCard detalle={detalle} />
-          <DocumentsCard />
+          <DocumentsCard
+            propertyId={idPropiedad}
+            activeContractId={detalle.activeContractId}
+            hasContract={detalle.hasContract}
+            activeContractAmount={detalle.activeContractAmount}
+            activeContractDueDate={detalle.activeContractDueDate}
+          />
         </div>
       </div>
       <RegisterPaymentModal
