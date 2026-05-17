@@ -82,7 +82,6 @@ export default function DocumentsCard({
         queryKey: ["propiedad-detalle", propertyId],
       });
       queryClient.invalidateQueries({ queryKey: ["propiedades"] });
-      alert("Contrato subido correctamente");
     } catch (err) {
       setUploadError("No se pudo subir el contrato. Intentá nuevamente.");
     } finally {
