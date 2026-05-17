@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import type {
-  Billing,
-  PaymentMethod,
-  RegisterPaymentRequest,
-} from "../../service/propiedades";
+import {
+  MAX_UPLOAD_BYTES,
+  ALLOWED_RECEIPT_MIMES,
+} from "../../config/fileLimits";
+import type { Billing, PaymentMethod } from "../../service/propiedades";
 import { formatCurrency } from "../../utils/propertyDetail";
 import {
   registrarPagoSchema,
   type RegisterPaymentFormErrors,
 } from "../../schemas/registrarPagoSchema";
+import type { RegisterPaymentRequest } from "../../service/propiedades";
 import MultiSelect from "../../components/ui/MultiSelect";
 
 interface Props {
@@ -56,6 +57,8 @@ export default function RegisterPaymentModal({
   const [referencia, setReferencia] = useState("");
   const [observaciones, setObservaciones] = useState("");
   const [errors, setErrors] = useState<RegisterPaymentFormErrors>({});
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptError, setReceiptError] = useState<string | null>(null);
 
   const montoTotal = facturas
     .filter((f) => selectedPeriods.includes(f.period))
@@ -91,6 +94,7 @@ export default function RegisterPaymentModal({
       : undefined;
 
   const handleSubmit = () => {
+    if (receiptError) return;
     const result = registrarPagoSchema.safeParse({
       periods: selectedPeriods,
       paymentDate: fechaPago,
@@ -125,18 +129,42 @@ export default function RegisterPaymentModal({
       reference: ref,
       notes: note,
     } = result.data!;
-    onSubmit({
+
+    const payload: RegisterPaymentRequest = {
       amount: montoTotal,
-      paymentMethod: method as PaymentMethod,
+      paymentMethod: method as any,
       paymentDate: fechaPago,
-      reference: ref || undefined,
-      notes: note || undefined,
+      reference: ref,
+      notes: note,
       selectedPeriods: periods,
-    });
+      receipt: receiptFile ?? undefined,
+    };
+    onSubmit(payload);
   };
 
   const noSelectableFact =
     facturas.filter((f) => f.status !== "PAID").length === 0;
+
+  const handleReceiptFileChange = (f?: File) => {
+    setReceiptError(null);
+    if (!f) {
+      setReceiptFile(null);
+      return;
+    }
+    if (!ALLOWED_RECEIPT_MIMES.includes(f.type)) {
+      setReceiptError("El comprobante debe ser un archivo PDF");
+      setReceiptFile(null);
+      return;
+    }
+    if (f.size > MAX_UPLOAD_BYTES) {
+      setReceiptError(
+        `El archivo supera el límite de ${Math.round(MAX_UPLOAD_BYTES / (1024 * 1024))} MB`,
+      );
+      setReceiptFile(null);
+      return;
+    }
+    setReceiptFile(f);
+  };
 
   return (
     <div className="pm-overlay" onClick={onClose}>
@@ -186,6 +214,23 @@ export default function RegisterPaymentModal({
             {errors.periods && (
               <p className="pm-field__error">{errors.periods}</p>
             )}
+          </div>
+
+          <div className="pm-section">
+            <div className="pm-section__label">Comprobante (opcional)</div>
+            <div className="pm-field">
+              <input
+                type="file"
+                accept="application/pdf,image/*"
+                onChange={(e) => handleReceiptFileChange(e.target.files?.[0])}
+              />
+              {receiptFile && (
+                <p className="pm-feedback">Archivo: {receiptFile.name}</p>
+              )}
+              {receiptError && (
+                <p className="pm-field__error">{receiptError}</p>
+              )}
+            </div>
           </div>
 
           <div className="pm-section">

@@ -14,7 +14,8 @@ export function useRegistrarPago(idPropiedad: string) {
     Error,
     RegisterPaymentRequest
   >({
-    mutationFn: (body) => registerPayment(idPropiedad, body),
+    mutationFn: (body: RegisterPaymentRequest) =>
+      registerPayment(idPropiedad, body),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["propiedad-detalle", idPropiedad],

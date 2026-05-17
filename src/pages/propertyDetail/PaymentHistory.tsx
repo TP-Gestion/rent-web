@@ -1,13 +1,18 @@
 import { useState } from "react";
-import type { Billing } from "../../service/propiedades";
+import type { Billing, PaymentRecord } from "../../service/propiedades";
 import { formatCurrency, formatDate } from "../../utils/propertyDetail";
 import DataTablePagination from "../../components/tenants/dataTable/DataTablePagination";
+import "./PaymentHistory.css";
+import PaymentDetailModal from "./PaymentDetailModal";
 
 const PAGE_SIZE = 8;
 
 interface Props {
   facturas: Billing[];
   isLoading?: boolean;
+  pagos?: PaymentRecord[];
+  isLoadingPagos?: boolean;
+  propertyId?: string;
 }
 
 const ESTADO_LABEL: Record<string, string> = {
@@ -32,7 +37,14 @@ function EmptyPaymentHistory() {
   );
 }
 
-export default function PaymentHistory({ facturas, isLoading }: Props) {
+export default function PaymentHistory({
+  facturas,
+  isLoading,
+  pagos = [],
+  isLoadingPagos = false,
+  propertyId,
+}: Props) {
+  const [modalBilling, setModalBilling] = useState<Billing | null>(null);
   const [page, setPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil(facturas.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -44,6 +56,7 @@ export default function PaymentHistory({ facturas, isLoading }: Props) {
   return (
     <div className="pd-card">
       <h2 className="pd-card__title">Historial de Pagos</h2>
+
       {isLoading ? (
         <div className="pd-empty">
           <p className="pd-empty__sub">Cargando...</p>
@@ -60,12 +73,13 @@ export default function PaymentHistory({ facturas, isLoading }: Props) {
                 <th>Fecha de pago</th>
                 <th>Monto</th>
                 <th>Estado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {paged.map((f) => (
                 <tr key={f.id}>
-                  <td style={{ fontWeight: 600 }}>{f.period}</td>
+                  <td className="ph-period">{f.period}</td>
                   <td>{formatDate(f.dueDate)}</td>
                   <td>
                     {f.paymentDate ? (
@@ -74,9 +88,7 @@ export default function PaymentHistory({ facturas, isLoading }: Props) {
                       <span style={{ color: "#b8a882" }}>—</span>
                     )}
                   </td>
-                  <td style={{ fontWeight: 600 }}>
-                    {formatCurrency(f.amount)}
-                  </td>
+                  <td className="ph-amount">{formatCurrency(f.amount)}</td>
                   <td>
                     <span
                       className={`pd-pay-status ${ESTADO_CSS[f.status] ?? ""}`}
@@ -84,10 +96,20 @@ export default function PaymentHistory({ facturas, isLoading }: Props) {
                       {ESTADO_LABEL[f.status] ?? f.status}
                     </span>
                   </td>
+                  <td>
+                    <button
+                      className="tenant-row__detail-btn"
+                      type="button"
+                      onClick={() => setModalBilling(f)}
+                    >
+                      VER DETALLE
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
           {totalPages > 1 && (
             <DataTablePagination
               currentPage={currentPage}
@@ -98,6 +120,16 @@ export default function PaymentHistory({ facturas, isLoading }: Props) {
             />
           )}
         </>
+      )}
+
+      {modalBilling && (
+        <PaymentDetailModal
+          billing={modalBilling}
+          pagos={pagos}
+          isLoadingPagos={isLoadingPagos}
+          propertyId={propertyId}
+          onClose={() => setModalBilling(null)}
+        />
       )}
     </div>
   );

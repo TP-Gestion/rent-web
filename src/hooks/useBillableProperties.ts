@@ -11,7 +11,10 @@ function normalizeItem(api: ApiBillableItem): BillingItem {
     propiedad: `${api.building} ${api.unit}`,
     edificio: api.building,
     unidad: api.unit,
-    inquilino: `${api.tenant.firstName} ${api.tenant.lastName}`,
+    inquilino:
+      api.tenant.firstName && api.tenant.lastName
+        ? `${api.tenant.firstName} ${api.tenant.lastName}`
+        : "",
     correo: api.tenant.email,
     telefono: api.tenant.phone,
     direccion: api.address,

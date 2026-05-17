@@ -15,6 +15,7 @@ export interface AltaPropiedadInput {
   unitType: string;
   contractAmount: number;
   contractDueDate: string;
+  contractFile?: File | null;
 }
 
 function extractApiError(err: unknown): Error {
@@ -54,6 +55,7 @@ export function useAltaPropiedad() {
         await createRentalContract(propertyId, {
           amount: input.contractAmount,
           dueDate: input.contractDueDate,
+          contract: input.contractFile ?? undefined,
         });
 
         return propertyId;
