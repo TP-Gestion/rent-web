@@ -1,9 +1,6 @@
 import { useNavigate } from "react-router";
-import {
-    formatDueDate,
-    getDueStatusLabel,
-    useDashboard,
-} from "../hooks/useDashboard.ts";
+import { useDashboard } from "../hooks/useDashboard.ts";
+import { formatDueDate as formatDashboardDueDate, getDueStatusLabel as getDashboardDueStatusLabel } from "../utils/dashboardUtils";
 import { PERIOD, formatArs } from "../utils/billingHelpers";
 import StatCard from "../components/dashboard/StatCard";
 import "./DashboardPage.css";
@@ -12,7 +9,6 @@ type DashboardActionProps = {
     label: string;
     description: string;
     onClick: () => void;
-    primary?: boolean;
 };
 
 function DashboardAction({ label, description, onClick}: DashboardActionProps) {
@@ -34,16 +30,14 @@ export default function DashboardPage() {
         isLoading,
         hasError,
         overview,
+        openFollowUps,
         buildingBreakdown,
-        followUpBillings,
+        dueSoonBillings,
         overdueBillings,
         buildings,
         tenants,
         payments,
     } = useDashboard();
-
-    const openFollowUps = overview.pendingProperties + overview.overdueProperties;
-    const dueSoonBillings = followUpBillings.filter((item) => (item.daysLeft ?? 0) <= 7);
 
     const actionCards = [
         {
@@ -170,12 +164,12 @@ export default function DashboardPage() {
                                             <div className="dashboard-due-item__main">
                                                 <strong>{item.propiedad}</strong>
                                                 <span>
-                                                    {item.inquilino || "Unidad sin asignar"} · {formatDueDate(item.fechaVencimiento)}
+                                                    {item.inquilino || "Unidad sin asignar"} · {formatDashboardDueDate(item.fechaVencimiento)}
                                                 </span>
                                             </div>
                                             <div className="dashboard-due-item__side">
                                                 <span className={`dashboard-status dashboard-status--${item.tone}`}>
-                                                    {getDueStatusLabel(item.daysLeft)}
+                                                    {getDashboardDueStatusLabel(item.daysLeft)}
                                                 </span>
                                                 <strong>{formatArs(item.montoACobrar)}</strong>
                                             </div>
@@ -199,12 +193,12 @@ export default function DashboardPage() {
                                             <div className="dashboard-due-item__main">
                                                 <strong>{item.propiedad}</strong>
                                                 <span>
-                                                    {item.inquilino || "Unidad sin asignar"} · {formatDueDate(item.fechaVencimiento)}
+                                                    {item.inquilino || "Unidad sin asignar"} · {formatDashboardDueDate(item.fechaVencimiento)}
                                                 </span>
                                             </div>
                                             <div className="dashboard-due-item__side">
                                                 <span className={`dashboard-status dashboard-status--${item.tone}`}>
-                                                    {getDueStatusLabel(item.daysLeft)}
+                                                    {getDashboardDueStatusLabel(item.daysLeft)}
                                                 </span>
                                                 <strong>{formatArs(item.montoACobrar)}</strong>
                                             </div>
