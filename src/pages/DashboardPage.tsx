@@ -1,223 +1,285 @@
-import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import {
-  DashboardHero,
-  StatCardLarge,
-  UpcomingDueCardGrouped,
-  RecentActivityCard,
-  RisksCard,
-  type UpcomingDueItem,
-} from "../components/dashboard";
-import { usePropiedades } from "../hooks/usePropiedades";
-import {
-  EXPENSAS_PERIOD_LABEL,
-  getBatchActionsData,
-  getMorosityData,
-} from "../propiedadService";
-import type { PropiedadListItem } from "../service/propiedades";
+    formatDueDate,
+    getDueStatusLabel,
+    useDashboard,
+} from "../hooks/useDashboard.ts";
+import { PERIOD, formatArs } from "../utils/billingHelpers";
+import StatCard from "../components/dashboard/StatCard";
 import "./DashboardPage.css";
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+type DashboardActionProps = {
+    label: string;
+    description: string;
+    onClick: () => void;
+    primary?: boolean;
+};
 
-function getDaysToDue(dateValue: string | null): number | null {
-  if (!dateValue) return null;
-
-  // Parse date in YYYY-MM-DD format as local date, not UTC
-  const [year, month, day] = dateValue.split('-').map(Number);
-  if (!year || !month || !day) return null;
-
-  const dueDate = new Date(year, month - 1, day);
-  const today = new Date();
-  
-  today.setHours(0, 0, 0, 0);
-  dueDate.setHours(0, 0, 0, 0);
-
-  const dayMs = 1000 * 60 * 60 * 24;
-  return Math.round((dueDate.getTime() - today.getTime()) / dayMs);
-}
-
-function buildDueLabel(daysToDue: number | null): string {
-  if (daysToDue == null) return "Sin fecha";
-  if (daysToDue < 0) return `Vencido hace ${Math.abs(daysToDue)} día(s)`;
-  if (daysToDue === 0) return "Vence hoy";
-  return `Vence en ${daysToDue} día(s)`;
-}
-
-function resolveAmount(item: PropiedadListItem): number {
-  if (Number.isFinite(item.montoTotal) && item.montoTotal > 0)
-    return item.montoTotal;
-  return (item.montoAlquiler || 0) + (item.expensas || 0);
+function DashboardAction({ label, description, onClick}: DashboardActionProps) {
+    return (
+        <button
+            type="button"
+            className="dashboard-action"
+            onClick={onClick}
+        >
+            <span className="dashboard-action__label">{label}</span>
+            <span className="dashboard-action__description">{description}</span>
+        </button>
+    );
 }
 
 export default function DashboardPage() {
-  const navigate = useNavigate();
-  const { data: propiedades = [], isLoading, isError } = usePropiedades();
+    const navigate = useNavigate();
+    const {
+        isLoading,
+        hasError,
+        overview,
+        buildingBreakdown,
+        followUpBillings,
+        overdueBillings,
+        buildings,
+        tenants,
+        payments,
+    } = useDashboard();
 
-  const morosityData = getMorosityData();
-  const batchActionsData = getBatchActionsData();
+    const openFollowUps = overview.pendingProperties + overview.overdueProperties;
+    const dueSoonBillings = followUpBillings.filter((item) => (item.daysLeft ?? 0) <= 7);
 
-  const metrics = useMemo(() => {
-    const totalUnits = propiedades.length;
-    const occupied = propiedades.filter(
-      (p) => p.estadoOcupacion === "OCCUPIED",
-    ).length;
-    const available = totalUnits - occupied;
-    const overdue = propiedades.filter(
-      (p) => p.estadoPago === "OVERDUE",
-    ).length;
-    const pending = propiedades.filter(
-      (p) => p.estadoPago === "PENDING",
-    ).length;
+    const actionCards = [
+        {
+            label: "Generar liquidación",
+            description: "Armá el lote mensual de expensas",
+            onClick: () => navigate("/generar-liquidacion"),
+        },
+        {
+            label: "Cargar expensa",
+            description: "Registrá gastos operativos",
+            onClick: () => navigate("/finances"),
+        },
+        {
+            label: "Nueva propiedad",
+            description: "Sumá una unidad a la cartera",
+            onClick: () => navigate("/nueva-propiedad"),
+        },
+        {
+            label: "Ver inquilinos",
+            description: "Revisá ocupación y contactos",
+            onClick: () => navigate("/tenants"),
+        },
+    ];
 
-    const billedAmount = propiedades.reduce(
-      (sum, item) => sum + resolveAmount(item),
-      0,
-    );
-    const collectedAmount = propiedades
-      .filter((p) => p.estadoPago === "PAID")
-      .reduce((sum, item) => sum + resolveAmount(item), 0);
-    const pendingAmount = propiedades
-      .filter((p) => p.estadoPago === "PENDING")
-      .reduce((sum, item) => sum + resolveAmount(item), 0);
-    const overdueAmount = propiedades
-      .filter((p) => p.estadoPago === "OVERDUE")
-      .reduce((sum, item) => sum + resolveAmount(item), 0);
-    const occupancyRate =
-      totalUnits > 0 ? Math.round((occupied / totalUnits) * 100) : 0;
+    return (
+        <div className="dashboard-page">
 
-    return {
-      totalUnits,
-      occupied,
-      available,
-      overdue,
-      pending,
-      billedAmount,
-      collectedAmount,
-      pendingAmount,
-      overdueAmount,
-      occupancyRate,
-    };
-  }, [propiedades]);
+            <section className="dashboard-hero" aria-labelledby="dashboard-title">
+                <div className="dashboard-hero__content">
+                    <div className="dashboard-hero__eyebrow">Panel principal</div>
+                    <h1 id="dashboard-title" className="dashboard-hero__title">
+                        Operación inmobiliaria en una sola vista
+                    </h1>
+                    <p className="dashboard-hero__copy">
+                        Seguimiento de propiedades, edificios, inquilinos y cobros del período activo.
+                    </p>
+                    <div className="dashboard-hero__meta" aria-label="Contexto del tablero">
+                        <span className="dashboard-hero__meta-pill">Período activo: {PERIOD}</span>
+                    </div>
+                </div>
 
-  const upcomingDueItems = useMemo<UpcomingDueItem[]>(() => {
-    return propiedades
-      .map((item) => ({
-        id: item.id,
-        building: item.edificio,
-        floor: item.piso,
-        tenant: item.nombreInquilino,
-        status: item.estadoPago,
-        daysToDue: getDaysToDue(item.fechaVencimiento),
-      }))
-      .filter((item) => item.daysToDue !== null && item.daysToDue >= -7 && item.daysToDue <= 7)
-      .sort((a, b) => (a.daysToDue ?? 0) - (b.daysToDue ?? 0))
-      .slice(0, 10);
-  }, [propiedades]);
+                <aside className="dashboard-hero__panel">
+                    <StatCard
+                        label="Cobrado"
+                        value={formatArs(payments.totalPaidAmount ?? 0)}
+                        subtitle={`${payments.paidCount} pagos registrados`}
+                        variant="success"
+                    />
+                    <StatCard
+                        label="Pendientes"
+                        value={formatArs(payments.totalPendingAmount ?? 0)}
+                        subtitle={`${payments.pendingCount} unidades`}
+                        variant="warning"
+                    />
+                    <StatCard
+                        label="Atrasadas"
+                        value={formatArs(payments.totalOverdueAmount ?? 0)}
+                        subtitle={`${payments.overdueCount} unidades`}
+                        variant="danger"
+                    />
+                </aside>
+            </section>
 
-  return (
-    <div className="dashboard-page">
-      <DashboardHero periodLabel={EXPENSAS_PERIOD_LABEL} />
+            <section className="dashboard-metrics" aria-label="Resumen operativo">
+                <StatCard
+                    label="Propiedades"
+                    value={String(overview.totalProperties)}
+                    subtitle={`${overview.occupiedProperties} ocupadas / ${overview.availableProperties} disponibles`}
+                    variant="success"
+                />
+                <StatCard
+                    label="Ocupación"
+                    value={`${overview.occupancyRate}%`}
+                    subtitle={`${overview.occupiedProperties} unidades activas`}
+                    variant="default"
+                />
+                <StatCard
+                    label="Seguimiento abierto"
+                    value={String(openFollowUps)}
+                    subtitle={`${overview.pendingProperties} pendientes / ${overview.overdueProperties} vencidas`}
+                    variant="warning"
+                />
+                <StatCard
+                    label="Deuda abierta"
+                    value={formatArs(overview.totalDebt)}
+                    subtitle={`${overview.overdueProperties} unidades en mora`}
+                    variant="danger"
+                />
+            </section>
 
-      {isError && (
-        <div className="dashboard-page__feedback dashboard-page__feedback--error">
-          No se pudieron cargar los datos para el dashboard.
+            {hasError && (
+                <div className="dashboard-banner dashboard-banner--error">
+                    No se pudieron cargar todos los datos del panel. Reintentá desde la navegación o recargá la pantalla.
+                </div>
+            )}
+
+            {isLoading && (
+                <div className="dashboard-banner">Cargando métricas del dashboard...</div>
+            )}
+
+            <section className="dashboard-grid">
+                <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                <article className="dashboard-card dashboard-card--followup dashboard-card--wide">
+                    <div className="dashboard-card__header">
+                        <div>
+                            <div className="dashboard-card__eyebrow">Cobros que requieren seguimiento</div>
+                            <h2 className="dashboard-card__title">Próximos vencimientos y mora</h2>
+                        </div>
+                        <span className="dashboard-card__badge">{dueSoonBillings.length + overdueBillings.length} en vista</span>
+                    </div>
+
+                    <div className="dashboard-followup-grid">
+                        <section className="dashboard-followup-group" aria-label="Próximos siete días">
+                            <div className="dashboard-followup__header">
+                                <h3 className="dashboard-followup__title">Próximos 7 días</h3>
+                                <span className="dashboard-followup__count">{dueSoonBillings.length}</span>
+                            </div>
+                            <div className="dashboard-due-list">
+                                {dueSoonBillings.length === 0 ? (
+                                    <div className="dashboard-empty-state">No hay cobros por vencer en los próximos 7 días.</div>
+                                ) : (
+                                    dueSoonBillings.map((item) => (
+                                        <div className="dashboard-due-item" key={item.id}>
+                                            <div className="dashboard-due-item__main">
+                                                <strong>{item.propiedad}</strong>
+                                                <span>
+                                                    {item.inquilino || "Unidad sin asignar"} · {formatDueDate(item.fechaVencimiento)}
+                                                </span>
+                                            </div>
+                                            <div className="dashboard-due-item__side">
+                                                <span className={`dashboard-status dashboard-status--${item.tone}`}>
+                                                    {getDueStatusLabel(item.daysLeft)}
+                                                </span>
+                                                <strong>{formatArs(item.montoACobrar)}</strong>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </section>
+
+                        <section className="dashboard-followup-group" aria-label="Vencimientos atrasados">
+                            <div className="dashboard-followup__header">
+                                <h3 className="dashboard-followup__title">Vencidos</h3>
+                                <span className="dashboard-followup__count">{overdueBillings.length}</span>
+                            </div>
+                            <div className="dashboard-due-list">
+                                {overdueBillings.length === 0 ? (
+                                    <div className="dashboard-empty-state">No hay cobros vencidos para seguir.</div>
+                                ) : (
+                                    overdueBillings.map((item) => (
+                                        <div className="dashboard-due-item" key={item.id}>
+                                            <div className="dashboard-due-item__main">
+                                                <strong>{item.propiedad}</strong>
+                                                <span>
+                                                    {item.inquilino || "Unidad sin asignar"} · {formatDueDate(item.fechaVencimiento)}
+                                                </span>
+                                            </div>
+                                            <div className="dashboard-due-item__side">
+                                                <span className={`dashboard-status dashboard-status--${item.tone}`}>
+                                                    {getDueStatusLabel(item.daysLeft)}
+                                                </span>
+                                                <strong>{formatArs(item.montoACobrar)}</strong>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </section>
+                    </div>
+
+                    <div className="dashboard-card__note">Solo se muestran cobranzas con vencimiento cargado y estado pendiente o atrasado.</div>
+
+                </article>
+
+                <article className="dashboard-card dashboard-card--buildings">
+                    <div className="dashboard-card__header">
+                        <div>
+                           <div className="dashboard-card__eyebrow">Propiedades</div>
+                            <h2 className="dashboard-card__title">Concentración de unidades</h2>
+                        </div>
+                    </div>
+
+                    <div className="dashboard-building-list">
+                        {buildingBreakdown.map((building) => (
+                        <div className="dashboard-building" key={building.id}>
+                            <div className="dashboard-building__main">
+                                <strong>{building.name}</strong>
+                                <span>{building.address}</span>
+                            </div>
+                                <div className="dashboard-building__count">
+                                    <strong>{building.units}</strong>
+                                    <span>unidades</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </article>
+                </div>
+                <aside className="dashboard-card">
+                    <div className="dashboard-card__header">
+                        <div>
+                            <div className="dashboard-card__eyebrow">Acciones rápidas</div>
+                            <h2 className="dashboard-card__title">Atajos operativos</h2>
+                        </div>
+                    </div>
+
+                    <div className="dashboard-actions-stack">
+                        {actionCards.map((action) => (
+                            <DashboardAction key={action.label} {...action} />
+                        ))}
+                    </div>
+
+                    <div className="dashboard-card__divider" />
+
+                    <div className="dashboard-card__header dashboard-card__header--compact">
+                        <div>
+                            <div className="dashboard-card__eyebrow">Universo de trabajo</div>
+                            <h2 className="dashboard-card__title">Edificios y tenencia</h2>
+                        </div>
+                    </div>
+
+                    <div className="dashboard-universe">
+                        <div className="dashboard-universe__item">
+                            <span className="dashboard-universe__value">{buildings.length}</span>
+                            <span className="dashboard-universe__label">edificios activos</span>
+                        </div>
+                        <div className="dashboard-universe__item">
+                            <span className="dashboard-universe__value">{tenants.length}</span>
+                            <span className="dashboard-universe__label">inquilinos cargados</span>
+                        </div>
+                    </div>
+                </aside>
+
+
+            </section>
         </div>
-      )}
-
-      {isLoading && (
-        <div className="dashboard-page__feedback">Cargando métricas...</div>
-      )}
-
-      {!isLoading && !isError && (
-        <>
-          {/* PRIMARY KPIs - 3 COLUMNAS COMPACTAS */}
-          <section className="dashboard-page__kpi-section">
-            <StatCardLarge
-              label="Ocupación"
-              value={`${metrics.occupancyRate}%`}
-              badge={`${metrics.occupied}/${metrics.totalUnits}`}
-              progressValue={metrics.occupancyRate}
-              indicator={metrics.occupancyRate >= 80 ? "up" : metrics.occupancyRate >= 50 ? "neutral" : "down"}
-              indicatorLabel={metrics.occupancyRate >= 80 ? "Saludable" : metrics.occupancyRate >= 50 ? "Normal" : "Bajo"}
-              variant="success"
-            />
-            <StatCardLarge
-              label="Cobrado"
-              value={formatCurrency(metrics.collectedAmount)}
-              badge="Último período"
-              indicator={metrics.collectedAmount >= metrics.billedAmount * 0.8 ? "up" : "neutral"}
-              indicatorLabel={metrics.collectedAmount >= metrics.billedAmount * 0.8 ? "En línea" : "Por debajo"}
-              variant="success"
-            />
-            <StatCardLarge
-              label="⚠️ Vencido"
-              value={formatCurrency(metrics.overdueAmount)}
-              badge={`${metrics.overdue} unidades`}
-              indicator={metrics.overdue > 0 ? "down" : "neutral"}
-              indicatorLabel={metrics.overdue > 0 ? "Requiere atención" : "Sin vencidos"}
-              variant={metrics.overdue > 0 ? "warning" : "success"}
-            />
-          </section>
-
-          {/* SECONDARY METRICS - COMPACT & DISCRETE */}
-          <section className="dashboard-page__secondary-metrics-compact">
-            <div className="dashboard-page__secondary-card-compact">
-              <div className="dashboard-page__secondary-label-compact">Unidades</div>
-              <div className="dashboard-page__secondary-value-compact">{metrics.totalUnits}</div>
-              <div className="dashboard-page__secondary-badge-compact">{metrics.occupied} ocupadas</div>
-            </div>
-            <div className="dashboard-page__secondary-card-compact">
-              <div className="dashboard-page__secondary-label-compact">Facturación Esperada</div>
-              <div className="dashboard-page__secondary-value-compact">{formatCurrency(metrics.billedAmount)}</div>
-              <div className="dashboard-page__secondary-badge-compact">{EXPENSAS_PERIOD_LABEL}</div>
-            </div>
-            <div className="dashboard-page__secondary-card-compact">
-              <div className="dashboard-page__secondary-label-compact">Pendiente de Cobro</div>
-              <div className="dashboard-page__secondary-value-compact">{formatCurrency(metrics.pendingAmount)}</div>
-              <div className="dashboard-page__secondary-badge-compact">{metrics.pending} unidades</div>
-            </div>
-            <div className="dashboard-page__secondary-card-compact">
-              <div className="dashboard-page__secondary-label-compact">Morosidad</div>
-              <div className="dashboard-page__secondary-value-compact">{getMorosityData().percentage}%</div>
-              <div className="dashboard-page__secondary-badge-compact">{getMorosityData().trendLabel}</div>
-            </div>
-          </section>
-
-          <section className="dashboard-page__upcoming-section">
-            <UpcomingDueCardGrouped
-              items={upcomingDueItems}
-              onSeeAll={() => navigate("/tenants")}
-              onOpenProperty={(propertyId) =>
-                navigate(`/propiedades/${propertyId}`)
-              }
-              getDueLabel={buildDueLabel}
-            />
-          </section>
-
-          {/* ALERTS & ACTIVITY - 2 Columns */}
-          <section className="dashboard-page__bottom-grid">
-            <RisksCard
-              morosityPercentage={morosityData.percentage}
-              morosityTrendLabel={morosityData.trendLabel}
-              overdueUnits={metrics.overdue}
-              pendingBatchActions={batchActionsData.pendingCount}
-              lastSyncLabel={batchActionsData.lastSyncLabel}
-            />
-
-            <RecentActivityCard
-              periodLabel={EXPENSAS_PERIOD_LABEL}
-              lastSyncLabel={batchActionsData.lastSyncLabel}
-              pendingUnits={metrics.pending}
-            />
-          </section>
-        </>
-      )}
-    </div>
-  );
+    );
 }
