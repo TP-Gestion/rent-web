@@ -55,7 +55,6 @@ export default function CargarExpensaPage() {
       }
       await addExpensa(payload, selectedBuildingId)
       setMessage('Expensa cargada correctamente')
-      // reset form for extraordinary only
       if (type === 'EXTRAORDINARIA') {
         setConcept('')
         setAmount('')
