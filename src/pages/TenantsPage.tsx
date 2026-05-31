@@ -113,13 +113,10 @@ export default function TenantsPage() {
         <div className="expensas-page__header-actions">
           <HeaderButton
             label="Nueva propiedad"
+            primary
             onClick={() => navigate("/nueva-propiedad")}
           />
-          <HeaderButton
-            label="Generar liquidación"
-            primary
-            onClick={handleGenerarLiquidacion}
-          />
+          <HeaderButton label="Generar liquidación" onClick={handleGenerarLiquidacion} />
           <HeaderButton label="Extraer reporte" onClick={handleExportar} />
           <HeaderButton
             label="Enviar recordatorios"

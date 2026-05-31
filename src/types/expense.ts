@@ -10,6 +10,13 @@ export interface CreateExpenseRequest {
   amount: number
 }
 
+export interface UpdateExpenseRequest {
+  type?: ExpenseType
+  category?: string
+  concept?: string
+  amount?: number
+}
+
 export interface ExpenseItem {
   id: number
   buildingName: string
