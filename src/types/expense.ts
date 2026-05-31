@@ -10,11 +10,9 @@ export interface CreateExpenseRequest {
   amount: number
 }
 
+// PATCH
 export interface UpdateExpenseRequest {
-  type?: ExpenseType
-  category?: string
-  concept?: string
-  amount?: number
+  amount: number
 }
 
 export interface ExpenseItem {
