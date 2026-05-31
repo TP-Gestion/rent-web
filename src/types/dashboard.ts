@@ -27,6 +27,7 @@ export type DashboardPaymentsSummary = {
 	paidCount: number;
 	pendingCount: number;
 	overdueCount: number;
+	morosityRate: number;
 };
 
 export type UpcomingBillingItem = BillingItem & {

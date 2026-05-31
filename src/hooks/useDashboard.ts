@@ -11,6 +11,13 @@ import { useBuildings } from "./useBuildings";
 import { usePropertiesSummary } from "./usePropertiesSummary";
 import { useTenants } from "./useTenants";
 
+function isOverdueBilling(
+	item: { estadoAnterior: string; fechaVencimiento: string | null | undefined },
+) {
+	const daysLeft = getDaysUntil(item.fechaVencimiento);
+	return item.estadoAnterior !== "PAID" && daysLeft !== null && daysLeft < 0;
+}
+
 export function useDashboard() {
 	const propertiesQuery = usePropertiesSummary();
 	const billableQuery = useBillableProperties();
@@ -46,10 +53,13 @@ export function useDashboard() {
 		const overdueProperties = properties.filter(
 			(property) => property.estadoPago === "OVERDUE",
 		).length;
-		const totalDebt = billableItems.reduce(
-			(sum, item) => sum + (item.deudaAmount ?? 0),
-			0,
-		);
+		const totalDebt = billableItems.reduce((sum, item) => {
+			if (!isOverdueBilling(item)) {
+				return sum;
+			}
+
+			return sum + (item.montoACobrar ?? 0);
+		}, 0);
 
 		return {
 			totalProperties,
@@ -129,25 +139,30 @@ export function useDashboard() {
 					tone: getStatusTone(daysLeft),
 				};
 			})
-			.filter((item) => item.estadoAnterior !== "PAID" && item.daysLeft !== null && item.daysLeft < 0)
+			.filter((item) => isOverdueBilling(item))
 			.sort((left, right) => (left.daysLeft ?? 0) - (right.daysLeft ?? 0))
 			.slice(0, 5);
 	}, [billableItems]);
 
 	const payments = useMemo<DashboardPaymentsSummary>(() => {
-		const paid = properties.filter((property) => property.estadoPago === "PAID");
-		const pending = properties.filter((property) => property.estadoPago === "PENDING");
-		const overdue = properties.filter((property) => property.estadoPago === "OVERDUE");
+		const paid = billableItems.filter((item) => item.estadoAnterior === "PAID");
+		const pending = billableItems.filter((item) => item.estadoAnterior === "PENDING");
+		const overdue = overdueBillings;
+		const morosityRate =
+			overview.occupiedProperties > 0
+				? Math.round((overdue.length / overview.occupiedProperties) * 100)
+				: 0;
 
 		return {
-			totalPaidAmount: paid.reduce((sum, property) => sum + (property.montoTotal ?? 0), 0),
-			totalPendingAmount: pending.reduce((sum, property) => sum + (property.montoTotal ?? 0), 0),
-			totalOverdueAmount: overdue.reduce((sum, property) => sum + (property.montoTotal ?? 0), 0),
+			totalPaidAmount: paid.reduce((sum, item) => sum + (item.montoACobrar ?? 0), 0),
+			totalPendingAmount: pending.reduce((sum, item) => sum + (item.montoACobrar ?? 0), 0),
+			totalOverdueAmount: overdue.reduce((sum, item) => sum + (item.montoACobrar ?? 0), 0),
 			paidCount: paid.length,
 			pendingCount: pending.length,
 			overdueCount: overdue.length,
+			morosityRate,
 		};
-	}, [properties]);
+	}, [billableItems, overdueBillings, overview.occupiedProperties]);
 
 	const openFollowUps = overview.pendingProperties + overview.overdueProperties;
 

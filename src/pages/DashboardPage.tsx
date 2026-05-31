@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useDashboard } from "../hooks/useDashboard.ts";
 import { formatDueDate as formatDashboardDueDate, getDueStatusLabel as getDashboardDueStatusLabel } from "../utils/dashboardUtils";
@@ -58,7 +59,6 @@ export default function DashboardPage() {
         isLoading,
         hasError,
         overview,
-        openFollowUps,
         buildingBreakdown,
         dueSoonBillings,
         overdueBillings,
@@ -67,11 +67,27 @@ export default function DashboardPage() {
         payments,
     } = useDashboard();
 
+    const buildingsWithAlert = useMemo(() => {
+        const buildings = new Set<string>();
+
+        [...dueSoonBillings, ...overdueBillings].forEach((item) => {
+            if (item.edificio) {
+                buildings.add(item.edificio);
+            }
+        });
+
+        return buildings.size;
+    }, [dueSoonBillings, overdueBillings]);
+
+    const dueSoonAmount = useMemo(() => {
+        return dueSoonBillings.reduce((sum, item) => sum + (item.montoACobrar ?? 0), 0);
+    }, [dueSoonBillings]);
+
     const actionCards = [
         {
-            label: "Generar liquidación",
-            description: "Armá el lote mensual de expensas",
-            onClick: () => navigate("/generar-liquidacion"),
+            label: "Nueva propiedad",
+            description: "Sumá una unidad a la cartera",
+            onClick: () => navigate("/nueva-propiedad"),
         },
         {
             label: "Cargar expensa",
@@ -79,9 +95,9 @@ export default function DashboardPage() {
             onClick: () => navigate("/finances"),
         },
         {
-            label: "Nueva propiedad",
-            description: "Sumá una unidad a la cartera",
-            onClick: () => navigate("/nueva-propiedad"),
+            label: "Generar liquidación",
+            description: "Armá el lote mensual de expensas",
+            onClick: () => navigate("/generar-liquidacion"),
         },
         {
             label: "Ver inquilinos",
@@ -111,19 +127,19 @@ export default function DashboardPage() {
                     <StatCard
                         label="Cobrado"
                         value={formatArs(payments.totalPaidAmount ?? 0)}
-                        subtitle={`${payments.paidCount} pagos registrados`}
+                        subtitle={`${payments.paidCount} pagos registrados en el período activo`}
                         variant="success"
                     />
                     <StatCard
                         label="Pendientes"
-                        value={formatArs(payments.totalPendingAmount ?? 0)}
-                        subtitle={`${payments.pendingCount} unidades`}
+                        value={formatArs(dueSoonAmount)}
+                        subtitle={`${dueSoonBillings.length} vencimientos próximos a vencer`}
                         variant="warning"
                     />
                     <StatCard
-                        label="Atrasadas"
+                        label="Vencidos"
                         value={formatArs(payments.totalOverdueAmount ?? 0)}
-                        subtitle={`${payments.overdueCount} unidades`}
+                        subtitle={`${payments.overdueCount} unidades que requieren seguimiento urgente`}
                         variant="danger"
                     />
                 </aside>
@@ -133,25 +149,26 @@ export default function DashboardPage() {
                 <StatCard
                     label="Propiedades"
                     value={String(overview.totalProperties)}
-                    subtitle={`${overview.occupiedProperties} ocupadas / ${overview.availableProperties} disponibles`}
+                    subtitle={`${overview.occupiedProperties} ocupadas de ${overview.availableProperties} disponibles`}
                     variant="success"
                 />
                 <StatCard
                     label="Ocupación"
                     value={`${overview.occupancyRate}%`}
-                    subtitle={`${overview.occupiedProperties} unidades activas`}
+                    subtitle={`${overview.occupiedProperties} de ${overview.totalProperties} unidades ocupadas en total`}
                     variant="default"
+                />                
+                <StatCard
+                    label="Índice de morosidad"
+                    value={`${payments.morosityRate}%`}
+                    badge={`${payments.overdueCount} morosos`}
+                    subtitle={`${payments.overdueCount} clientes con deuda sobre ${overview.occupiedProperties} ocupadas`}
+                    variant="danger"
                 />
                 <StatCard
-                    label="Seguimiento abierto"
-                    value={String(openFollowUps)}
-                    subtitle={`${overview.pendingProperties} pendientes / ${overview.overdueProperties} vencidas`}
-                    variant="warning"
-                />
-                <StatCard
-                    label="Deuda abierta"
-                    value={formatArs(overview.totalDebt)}
-                    subtitle={`${overview.overdueProperties} unidades en mora`}
+                    label="Edificios con alerta"
+                    value={String(buildingsWithAlert)}
+                    subtitle={`${buildingsWithAlert} edificios con vencimientos próximos o atrasados`}
                     variant="danger"
                 />
             </section>
@@ -174,7 +191,6 @@ export default function DashboardPage() {
                             <div className="dashboard-card__eyebrow">Cobros que requieren seguimiento</div>
                             <h2 className="dashboard-card__title">Próximos vencimientos y mora</h2>
                         </div>
-                        <span className="dashboard-card__badge">{dueSoonBillings.length + overdueBillings.length} en vista</span>
                     </div>
 
                     <div className="dashboard-followup-grid">
@@ -250,7 +266,7 @@ export default function DashboardPage() {
                     </div>
 
                     <p className="dashboard-buildings-card__copy">
-                        Resumen corto de edificios, tenencia y ocupación general en un solo bloque.
+                        Revisión de edificios con mayor cantidad de unidades y su nivel de ocupación.
                     </p>
 
                     <div className="dashboard-buildings-summary" aria-label="Resumen de cartera">
