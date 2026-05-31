@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getExpensesForBuilding, createExpense } from "../service/expense";
+import { getExpensesForBuilding, createBuildingExpense } from "../service/expense";
 import { CreateExpenseRequest} from "../types/expense";
 
 function getExpensas(buildingId: number) {
@@ -11,7 +11,7 @@ function getExpensas(buildingId: number) {
 }
 
 function addExpensa(expenseData: CreateExpenseRequest, buildingId: number) {
-    return createExpense(expenseData, buildingId);
+    return createBuildingExpense(expenseData, buildingId);
 }
 
 export { getExpensas, addExpensa };

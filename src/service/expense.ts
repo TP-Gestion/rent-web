@@ -1,11 +1,21 @@
 import { apiClient, wrapResponse, ApiResponse } from './client'
-import { CreateExpenseRequest, ExpenseItem } from '../types/expense'
+import { CreateExpenseRequest, ExpenseItem, UpdateExpenseRequest } from '../types/expense'
 
-export async function createExpense(
+export async function createBuildingExpense(
   body: CreateExpenseRequest,
   buildingId: number,
 ): Promise<ApiResponse<ExpenseItem>> {
   return wrapResponse(apiClient.post<ExpenseItem>(`/buildings/${buildingId}/expenses`, body))
+}
+
+export async function updateBuildingExpense(
+  buildingId: number,
+  expenseId: number,
+  body: UpdateExpenseRequest,
+): Promise<ApiResponse<ExpenseItem>> {
+  return wrapResponse(
+    apiClient.patch<ExpenseItem>(`/buildings/${buildingId}/expenses/${expenseId}`, body),
+  )
 }
 
 
