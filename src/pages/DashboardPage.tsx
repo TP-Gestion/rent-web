@@ -24,6 +24,34 @@ function DashboardAction({ label, description, onClick}: DashboardActionProps) {
     );
 }
 
+function getOccupancyTone(occupancyRate: number) {
+    if (occupancyRate === 100) {
+        return "success";
+    }
+
+    if (occupancyRate >= 50) {
+        return "warning";
+    }
+
+    return "danger";
+}
+
+function getOccupancyLabel(occupancyRate: number) {
+    if (occupancyRate === 100) {
+        return "Completo";
+    }
+
+    if (occupancyRate >= 50) {
+        return "Medio";
+    }
+
+    if (occupancyRate === 0) {
+        return "Sin ocupación";
+    }
+
+    return "Bajo";
+}
+
 export default function DashboardPage() {
     const navigate = useNavigate();
     const {
@@ -139,7 +167,7 @@ export default function DashboardPage() {
             )}
 
             <section className="dashboard-grid">
-                <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                <div className="dashboard-grid__main">
                 <article className="dashboard-card dashboard-card--followup dashboard-card--wide">
                     <div className="dashboard-card__header">
                         <div>
@@ -213,27 +241,77 @@ export default function DashboardPage() {
 
                 </article>
 
-                <article className="dashboard-card dashboard-card--buildings">
-                    <div className="dashboard-card__header">
+                <article className="dashboard-card dashboard-card--buildings dashboard-buildings-card">
+                    <div className="dashboard-card__header dashboard-card__header--stacked">
                         <div>
-                           <div className="dashboard-card__eyebrow">Propiedades</div>
+                            <div className="dashboard-card__eyebrow">Propiedades</div>
                             <h2 className="dashboard-card__title">Concentración de unidades</h2>
                         </div>
                     </div>
 
-                    <div className="dashboard-building-list">
-                        {buildingBreakdown.map((building) => (
-                        <div className="dashboard-building" key={building.id}>
-                            <div className="dashboard-building__main">
-                                <strong>{building.name}</strong>
-                                <span>{building.address}</span>
-                            </div>
-                                <div className="dashboard-building__count">
-                                    <strong>{building.units}</strong>
-                                    <span>unidades</span>
+                    <p className="dashboard-buildings-card__copy">
+                        Resumen corto de edificios, tenencia y ocupación general en un solo bloque.
+                    </p>
+
+                    <div className="dashboard-buildings-summary" aria-label="Resumen de cartera">
+                        <div className="dashboard-buildings-summary__item">
+                            <span className="dashboard-buildings-summary__value">{buildings.length}</span>
+                            <span className="dashboard-buildings-summary__label">Edificios activos</span>
+                        </div>
+                        <div className="dashboard-buildings-summary__item">
+                            <span className="dashboard-buildings-summary__value">{tenants.length}</span>
+                            <span className="dashboard-buildings-summary__label">Inquilinos activos</span>
+                        </div>
+                        <div className="dashboard-buildings-summary__item">
+                            <span className="dashboard-buildings-summary__value">{overview.totalProperties}</span>
+                            <span className="dashboard-buildings-summary__label">Unidades totales</span>
+                        </div>
+                    </div>
+
+                    <div className="dashboard-card__divider" />
+
+                    <div className="dashboard-building-list dashboard-building-list--compact">
+                        {buildingBreakdown.map((building) => {
+                            const occupancyTone = getOccupancyTone(building.occupancyRate);
+
+                            return (
+                                <div className="dashboard-building dashboard-building--compact" key={building.id}>
+                                    <div className="dashboard-building__main">
+                                        <strong>{building.name}</strong>
+                                        <span>{building.address}</span>
+                                    </div>
+
+                                    <div className="dashboard-building__occupancy">
+                                        <div className="dashboard-building__occupancy-row">
+                                            <strong className={`dashboard-building__occupancy-value dashboard-building__occupancy-value--${occupancyTone}`}>
+                                                {building.occupancyRate}%
+                                            </strong>
+                                            <span className={`dashboard-building__occupancy-pill dashboard-building__occupancy-pill--${occupancyTone}`}>
+                                                {getOccupancyLabel(building.occupancyRate)}
+                                            </span>
+                                        </div>
+
+                                        <div
+                                            className="dashboard-building__occupancy-track"
+                                            role="progressbar"
+                                            aria-label={`Ocupación ${building.name}`}
+                                            aria-valuemin={0}
+                                            aria-valuemax={100}
+                                            aria-valuenow={building.occupancyRate}
+                                        >
+                                            <span
+                                                className={`dashboard-building__occupancy-fill dashboard-building__occupancy-fill--${occupancyTone}`}
+                                                style={{ width: `${building.occupancyRate}%` }}
+                                            />
+                                        </div>
+
+                                        <span className="dashboard-building__occupancy-meta">
+                                            {building.occupiedUnits}/{building.units} ocupadas
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </article>
                 </div>
@@ -249,26 +327,6 @@ export default function DashboardPage() {
                         {actionCards.map((action) => (
                             <DashboardAction key={action.label} {...action} />
                         ))}
-                    </div>
-
-                    <div className="dashboard-card__divider" />
-
-                    <div className="dashboard-card__header dashboard-card__header--compact">
-                        <div>
-                            <div className="dashboard-card__eyebrow">Universo de trabajo</div>
-                            <h2 className="dashboard-card__title">Edificios y tenencia</h2>
-                        </div>
-                    </div>
-
-                    <div className="dashboard-universe">
-                        <div className="dashboard-universe__item">
-                            <span className="dashboard-universe__value">{buildings.length}</span>
-                            <span className="dashboard-universe__label">edificios activos</span>
-                        </div>
-                        <div className="dashboard-universe__item">
-                            <span className="dashboard-universe__value">{tenants.length}</span>
-                            <span className="dashboard-universe__label">inquilinos cargados</span>
-                        </div>
                     </div>
                 </aside>
 

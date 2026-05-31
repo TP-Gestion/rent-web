@@ -6,6 +6,8 @@ export type DashboardBuilding = {
 	name: string;
 	address?: string;
 	units: number;
+	occupiedUnits: number;
+	occupancyRate: number;
 };
 
 export type DashboardOverview = {
