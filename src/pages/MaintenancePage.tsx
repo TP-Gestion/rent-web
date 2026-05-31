@@ -2,29 +2,20 @@ import { useEffect, useMemo, useState } from "react"
 import { useBuildings } from "../hooks/useBuildings"
 import { getExpensas } from "../hooks/useExpensas"
 import { useUpdateExpense } from "../hooks/useMaintenance"
-import type { ExpenseItem, ExpenseType } from "../types/expense"
+import type { ExpenseItem } from "../types/expense"
 import { formatCurrency } from "../utils/propertyDetail"
 import "./MaintenancePage.css"
 
 type ExpenseDraft = {
-  type: ExpenseType
-  category: string
-  concept: string
   amount: string
 }
 
 const EMPTY_DRAFT: ExpenseDraft = {
-  type: "ORDINARIA",
-  category: "SERVICIOS",
-  concept: "",
   amount: "",
 }
 
 function expenseToDraft(expense: ExpenseItem): ExpenseDraft {
   return {
-    type: expense.type,
-    category: expense.category ?? "SERVICIOS",
-    concept: expense.concept ?? "",
     amount: String(expense.amount),
   }
 }
@@ -78,24 +69,14 @@ export default function MaintenancePage() {
 
   const updateExpenseMutation = useUpdateExpense(selectedBuildingId)
 
-  const canSave = Boolean(
-    selectedExpense &&
-      draft.concept.trim().length > 0 &&
-      draft.amount.trim().length > 0 &&
-      Number(draft.amount) > 0,
-  )
+  const canSave = Boolean(selectedExpense && draft.amount.trim().length > 0 && Number(draft.amount) > 0)
 
   const handleSave = () => {
     if (!selectedExpense || !canSave) return
 
     updateExpenseMutation.mutate({
       expenseId: selectedExpense.id,
-      body: {
-        type: draft.type,
-        category: draft.type === "EXTRAORDINARIA" ? draft.category : undefined,
-        concept: draft.concept.trim(),
-        amount: Number(draft.amount),
-      },
+      body: { amount: Number(draft.amount) },
     })
   }
 
@@ -209,50 +190,12 @@ export default function MaintenancePage() {
               <div className="mnt-empty">Seleccioná un gasto para editar sus datos.</div>
             ) : (
               <div className="mnt-editor">
-                <div className="mnt-field">
-                  <label className="mnt-label">Tipo</label>
-                  <select
-                    className="mnt-select"
-                    value={draft.type}
-                    onChange={(event) =>
-                      setDraft((prev) => ({
-                        ...prev,
-                        type: event.target.value as ExpenseType,
-                      }))
-                    }
-                  >
-                    <option value="ORDINARIA">Ordinaria</option>
-                    <option value="EXTRAORDINARIA">Extraordinaria</option>
-                  </select>
-                </div>
-
-                <div className="mnt-field">
-                  <label className="mnt-label">Categoría</label>
-                  <select
-                    className="mnt-select"
-                    value={draft.category}
-                    onChange={(event) =>
-                      setDraft((prev) => ({ ...prev, category: event.target.value }))
-                    }
-                    disabled={draft.type === "ORDINARIA"}
-                  >
-                    <option value="SERVICIOS">Servicios</option>
-                    <option value="LIMPIEZA">Limpieza</option>
-                    <option value="MANTENIMIENTO">Mantenimiento</option>
-                    <option value="OTROS">Otros</option>
-                  </select>
-                </div>
-
-                <div className="mnt-field mnt-field--full">
-                  <label className="mnt-label">Concepto</label>
-                  <input
-                    className="mnt-input"
-                    value={draft.concept}
-                    onChange={(event) =>
-                      setDraft((prev) => ({ ...prev, concept: event.target.value }))
-                    }
-                    placeholder="Ej: Limpieza de espacios comunes"
-                  />
+                <div className="mnt-summary">
+                  <div className="mnt-summary__label">Concepto</div>
+                  <div className="mnt-summary__value">{selectedExpense.concept || "Sin concepto"}</div>
+                  <div className="mnt-summary__note">
+                    {selectedExpense.category ?? "Sin categoría"} · {selectedExpense.type}
+                  </div>
                 </div>
 
                 <div className="mnt-field">
