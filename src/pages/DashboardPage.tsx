@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useDashboard } from "../hooks/useDashboard.ts";
 import { formatDueDate as formatDashboardDueDate, getDueStatusLabel as getDashboardDueStatusLabel } from "../utils/dashboardUtils";
@@ -24,13 +25,40 @@ function DashboardAction({ label, description, onClick}: DashboardActionProps) {
     );
 }
 
+function getOccupancyTone(occupancyRate: number) {
+    if (occupancyRate === 100) {
+        return "success";
+    }
+
+    if (occupancyRate >= 50) {
+        return "warning";
+    }
+
+    return "danger";
+}
+
+function getOccupancyLabel(occupancyRate: number) {
+    if (occupancyRate === 100) {
+        return "Completo";
+    }
+
+    if (occupancyRate >= 50) {
+        return "Medio";
+    }
+
+    if (occupancyRate === 0) {
+        return "Sin ocupación";
+    }
+
+    return "Bajo";
+}
+
 export default function DashboardPage() {
     const navigate = useNavigate();
     const {
         isLoading,
         hasError,
         overview,
-        openFollowUps,
         buildingBreakdown,
         dueSoonBillings,
         overdueBillings,
@@ -39,11 +67,27 @@ export default function DashboardPage() {
         payments,
     } = useDashboard();
 
+    const buildingsWithAlert = useMemo(() => {
+        const buildings = new Set<string>();
+
+        [...dueSoonBillings, ...overdueBillings].forEach((item) => {
+            if (item.edificio) {
+                buildings.add(item.edificio);
+            }
+        });
+
+        return buildings.size;
+    }, [dueSoonBillings, overdueBillings]);
+
+    const dueSoonAmount = useMemo(() => {
+        return dueSoonBillings.reduce((sum, item) => sum + (item.montoACobrar ?? 0), 0);
+    }, [dueSoonBillings]);
+
     const actionCards = [
         {
-            label: "Generar liquidación",
-            description: "Armá el lote mensual de expensas",
-            onClick: () => navigate("/generar-liquidacion"),
+            label: "Nueva propiedad",
+            description: "Sumá una unidad a la cartera",
+            onClick: () => navigate("/nueva-propiedad"),
         },
         {
             label: "Cargar expensa",
@@ -51,9 +95,9 @@ export default function DashboardPage() {
             onClick: () => navigate("/finances"),
         },
         {
-            label: "Nueva propiedad",
-            description: "Sumá una unidad a la cartera",
-            onClick: () => navigate("/nueva-propiedad"),
+            label: "Generar liquidación",
+            description: "Armá el lote mensual de expensas",
+            onClick: () => navigate("/generar-liquidacion"),
         },
         {
             label: "Ver inquilinos",
@@ -83,19 +127,19 @@ export default function DashboardPage() {
                     <StatCard
                         label="Cobrado"
                         value={formatArs(payments.totalPaidAmount ?? 0)}
-                        subtitle={`${payments.paidCount} pagos registrados`}
+                        subtitle={`${payments.paidCount} pagos registrados en el período activo`}
                         variant="success"
                     />
                     <StatCard
                         label="Pendientes"
-                        value={formatArs(payments.totalPendingAmount ?? 0)}
-                        subtitle={`${payments.pendingCount} unidades`}
+                        value={formatArs(dueSoonAmount)}
+                        subtitle={`${dueSoonBillings.length} vencimientos próximos a vencer`}
                         variant="warning"
                     />
                     <StatCard
-                        label="Atrasadas"
+                        label="Vencidos"
                         value={formatArs(payments.totalOverdueAmount ?? 0)}
-                        subtitle={`${payments.overdueCount} unidades`}
+                        subtitle={`${payments.overdueCount} unidades que requieren seguimiento urgente`}
                         variant="danger"
                     />
                 </aside>
@@ -105,25 +149,26 @@ export default function DashboardPage() {
                 <StatCard
                     label="Propiedades"
                     value={String(overview.totalProperties)}
-                    subtitle={`${overview.occupiedProperties} ocupadas / ${overview.availableProperties} disponibles`}
+                    subtitle={`${overview.occupiedProperties} ocupadas de ${overview.availableProperties} disponibles`}
                     variant="success"
                 />
                 <StatCard
                     label="Ocupación"
                     value={`${overview.occupancyRate}%`}
-                    subtitle={`${overview.occupiedProperties} unidades activas`}
+                    subtitle={`${overview.occupiedProperties} de ${overview.totalProperties} unidades ocupadas en total`}
                     variant="default"
+                />                
+                <StatCard
+                    label="Índice de morosidad"
+                    value={`${payments.morosityRate}%`}
+                    badge={`${payments.overdueCount} morosos`}
+                    subtitle={`${payments.overdueCount} clientes con deuda sobre ${overview.occupiedProperties} ocupadas`}
+                    variant="danger"
                 />
                 <StatCard
-                    label="Seguimiento abierto"
-                    value={String(openFollowUps)}
-                    subtitle={`${overview.pendingProperties} pendientes / ${overview.overdueProperties} vencidas`}
-                    variant="warning"
-                />
-                <StatCard
-                    label="Deuda abierta"
-                    value={formatArs(overview.totalDebt)}
-                    subtitle={`${overview.overdueProperties} unidades en mora`}
+                    label="Edificios con alerta"
+                    value={String(buildingsWithAlert)}
+                    subtitle={`${buildingsWithAlert} edificios con vencimientos próximos o atrasados`}
                     variant="danger"
                 />
             </section>
@@ -139,14 +184,13 @@ export default function DashboardPage() {
             )}
 
             <section className="dashboard-grid">
-                <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                <div className="dashboard-grid__main">
                 <article className="dashboard-card dashboard-card--followup dashboard-card--wide">
                     <div className="dashboard-card__header">
                         <div>
                             <div className="dashboard-card__eyebrow">Cobros que requieren seguimiento</div>
                             <h2 className="dashboard-card__title">Próximos vencimientos y mora</h2>
                         </div>
-                        <span className="dashboard-card__badge">{dueSoonBillings.length + overdueBillings.length} en vista</span>
                     </div>
 
                     <div className="dashboard-followup-grid">
@@ -213,27 +257,77 @@ export default function DashboardPage() {
 
                 </article>
 
-                <article className="dashboard-card dashboard-card--buildings">
-                    <div className="dashboard-card__header">
+                <article className="dashboard-card dashboard-card--buildings dashboard-buildings-card">
+                    <div className="dashboard-card__header dashboard-card__header--stacked">
                         <div>
-                           <div className="dashboard-card__eyebrow">Propiedades</div>
+                            <div className="dashboard-card__eyebrow">Propiedades</div>
                             <h2 className="dashboard-card__title">Concentración de unidades</h2>
                         </div>
                     </div>
 
-                    <div className="dashboard-building-list">
-                        {buildingBreakdown.map((building) => (
-                        <div className="dashboard-building" key={building.id}>
-                            <div className="dashboard-building__main">
-                                <strong>{building.name}</strong>
-                                <span>{building.address}</span>
-                            </div>
-                                <div className="dashboard-building__count">
-                                    <strong>{building.units}</strong>
-                                    <span>unidades</span>
+                    <p className="dashboard-buildings-card__copy">
+                        Revisión de edificios con mayor cantidad de unidades y su nivel de ocupación.
+                    </p>
+
+                    <div className="dashboard-buildings-summary" aria-label="Resumen de cartera">
+                        <div className="dashboard-buildings-summary__item">
+                            <span className="dashboard-buildings-summary__value">{buildings.length}</span>
+                            <span className="dashboard-buildings-summary__label">Edificios activos</span>
+                        </div>
+                        <div className="dashboard-buildings-summary__item">
+                            <span className="dashboard-buildings-summary__value">{tenants.length}</span>
+                            <span className="dashboard-buildings-summary__label">Inquilinos activos</span>
+                        </div>
+                        <div className="dashboard-buildings-summary__item">
+                            <span className="dashboard-buildings-summary__value">{overview.totalProperties}</span>
+                            <span className="dashboard-buildings-summary__label">Unidades totales</span>
+                        </div>
+                    </div>
+
+                    <div className="dashboard-card__divider" />
+
+                    <div className="dashboard-building-list dashboard-building-list--compact">
+                        {buildingBreakdown.map((building) => {
+                            const occupancyTone = getOccupancyTone(building.occupancyRate);
+
+                            return (
+                                <div className="dashboard-building dashboard-building--compact" key={building.id}>
+                                    <div className="dashboard-building__main">
+                                        <strong>{building.name}</strong>
+                                        <span>{building.address}</span>
+                                    </div>
+
+                                    <div className="dashboard-building__occupancy">
+                                        <div className="dashboard-building__occupancy-row">
+                                            <strong className={`dashboard-building__occupancy-value dashboard-building__occupancy-value--${occupancyTone}`}>
+                                                {building.occupancyRate}%
+                                            </strong>
+                                            <span className={`dashboard-building__occupancy-pill dashboard-building__occupancy-pill--${occupancyTone}`}>
+                                                {getOccupancyLabel(building.occupancyRate)}
+                                            </span>
+                                        </div>
+
+                                        <div
+                                            className="dashboard-building__occupancy-track"
+                                            role="progressbar"
+                                            aria-label={`Ocupación ${building.name}`}
+                                            aria-valuemin={0}
+                                            aria-valuemax={100}
+                                            aria-valuenow={building.occupancyRate}
+                                        >
+                                            <span
+                                                className={`dashboard-building__occupancy-fill dashboard-building__occupancy-fill--${occupancyTone}`}
+                                                style={{ width: `${building.occupancyRate}%` }}
+                                            />
+                                        </div>
+
+                                        <span className="dashboard-building__occupancy-meta">
+                                            {building.occupiedUnits}/{building.units} ocupadas
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </article>
                 </div>
@@ -249,26 +343,6 @@ export default function DashboardPage() {
                         {actionCards.map((action) => (
                             <DashboardAction key={action.label} {...action} />
                         ))}
-                    </div>
-
-                    <div className="dashboard-card__divider" />
-
-                    <div className="dashboard-card__header dashboard-card__header--compact">
-                        <div>
-                            <div className="dashboard-card__eyebrow">Universo de trabajo</div>
-                            <h2 className="dashboard-card__title">Edificios y tenencia</h2>
-                        </div>
-                    </div>
-
-                    <div className="dashboard-universe">
-                        <div className="dashboard-universe__item">
-                            <span className="dashboard-universe__value">{buildings.length}</span>
-                            <span className="dashboard-universe__label">edificios activos</span>
-                        </div>
-                        <div className="dashboard-universe__item">
-                            <span className="dashboard-universe__value">{tenants.length}</span>
-                            <span className="dashboard-universe__label">inquilinos cargados</span>
-                        </div>
                     </div>
                 </aside>
 
