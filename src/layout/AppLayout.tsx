@@ -60,7 +60,7 @@ export default function AppLayout() {
       >
         {/* TopBar sticky */}
         <TopBar
-          sectionTitle="SOLARIS ASSETS"
+          sectionTitle="PROPIEDADES SOLARIS"
           user={currentUser}
           onMenuClick={() => setMobileOpen((o) => !o)}
         />
