@@ -253,7 +253,7 @@ export default function DashboardPage() {
                         </section>
                     </div>
 
-                    <div className="dashboard-card__note">Solo se muestran cobranzas con vencimiento cargado y estado pendiente o atrasado.</div>
+                    <div className="dashboard-card__note">Solo se muestran hasta 10 cobranzas por sección con vencimiento cargado y estado pendiente o atrasado.</div>
 
                 </article>
 

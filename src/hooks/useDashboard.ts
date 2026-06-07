@@ -126,7 +126,7 @@ export function useDashboard() {
 				return leftDays - rightDays;
 			})
 			.filter((item) => item.daysLeft !== null && item.daysLeft >= 0 && item.daysLeft <= 7)
-			.slice(0, 5);
+			.slice(0, 10);
 	}, [billableItems]);
 
 	const overdueBillings = useMemo<UpcomingBillingItem[]>(() => {
@@ -141,7 +141,7 @@ export function useDashboard() {
 			})
 			.filter((item) => isOverdueBilling(item))
 			.sort((left, right) => (left.daysLeft ?? 0) - (right.daysLeft ?? 0))
-			.slice(0, 5);
+			.slice(0, 10);
 	}, [billableItems]);
 
 	const payments = useMemo<DashboardPaymentsSummary>(() => {
