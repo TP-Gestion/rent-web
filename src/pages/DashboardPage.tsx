@@ -65,6 +65,7 @@ export default function DashboardPage() {
         buildings,
         tenants,
         payments,
+        topTenants,
     } = useDashboard();
 
     const buildingsWithAlert = useMemo(() => {
@@ -331,19 +332,46 @@ export default function DashboardPage() {
                     </div>
                 </article>
                 </div>
-                <aside className="dashboard-card">
-                    <div className="dashboard-card__header">
-                        <div>
-                            <div className="dashboard-card__eyebrow">Acciones rápidas</div>
-                            <h2 className="dashboard-card__title">Atajos operativos</h2>
+                <aside style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    <article className="dashboard-card">
+                        <div className="dashboard-card__header">
+                            <div>
+                                <div className="dashboard-card__eyebrow">Acciones rápidas</div>
+                                <h2 className="dashboard-card__title">Atajos operativos</h2>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="dashboard-actions-stack">
-                        {actionCards.map((action) => (
-                            <DashboardAction key={action.label} {...action} />
-                        ))}
-                    </div>
+                        <div className="dashboard-actions-stack">
+                            {actionCards.map((action) => (
+                                <DashboardAction key={action.label} {...action} />
+                            ))}
+                        </div>
+                    </article>
+
+                    <article className="dashboard-card">
+                        <div className="dashboard-card__header">
+                            <div>
+                                <div className="dashboard-card__eyebrow">Inquilinos</div>
+                                <h2 className="dashboard-card__title">Top 5 con más propiedades</h2>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-top-tenants-list">
+                            {topTenants.length === 0 ? (
+                                <div className="dashboard-empty-state">No hay inquilinos activos.</div>
+                            ) : (
+                                topTenants.map((item, index) => (
+                                    <div key={item.name} className="dashboard-top-tenant-item">
+                                        <div className="dashboard-top-tenant-rank">#{index + 1}</div>
+                                        <div className="dashboard-top-tenant-name">{item.name}</div>
+                                        <div className="dashboard-top-tenant-count">
+                                            {item.count} {item.count === 1 ? 'propiedad' : 'propiedades'}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </article>
                 </aside>
 
 

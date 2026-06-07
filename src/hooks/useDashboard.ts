@@ -166,6 +166,21 @@ export function useDashboard() {
 
 	const openFollowUps = overview.pendingProperties + overview.overdueProperties;
 
+	const topTenants = useMemo(() => {
+		const tenantCounts = new Map<string, number>();
+		properties.forEach((prop) => {
+			if (prop.nombreInquilino && prop.nombreInquilino.trim() !== "") {
+				const name = prop.nombreInquilino.trim();
+				tenantCounts.set(name, (tenantCounts.get(name) ?? 0) + 1);
+			}
+		});
+
+		return Array.from(tenantCounts.entries())
+			.map(([name, count]) => ({ name, count }))
+			.sort((left, right) => right.count - left.count)
+			.slice(0, 5);
+	}, [properties]);
+
 	return {
 		isLoading,
 		hasError,
@@ -177,5 +192,6 @@ export function useDashboard() {
 		buildings,
 		tenants,
 		payments,
+		topTenants,
 	};
 }
