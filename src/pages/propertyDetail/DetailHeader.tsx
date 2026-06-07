@@ -4,12 +4,16 @@ interface Props {
   detalle: PropiedadDetalle;
   onBack: () => void;
   onRegistrarPago?: () => void;
+  onEmitirFactura?: () => void;
+  isEmitirFacturaPending?: boolean;
 }
 
 export default function DetailHeader({
   detalle,
   onBack,
   onRegistrarPago,
+  onEmitirFactura,
+  isEmitirFacturaPending,
 }: Props) {
   return (
     <div>
@@ -33,9 +37,16 @@ export default function DetailHeader({
               Registrar pago
             </button>
           )}
-          <button className="pd-btn pd-btn--secondary" type="button">
-            Emitir Factura
-          </button>
+          {onEmitirFactura && (
+            <button
+              className="pd-btn pd-btn--secondary"
+              type="button"
+              onClick={onEmitirFactura}
+              disabled={isEmitirFacturaPending}
+            >
+              {isEmitirFacturaPending ? "Reenviando..." : "Emitir Factura"}
+            </button>
+          )}
           <button className="pd-btn pd-btn--secondary" type="button">
             Notificar Inquilino
           </button>

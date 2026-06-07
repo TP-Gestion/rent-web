@@ -8,7 +8,7 @@ interface BadgeStyle {
 
 export const BADGE_STYLES: Record<EstadoDisplay, BadgeStyle> = {
   PAID: { bg: "#e6f6ee", color: "#1a6b3a", label: "PAGADO" },
-  PENDING: { bg: "#fff4d6", color: "#8a5a00", label: "PENDIENTE" },
+  PENDING: { bg: "#fff7e4", color: "#9a6b00", label: "PENDIENTE" },
   OVERDUE: { bg: "#fdecea", color: "#b02020", label: "VENCIDO" },
   AVAILABLE: { bg: "#e8f0fe", color: "#1a56b0", label: "LIBRE" },
 };

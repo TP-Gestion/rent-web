@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { usePropertyDetail } from "../../hooks/usePropertyDetail";
 import { useFacturas } from "../../hooks/useFacturas";
 import { useRegistrarPago } from "../../hooks/useRegistrarPago";
+import { useIssueInvoice } from "../../hooks/useIssueInvoice";
 import { usePagos } from "../../hooks/usePagos";
 import DetailHeader from "./DetailHeader";
 import DueDateBanner from "./DueDateBanner";
@@ -92,8 +93,12 @@ export default function PropertyDetailPage() {
     useFacturas(idPropiedad);
   const { data: pagosData, isLoading: isLoadingPagos } = usePagos(idPropiedad);
   const registrarPagoMutation = useRegistrarPago(idPropiedad);
+  const issueInvoiceMutation = useIssueInvoice();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const detalle = data?.data;
+  const facturas = facturasData?.data ?? [];
+  const pagos = pagosData?.data ?? [];
 
   const showToast = (message: string, variant: ToastItem["variant"]) => {
     setToasts((prev) => [...prev, { id: Date.now(), message, variant }]);
@@ -103,9 +108,21 @@ export default function PropertyDetailPage() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const detalle = data?.data;
-  const facturas = facturasData?.data ?? [];
-  const pagos = pagosData?.data ?? [];
+  const handleEmitirFactura = () => {
+    if (!detalle) return;
+
+    issueInvoiceMutation.mutate(
+      { propertyId: detalle.id },
+      {
+        onSuccess: () => {
+          showToast("Factura reenviada con éxito", "success");
+        },
+        onError: () => {
+          showToast("No se pudo reenviar la factura. Intentá nuevamente.", "error");
+        },
+      },
+    );
+  };
 
   if (isLoading) return <SkeletonView />;
   if (isError || !detalle) return <ErrorView onBack={() => navigate(-1)} />;
@@ -116,6 +133,8 @@ export default function PropertyDetailPage() {
         detalle={detalle}
         onBack={() => navigate(-1)}
         onRegistrarPago={() => setIsPaymentModalOpen(true)}
+        onEmitirFactura={handleEmitirFactura}
+        isEmitirFacturaPending={issueInvoiceMutation.isPending}
       />
       <DueDateBanner fechaVencimiento={detalle.fechaVencimiento} />
       <div className="pd-grid">
