@@ -111,6 +111,64 @@
   box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.16);
 }
 
+.login-form__password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-form__password-wrapper .login-form__input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.login-form__password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: #8e8574;
+  transition: color 0.2s ease;
+}
+
+.login-form__password-toggle:hover {
+  color: #d4a017;
+}
+
+.login-form__password-toggle:focus {
+  outline: none;
+}
+
+.login-form__requirements {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-form__requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #b8a882;
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.login-form__requirement--met {
+  color: #059669;
+}
+
+.login-form__requirement-dot {
+  font-weight: 700;
+}
+
 .login-form__submit {
   margin-top: 12px;
   height: 42px;
@@ -124,11 +182,6 @@
   text-transform: uppercase;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
-}
-
-.login-form__submit:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 16px rgba(44, 40, 32, 0.25);
 }
 
 .login-form__submit:active {
