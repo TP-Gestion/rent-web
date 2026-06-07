@@ -23,7 +23,8 @@
 
 .topbar__search-container {
   position: relative;
-  width: 500px;
+  width: 450px;
+  margin-right: 16px;
 }
 
 .topbar__search-wrapper {
@@ -243,6 +244,7 @@
     width: auto;
     flex: 1;
     min-width: 0;
+    margin-right: 8px;
   }
 
   .topbar__divider,

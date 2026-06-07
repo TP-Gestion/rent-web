@@ -3,29 +3,7 @@ import { useNavigate } from 'react-router'
 import { usePropertiesSummary } from '../../hooks/usePropertiesSummary'
 import './TopBar.css'
 
-const BellIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path
-      d="M8 1.5A4.5 4.5 0 003.5 6v3.5L2 11h12l-1.5-1.5V6A4.5 4.5 0 008 1.5z"
-      fill="currentColor"
-      opacity="0.85"
-    />
-    <path d="M6.5 11.5a1.5 1.5 0 003 0" fill="currentColor" opacity="0.85" />
-  </svg>
-)
 
-const SettingsIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <circle cx="8" cy="8" r="2.5" fill="currentColor" opacity="0.85" />
-    <path
-      d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      opacity="0.85"
-    />
-  </svg>
-)
 
 const SearchIcon = () => (
   <svg
@@ -56,22 +34,16 @@ interface User {
 interface TopBarProps {
   sectionTitle?: string
   user?: User
-  notificationCount?: number
   onSearch?: (query: string) => void
   onMenuClick?: () => void
-  onNotificationsClick?: () => void
-  onSettingsClick?: () => void
   onAvatarClick?: () => void
 }
 
 export default function TopBar({
   sectionTitle,
   user,
-  notificationCount,
   onSearch,
   onMenuClick,
-  onNotificationsClick,
-  onSettingsClick,
   onAvatarClick,
 }: TopBarProps) {
   const [searchFocused, setSearchFocused] = useState(false)
@@ -200,24 +172,6 @@ export default function TopBar({
 
       {/* Acciones */}
       <div className="topbar__actions">
-
-        {/* Notificaciones */}
-        <button
-          className="topbar__icon-btn"
-          onClick={onNotificationsClick}
-        >
-          <BellIcon />
-          {notificationCount != null && notificationCount > 0 && <span className="topbar__notif-dot" />}
-        </button>
-
-        {/* Settings */}
-        <button
-          className="topbar__icon-btn"
-          onClick={onSettingsClick}
-        >
-          <SettingsIcon />
-        </button>
-
         {/* Avatar */}
         <button
           className="topbar__avatar-btn"
