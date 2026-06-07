@@ -1,4 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
+import { useNavigate } from 'react-router'
+import { usePropertiesSummary } from '../../hooks/usePropertiesSummary'
 import './TopBar.css'
 
 const BellIcon = () => (
@@ -75,6 +77,27 @@ export default function TopBar({
   const [searchFocused, setSearchFocused] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
+  
+  const navigate = useNavigate()
+  const { data: properties } = usePropertiesSummary()
+
+  const filteredProperties = useMemo(() => {
+    if (!searchValue.trim()) return []
+    const query = searchValue.toLowerCase()
+    return (properties ?? []).filter((prop) => {
+      const edificioStr = (prop.edificio ?? '').toLowerCase()
+      const pisoStr = (prop.piso ?? '').toLowerCase()
+      const direccionStr = (prop.direccion ?? '').toLowerCase()
+      const inquilinoStr = (prop.nombreInquilino ?? '').toLowerCase()
+      return (
+        edificioStr.includes(query) ||
+        pisoStr.includes(query) ||
+        direccionStr.includes(query) ||
+        inquilinoStr.includes(query) ||
+        `${edificioStr} ${pisoStr}`.includes(query)
+      )
+    }).slice(0, 8)
+  }, [searchValue, properties])
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value)
@@ -106,25 +129,69 @@ export default function TopBar({
       </div>
 
       {/* Buscador */}
-      <div className={`topbar__search-wrapper${searchFocused ? ' topbar__search-wrapper--focused' : ''}`}>
-        <SearchIcon />
-        <input
-          ref={searchRef}
-          type="text"
-          placeholder="Buscar expensa..."
-          value={searchValue}
-          onChange={handleSearchChange}
-          onFocus={() => setSearchFocused(true)}
-          onBlur={() => setSearchFocused(false)}
-          className="topbar__search-input"
-        />
-        {searchValue && (
-          <button
-            onClick={handleSearchClear}
-            className="topbar__clear-btn"
-          >
-            x
-          </button>
+      <div className="topbar__search-container">
+        <div className={`topbar__search-wrapper${searchFocused ? ' topbar__search-wrapper--focused' : ''}`}>
+          <SearchIcon />
+          <input
+            ref={searchRef}
+            type="text"
+            placeholder="Buscar propiedad..."
+            value={searchValue}
+            onChange={handleSearchChange}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+            className="topbar__search-input"
+          />
+          {searchValue && (
+            <button
+              onClick={handleSearchClear}
+              className="topbar__clear-btn"
+            >
+              x
+            </button>
+          )}
+        </div>
+
+        {searchFocused && searchValue.trim() && (
+          <div className="topbar__search-dropdown">
+            {filteredProperties.length === 0 ? (
+              <div className="topbar__search-no-results">
+                No se encontraron propiedades
+              </div>
+            ) : (
+              filteredProperties.map((prop) => (
+                <button
+                  key={prop.id}
+                  className="topbar__search-item"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                  }}
+                  onClick={() => {
+                    navigate(`/propiedades/${prop.id}`)
+                    setSearchValue('')
+                    setSearchFocused(false)
+                    searchRef.current?.blur()
+                  }}
+                >
+                  <div className="topbar__search-item-info">
+                    <span className="topbar__search-item-title">
+                      {prop.edificio} - {prop.piso}
+                    </span>
+                    <span className="topbar__search-item-subtitle">
+                      {prop.nombreInquilino ? `Inquilino: ${prop.nombreInquilino}` : 'Sin inquilino'}
+                    </span>
+                  </div>
+                  <span
+                    className={`topbar__search-item-badge topbar__search-item-badge--${
+                      prop.estadoOcupacion === 'OCCUPIED' ? 'occupied' : 'available'
+                    }`}
+                  >
+                    {prop.estadoOcupacion === 'OCCUPIED' ? 'Ocupado' : 'Disponible'}
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
         )}
       </div>
 
