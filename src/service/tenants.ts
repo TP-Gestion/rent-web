@@ -61,15 +61,10 @@ const MOCK_TENANT_SUMMARY: TenantSummary = {
 export async function getTenantSummary(
   tenantId: number,
 ): Promise<ApiResponse<TenantSummary>> {
-  try {
-    const { data } = await apiClient.get<ApiResponse<TenantSummary>>(
-      `/tenants/${tenantId}/summary`,
-    );
-    return data;
-  } catch {
-    await new Promise((r) => setTimeout(r, 400));
-    return { data: MOCK_TENANT_SUMMARY, errors: [] };
-  }
+  const { data } = await apiClient.get<ApiResponse<TenantSummary>>(
+    `/tenants/${tenantId}/summary`,
+  );
+  return data;
 }
 
 export async function updateTenant(

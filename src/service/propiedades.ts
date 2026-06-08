@@ -1243,9 +1243,6 @@ export async function getPropertyBillings(
   const { data } = await apiClient.get<ApiResponse<Billing[]>>(
     `/properties/${idPropiedad}/billings`,
   );
-  data.data.forEach((billing) => {
-    billing.tenant = randomTenant();
-  });
   return data;
 }
 
