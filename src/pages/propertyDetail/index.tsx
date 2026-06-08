@@ -118,7 +118,10 @@ export default function PropertyDetailPage() {
           showToast("Factura reenviada con éxito", "success");
         },
         onError: () => {
-          showToast("No se pudo reenviar la factura. Intentá nuevamente.", "error");
+          showToast(
+            "No se pudo reenviar la factura. Intentá nuevamente.",
+            "error",
+          );
         },
       },
     );
@@ -149,7 +152,11 @@ export default function PropertyDetailPage() {
           />
         </div>
         <div className="pd-right-col">
-          <TenantCard detalle={detalle} />
+          <TenantCard
+            detalle={detalle}
+            propertyId={idPropiedad}
+            onShowToast={showToast}
+          />
           <SpecsCard detalle={detalle} />
           <DocumentsCard
             propertyId={idPropiedad}

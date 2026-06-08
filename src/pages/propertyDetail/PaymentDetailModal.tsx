@@ -1,4 +1,3 @@
-import React from "react";
 import type { Billing, PaymentRecord } from "../../service/propiedades";
 import { downloadPaymentReceipt } from "../../service/propiedades";
 import { formatCurrency, formatDate } from "../../utils/propertyDetail";
@@ -109,6 +108,14 @@ export default function PaymentDetailModal({
                   >
                     {ESTADO_LABEL[billing.status] ?? billing.status}
                   </span>
+                </div>
+              </div>
+              <div className="ph-grid__item ph-grid__item--full">
+                <div className="pm-field__label">Inquilino</div>
+                <div className="ph-field__value">
+                  {billing.tenant
+                    ? `${billing.tenant.firstName} ${billing.tenant.lastName}`
+                    : "Inquilino no disponible"}
                 </div>
               </div>
             </div>

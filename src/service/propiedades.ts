@@ -689,6 +689,11 @@ export type PaymentMethod =
   | "DEBIT"
   | "CREDIT";
 
+export interface BillingTenant {
+  firstName: string;
+  lastName: string;
+}
+
 export interface Billing {
   id: string;
   period: string;
@@ -697,6 +702,7 @@ export interface Billing {
   dueDate: string;
   contract?: File;
   paymentDate?: string;
+  tenant?: BillingTenant | null;
 }
 
 export interface PaymentRecord {
@@ -1186,6 +1192,15 @@ const MOCK_PAGOS: Record<string, PaymentRecord[]> = {
   ],
 };
 
+const randomTenant = (): BillingTenant => {
+  const randomValue = Math.random();
+
+  return {
+    firstName: randomValue < 0.5 ? "John" : "Jane",
+    lastName: randomValue < 0.5 ? "Doe" : "Smith",
+  };
+};
+
 export async function getPropertyBillings(
   idPropiedad: string,
 ): Promise<ApiResponse<Billing[]>> {
@@ -1196,6 +1211,9 @@ export async function getPropertyBillings(
   const { data } = await apiClient.get<ApiResponse<Billing[]>>(
     `/properties/${idPropiedad}/billings`,
   );
+  data.data.forEach((billing) => {
+    billing.tenant = randomTenant();
+  });
   return data;
 }
 
@@ -1446,6 +1464,18 @@ export async function assignTenantToProperty(
   }
   return wrapResponse(
     apiClient.patch<void>(`/properties/${propertyId}/tenant/${tenantId}`),
+  );
+}
+
+export async function removeTenantFromProperty(
+  propertyId: number | string,
+): Promise<ApiResponse<void>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return { data: undefined as unknown as void, errors: [] };
+  }
+  return wrapResponse(
+    apiClient.delete<void>(`/properties/${propertyId}/tenant`),
   );
 }
 
