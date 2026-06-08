@@ -35,11 +35,7 @@ export default function CargarExpensaPage() {
     }
   }, [buildings, selectedBuildingId])
 
-  const ordinaryExists = useMemo(() => {
-    return existingExpenses.some((e) => e.type === 'ORDINARIA')
-  }, [existingExpenses])
-
-  const canSubmit = selectedBuildingId > 0 && amount !== '' && Number(amount) > 0 && concept.trim().length > 0 && (type === 'EXTRAORDINARIA' || (type === 'ORDINARIA' && !ordinaryExists))
+  const canSubmit = selectedBuildingId > 0 && amount !== '' && Number(amount) > 0 && concept.trim().length > 0
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,16 +45,14 @@ export default function CargarExpensaPage() {
     try {
       const payload = {
         type,
-        category: type === 'EXTRAORDINARIA' ? category : undefined,
+        category,
         amount: Number(amount),
         concept,
       }
       await addExpensa(payload, selectedBuildingId)
       setMessage('Expensa cargada correctamente')
-      if (type === 'EXTRAORDINARIA') {
-        setConcept('')
-        setAmount('')
-      }
+      setConcept('')
+      setAmount('')
     } catch (err) {
       setMessage('Error al cargar la expensa')
     } finally {
@@ -99,52 +93,35 @@ export default function CargarExpensaPage() {
           </div>
 
           <div className="exp-field">
-            <label className="exp-label">Tipo de expensa</label>
-            <div className="exp-switch" role="tablist" aria-label="Tipo de expensa">
-              <button
-                type="button"
-                className={`exp-switch__button${type === 'ORDINARIA' ? ' exp-switch__button--active' : ''}`}
-                onClick={() => setType('ORDINARIA')}
-                aria-pressed={type === 'ORDINARIA'}
-              >
-                Ordinaria
-              </button>
-              <button
-                type="button"
-                className={`exp-switch__button${type === 'EXTRAORDINARIA' ? ' exp-switch__button--active' : ''}`}
-                onClick={() => setType('EXTRAORDINARIA')}
-                aria-pressed={type === 'EXTRAORDINARIA'}
-              >
-                Extraordinaria
-              </button>
-            </div>
+            <label className="exp-label" htmlFor="type">Tipo de expensa</label>
+            <select
+              id="type"
+              className="exp-select"
+              value={type}
+              onChange={(e) => setType(e.target.value as ExpenseType)}
+            >
+              <option value="ORDINARIA">Ordinaria</option>
+              <option value="EXTRAORDINARIA">Extraordinaria</option>
+            </select>
             <p className="exp-hint">
               La ordinaria se cobra una sola vez por edificio. La extraordinaria se cobra mensualmente de manera indefinida.
             </p>
           </div>
 
-          {type === 'EXTRAORDINARIA' && (
-            <div className="exp-field">
-              <label className="exp-label" htmlFor="category">Categoría</label>
-              <select
-                id="category"
-                className="exp-select"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="SERVICIOS">Servicios</option>
-                <option value="LIMPIEZA">Limpieza</option>
-                <option value="MANTENIMIENTO">Mantenimiento</option>
-                <option value="OTROS">Otros</option>
-              </select>
-            </div>
-          )}
-
-          {type === 'ORDINARIA' && ordinaryExists && (
-            <div className="exp-alert exp-alert--error">
-              Ya existe una expensa ordinaria para este edificio. No se pueden crear más.
-            </div>
-          )}
+          <div className="exp-field">
+            <label className="exp-label" htmlFor="category">Categoría</label>
+            <select
+              id="category"
+              className="exp-select"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="SERVICIOS">Servicios</option>
+              <option value="LIMPIEZA">Limpieza</option>
+              <option value="MANTENIMIENTO">Mantenimiento</option>
+              <option value="OTROS">Otros</option>
+            </select>
+          </div>
 
           <div className="exp-field">
             <label className="exp-label" htmlFor="concept">Concepto</label>
@@ -153,7 +130,7 @@ export default function CargarExpensaPage() {
               className="exp-input"
               value={concept}
               onChange={(e) => setConcept(e.target.value)}
-              placeholder="Ej: Limpieza mensual"
+              placeholder="Nombre de la expensa"
             />
           </div>
 
