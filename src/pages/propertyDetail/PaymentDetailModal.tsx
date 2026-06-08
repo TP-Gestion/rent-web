@@ -5,20 +5,9 @@ import {
   downloadPaymentReceipt,
 } from "../../service/propiedades";
 import { formatCurrency, formatDate } from "../../utils/propertyDetail";
+import { ESTADO_LABEL, ESTADO_CSS } from "../../utils/billingStatus";
 import "./PaymentHistory.css";
 import DownloadIcon from "../../components/DownloadIcon";
-
-const ESTADO_LABEL: Record<string, string> = {
-  PAID: "Pagado",
-  PENDING: "Pendiente",
-  OVERDUE: "Vencido",
-};
-
-const ESTADO_CSS: Record<string, string> = {
-  PAID: "pd-pay-status--pagado",
-  PENDING: "pd-pay-status--parcial",
-  OVERDUE: "pd-pay-status--adeudado",
-};
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
   BANK_TRANSFER: "Transferencia bancaria",

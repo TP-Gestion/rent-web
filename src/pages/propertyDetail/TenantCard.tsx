@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import type { PropiedadDetalle } from "../../service/propiedades";
 import { getInitials } from "../../utils/propertyDetail";
 import { useRemoveTenant } from "../../hooks/useRemoveTenant";
@@ -46,6 +47,7 @@ function TenantInfo({
   propertyId: string;
   onShowToast: (message: string, variant: ToastItem["variant"]) => void;
 }) {
+  const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
   const removeMutation = useRemoveTenant(propertyId);
 
@@ -82,6 +84,11 @@ function TenantInfo({
         className="pd-btn pd-btn--primary pd-tenant__action"
         style={{ marginBottom: 8 }}
         type="button"
+        onClick={() =>
+          detalle.tenantId != null &&
+          navigate(`/inquilinos/${detalle.tenantId}`)
+        }
+        disabled={detalle.tenantId == null}
       >
         Ver Perfil Completo
       </button>

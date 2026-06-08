@@ -1,0 +1,13 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteTenant } from "../service/tenants";
+
+export function useDeleteTenant(tenantId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, void>({
+    mutationFn: () => deleteTenant(tenantId),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["tenant-summary", tenantId] });
+    },
+  });
+}
