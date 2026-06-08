@@ -34,6 +34,7 @@ export type EstadoPago = "PAID" | "PENDING" | "OVERDUE";
 
 export interface PropiedadDetalle {
   id: number;
+  tenantId?: number | null;
   nombreInquilino: string;
   edificio: string;
   piso: string;
@@ -127,6 +128,7 @@ export async function getDetallePropiedad(
       hasContract: d.activeContract?.hasContract ?? false,
       activeContractAmount: d.activeContract?.amount ?? null,
       activeContractDueDate: d.activeContract?.dueDate ?? null,
+      tenantId: d.tenant?.id ?? null,
       nombreInquilino: d.tenant
         ? `${d.tenant.firstName} ${d.tenant.lastName}`
         : "",
@@ -160,6 +162,21 @@ export async function downloadPaymentReceipt(
   }
   const response = await apiClient.get<Blob>(
     `/properties/${idPropiedad}/payments/${paymentId}/receipt`,
+    { responseType: "blob" },
+  );
+  return response.data;
+}
+
+export async function downloadBillingFile(
+  idPropiedad: string,
+  billingId: string,
+): Promise<Blob> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return new Blob(["Factura mock"], { type: "application/pdf" });
+  }
+  const response = await apiClient.get<Blob>(
+    `/properties/${idPropiedad}/billings/${billingId}/file`,
     { responseType: "blob" },
   );
   return response.data;
@@ -271,6 +288,7 @@ const _period = (() => {
 const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   {
     id: 1,
+    tenantId: 1,
     nombreInquilino: "Pedro Pérez",
     edificio: "Torre Solaris I",
     piso: "2A",
@@ -287,6 +305,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 2,
+    tenantId: 2,
     nombreInquilino: "Laura Gómez",
     edificio: "Torre Solaris I",
     piso: "PH",
@@ -303,6 +322,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 3,
+    tenantId: 3,
     nombreInquilino: "Martín Rodríguez",
     edificio: "Edificio Palermo Sky",
     piso: "3B",
@@ -319,6 +339,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 4,
+    tenantId: 4,
     nombreInquilino: "Sofía Martínez",
     edificio: "Edificio Palermo Sky",
     piso: "1C",
@@ -335,6 +356,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 5,
+    tenantId: 5,
     nombreInquilino: "Carlos Sánchez",
     edificio: "Residencial Belgrano Norte",
     piso: "5D",
@@ -351,6 +373,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 6,
+    tenantId: 6,
     nombreInquilino: "Ana Torres",
     edificio: "Residencial Belgrano Norte",
     piso: "2F",
@@ -367,6 +390,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 7,
+    tenantId: 7,
     nombreInquilino: "Diego López",
     edificio: "Centro Comercial San Martín",
     piso: "Local 3",
@@ -383,6 +407,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 8,
+    tenantId: 8,
     nombreInquilino: "Valeria Ruiz",
     edificio: "Centro Comercial San Martín",
     piso: "Oficina 12",
@@ -399,6 +424,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 9,
+    tenantId: null,
     nombreInquilino: "",
     edificio: "Torre Solaris I",
     piso: "4C",
@@ -415,6 +441,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 10,
+    tenantId: null,
     nombreInquilino: "",
     edificio: "Edificio Palermo Sky",
     piso: "6A",
@@ -431,6 +458,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 11,
+    tenantId: 11,
     nombreInquilino: "Roberto Ibáñez",
     edificio: "Residencial Belgrano Norte",
     piso: "7B",
@@ -447,6 +475,7 @@ const MOCK_PROPIEDADES: PropiedadDetalle[] = [
   },
   {
     id: 12,
+    tenantId: 12,
     nombreInquilino: "Claudia Ferreyra",
     edificio: "Centro Comercial San Martín",
     piso: "Oficina 7",
@@ -689,6 +718,11 @@ export type PaymentMethod =
   | "DEBIT"
   | "CREDIT";
 
+export interface BillingTenant {
+  firstName: string;
+  lastName: string;
+}
+
 export interface Billing {
   id: string;
   period: string;
@@ -697,6 +731,7 @@ export interface Billing {
   dueDate: string;
   contract?: File;
   paymentDate?: string;
+  tenant?: BillingTenant | null;
 }
 
 export interface PaymentRecord {
@@ -707,6 +742,7 @@ export interface PaymentRecord {
   reference?: string;
   notes?: string;
   periods: string[];
+  hasReceipt?: boolean;
 }
 
 export interface RegisterPaymentRequest {
@@ -1063,6 +1099,7 @@ const MOCK_PAGOS: Record<string, PaymentRecord[]> = {
       paymentMethod: "BANK_TRANSFER",
       reference: "TX100001",
       periods: ["2026-04"],
+      hasReceipt: true,
     },
     {
       id: "p1-2",
@@ -1071,6 +1108,7 @@ const MOCK_PAGOS: Record<string, PaymentRecord[]> = {
       paymentMethod: "BANK_TRANSFER",
       reference: "TX100002",
       periods: ["2026-03"],
+      hasReceipt: true,
     },
   ],
   "2": [
@@ -1184,6 +1222,15 @@ const MOCK_PAGOS: Record<string, PaymentRecord[]> = {
       periods: ["2026-04"],
     },
   ],
+};
+
+const randomTenant = (): BillingTenant => {
+  const randomValue = Math.random();
+
+  return {
+    firstName: randomValue < 0.5 ? "John" : "Jane",
+    lastName: randomValue < 0.5 ? "Doe" : "Smith",
+  };
 };
 
 export async function getPropertyBillings(
@@ -1446,6 +1493,18 @@ export async function assignTenantToProperty(
   }
   return wrapResponse(
     apiClient.patch<void>(`/properties/${propertyId}/tenant/${tenantId}`),
+  );
+}
+
+export async function removeTenantFromProperty(
+  propertyId: number | string,
+): Promise<ApiResponse<void>> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return { data: undefined as unknown as void, errors: [] };
+  }
+  return wrapResponse(
+    apiClient.delete<void>(`/properties/${propertyId}/tenant`),
   );
 }
 

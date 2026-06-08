@@ -11,6 +11,7 @@ import CargarExpensaPage from "./pages/CargarExpensaPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import NuevaPropiedadPage from "./pages/NuevaPropiedadPage";
 import PropiedadDetallePage from "./pages/propertyDetail";
+import TenantSummaryPage from "./pages/TenantSummaryPage";
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import BillingPage from "./pages/BillingPage";
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
           {
             path: "propiedades/:idPropiedad",
             Component: PropiedadDetallePage,
+          },
+          {
+            path: "inquilinos/:tenantId",
+            Component: TenantSummaryPage,
           },
           {
             path: "*",

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Billing, PaymentRecord } from "../../service/propiedades";
 import { formatCurrency, formatDate } from "../../utils/propertyDetail";
+import { ESTADO_LABEL, ESTADO_CSS } from "../../utils/billingStatus";
 import DataTablePagination from "../../components/tenants/dataTable/DataTablePagination";
 import "./PaymentHistory.css";
 import PaymentDetailModal from "./PaymentDetailModal";
@@ -14,18 +15,6 @@ interface Props {
   isLoadingPagos?: boolean;
   propertyId?: string;
 }
-
-const ESTADO_LABEL: Record<string, string> = {
-  PAID: "Pagado",
-  PENDING: "Pendiente",
-  OVERDUE: "Vencido",
-};
-
-const ESTADO_CSS: Record<string, string> = {
-  PAID: "pd-pay-status--pagado",
-  PENDING: "pd-pay-status--parcial",
-  OVERDUE: "pd-pay-status--adeudado",
-};
 
 function EmptyPaymentHistory() {
   return (
