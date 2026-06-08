@@ -1,5 +1,9 @@
+import { useState } from "react";
 import type { Billing, PaymentRecord } from "../../service/propiedades";
-import { downloadPaymentReceipt } from "../../service/propiedades";
+import {
+  downloadBillingFile,
+  downloadPaymentReceipt,
+} from "../../service/propiedades";
 import { formatCurrency, formatDate } from "../../utils/propertyDetail";
 import "./PaymentHistory.css";
 import DownloadIcon from "../../components/DownloadIcon";
@@ -28,6 +32,17 @@ function getPaymentMethodLabel(m: string) {
   return PAYMENT_METHOD_LABELS[m] ?? m;
 }
 
+function triggerBlobDownload(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 interface Props {
   billing: Billing;
   pagos?: PaymentRecord[];
@@ -43,23 +58,40 @@ export default function PaymentDetailModal({
   propertyId,
   onClose,
 }: Props) {
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [loadingReceipt, setLoadingReceipt] = useState<string | null>(null);
+  const [loadingInvoice, setLoadingInvoice] = useState(false);
+
   const handleDownloadReceipt = async (
     paymentId: string,
     periods: string[],
   ) => {
     if (!propertyId) return;
+    setLoadingReceipt(paymentId);
+    setDownloadError(null);
     try {
       const blob = await downloadPaymentReceipt(propertyId, paymentId);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Recibo-${periods.join("_")}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      // ignore
+      triggerBlobDownload(blob, `Recibo-${periods.join("_")}.pdf`);
+    } catch {
+      setDownloadError(
+        "No se pudo descargar el comprobante. Intentá nuevamente.",
+      );
+    } finally {
+      setLoadingReceipt(null);
+    }
+  };
+
+  const handleDownloadBillingFile = async () => {
+    if (!propertyId) return;
+    setLoadingInvoice(true);
+    setDownloadError(null);
+    try {
+      const blob = await downloadBillingFile(propertyId, billing.id);
+      triggerBlobDownload(blob, `Factura-${billing.period}.pdf`);
+    } catch {
+      setDownloadError("No se pudo descargar la factura. Intentá nuevamente.");
+    } finally {
+      setLoadingInvoice(false);
     }
   };
 
@@ -81,6 +113,12 @@ export default function PaymentDetailModal({
         </div>
 
         <div className="pm-modal__body ph-modal__body">
+          {downloadError && (
+            <div className="ph-download-error" role="alert">
+              {downloadError}
+            </div>
+          )}
+
           <div className="pm-section">
             <div className="pm-section__label">DETALLE DE LA FACTURA</div>
             <div className="ph-grid">
@@ -118,6 +156,20 @@ export default function PaymentDetailModal({
                     : "Inquilino no disponible"}
                 </div>
               </div>
+            </div>
+
+            <div className="ph-payment-actions" style={{ marginTop: 14 }}>
+              <button
+                className="ph-download-btn"
+                onClick={handleDownloadBillingFile}
+                disabled={loadingInvoice}
+                type="button"
+              >
+                <DownloadIcon />
+                <span>
+                  {loadingInvoice ? "Descargando..." : "Descargar factura"}
+                </span>
+              </button>
             </div>
           </div>
 
@@ -179,15 +231,21 @@ export default function PaymentDetailModal({
                           </div>
 
                           <div className="ph-payment-actions">
-                            {((p as any).hasReceipt as boolean) ? (
+                            {p.hasReceipt ? (
                               <button
                                 className="ph-download-btn"
                                 onClick={() =>
                                   handleDownloadReceipt(p.id, p.periods)
                                 }
+                                disabled={loadingReceipt === p.id}
+                                type="button"
                               >
                                 <DownloadIcon />
-                                <span>Descargar comprobante</span>
+                                <span>
+                                  {loadingReceipt === p.id
+                                    ? "Descargando..."
+                                    : "Descargar comprobante"}
+                                </span>
                               </button>
                             ) : (
                               <span style={{ color: "#888" }}>

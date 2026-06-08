@@ -165,6 +165,21 @@ export async function downloadPaymentReceipt(
   return response.data;
 }
 
+export async function downloadBillingFile(
+  idPropiedad: string,
+  billingId: string,
+): Promise<Blob> {
+  if (USE_MOCK_BILLABLE_DATA) {
+    await mockDelay();
+    return new Blob(["Factura mock"], { type: "application/pdf" });
+  }
+  const response = await apiClient.get<Blob>(
+    `/properties/${idPropiedad}/billings/${billingId}/file`,
+    { responseType: "blob" },
+  );
+  return response.data;
+}
+
 export type PropiedadListItem = PropiedadDetalle;
 
 export async function getPropiedades(): Promise<PropiedadListItem[]> {
@@ -713,6 +728,7 @@ export interface PaymentRecord {
   reference?: string;
   notes?: string;
   periods: string[];
+  hasReceipt?: boolean;
 }
 
 export interface RegisterPaymentRequest {
@@ -1069,6 +1085,7 @@ const MOCK_PAGOS: Record<string, PaymentRecord[]> = {
       paymentMethod: "BANK_TRANSFER",
       reference: "TX100001",
       periods: ["2026-04"],
+      hasReceipt: true,
     },
     {
       id: "p1-2",
@@ -1077,6 +1094,7 @@ const MOCK_PAGOS: Record<string, PaymentRecord[]> = {
       paymentMethod: "BANK_TRANSFER",
       reference: "TX100002",
       periods: ["2026-03"],
+      hasReceipt: true,
     },
   ],
   "2": [
