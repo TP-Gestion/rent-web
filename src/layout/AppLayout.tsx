@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router'
-import { logout } from '../auth'
+import { logout, getUser } from '../auth'
 import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 
@@ -8,6 +8,7 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const currentUser = getUser()
 
   const handleNavigate = (path: string) => {
     if (path === '/logout') {
@@ -59,9 +60,8 @@ export default function AppLayout() {
       >
         {/* TopBar sticky */}
         <TopBar
-          sectionTitle="SOLARIS ASSETS"
-          user={{ name: 'Ana García' }}
-          notificationCount={3}
+          sectionTitle="PROPIEDADES SOLARIS"
+          user={currentUser}
           onMenuClick={() => setMobileOpen((o) => !o)}
         />
 

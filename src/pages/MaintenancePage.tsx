@@ -29,11 +29,7 @@ export default function MaintenancePage() {
 
   const buildings = useMemo(() => buildingsData ?? [], [buildingsData])
 
-  useEffect(() => {
-    if (buildings.length > 0 && !selectedBuildingId) {
-      setSelectedBuildingId(buildings[0].id)
-    }
-  }, [buildings, selectedBuildingId])
+
 
   const { data: expensesResponse, isLoading: loadingExpenses, error: expensesError } = getExpensas(selectedBuildingId)
 
@@ -64,7 +60,6 @@ export default function MaintenancePage() {
 
   useEffect(() => {
     setSelectedExpenseId(null)
-    setFeedback(null)
   }, [selectedBuildingId])
 
   const updateExpenseMutation = useUpdateExpense(selectedBuildingId)
@@ -74,10 +69,25 @@ export default function MaintenancePage() {
   const handleSave = () => {
     if (!selectedExpense || !canSave) return
 
-    updateExpenseMutation.mutate({
-      expenseId: selectedExpense.id,
-      body: { amount: Number(draft.amount) },
-    })
+    updateExpenseMutation.mutate(
+      {
+        expenseId: selectedExpense.id,
+        body: { amount: Number(draft.amount) },
+      },
+      {
+        onSuccess: (res) => {
+          if (res.errors && res.errors.length > 0) {
+            setFeedback("Hubo un error al guardar los cambios.")
+          } else {
+            setFeedback("Los cambios se guardaron exitosamente.")
+            setSelectedBuildingId(0)
+          }
+        },
+        onError: () => {
+          setFeedback("Hubo un error al guardar los cambios.")
+        },
+      }
+    )
   }
 
   return (
@@ -109,7 +119,10 @@ export default function MaintenancePage() {
                 id="building"
                 className="mnt-select"
                 value={selectedBuildingId || ""}
-                onChange={(event) => setSelectedBuildingId(Number(event.target.value))}
+                onChange={(event) => {
+                  setSelectedBuildingId(Number(event.target.value))
+                  setFeedback(null)
+                }}
               >
                 <option value="">Seleccioná un edificio</option>
                 {buildings.map((building) => (
@@ -140,7 +153,6 @@ export default function MaintenancePage() {
               </div>
             </div>
 
-            {feedback && <div className="mnt-feedback">{feedback}</div>}
             {expensesError && <div className="mnt-error">No se pudieron cargar los gastos.</div>}
             {loadingExpenses && <div className="mnt-loading">Cargando gastos...</div>}
 
@@ -157,7 +169,10 @@ export default function MaintenancePage() {
                       <button
                         type="button"
                         className="mnt-item__button"
-                        onClick={() => setSelectedExpenseId(expense.id)}
+                        onClick={() => {
+                          setSelectedExpenseId(expense.id)
+                          setFeedback(null)
+                        }}
                       >
                         <div className="mnt-item__top">
                           <strong>{expense.concept || "Sin concepto"}</strong>
@@ -185,6 +200,8 @@ export default function MaintenancePage() {
                 <h2 className="mnt-title">Modificar gasto</h2>
               </div>
             </div>
+
+            {feedback && <div className="mnt-feedback">{feedback}</div>}
 
             {!selectedExpense ? (
               <div className="mnt-empty">Seleccioná un gasto para editar sus datos.</div>
@@ -218,6 +235,7 @@ export default function MaintenancePage() {
                     onClick={() => {
                       setSelectedExpenseId(null)
                       setDraft(EMPTY_DRAFT)
+                      setFeedback(null)
                     }}
                   >
                     Cancelar

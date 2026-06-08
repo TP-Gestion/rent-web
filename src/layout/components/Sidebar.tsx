@@ -9,7 +9,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   {
-    label: 'Dashboard',
+    label: 'Métricas',
     href: '/dashboard',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -21,7 +21,7 @@ const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
-    label: 'Tenants',
+    label: 'Inquilinos',
     href: '/tenants',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -33,7 +33,7 @@ const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
-    label: 'Maintenance',
+    label: 'Modificar Gastos',
     href: '/maintenance',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -42,7 +42,7 @@ const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
-    label: 'Finances',
+    label: 'Agregar Gasto',
     href: '/finances',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -56,7 +56,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const FOOTER_ITEMS: NavItem[] = [
   {
-    label: 'Logout',
+    label: 'Salir',
     href: '/logout',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -85,7 +85,7 @@ export default function Sidebar({ activePath = '/tenants', onNavigate, mobileOpe
       {/* Logo */}
       <div className="sidebar__logo-area">
         <div className="sidebar__logo-text">SOLARIS</div>
-        <div className="sidebar__logo-sub">ADMIN CONSOLE</div>
+        <div className="sidebar__logo-sub">CONSOLA DE ADMINISTRADOR</div>
       </div>
 
       {/* Nav principal */}

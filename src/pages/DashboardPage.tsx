@@ -12,7 +12,7 @@ type DashboardActionProps = {
     onClick: () => void;
 };
 
-function DashboardAction({ label, description, onClick}: DashboardActionProps) {
+function DashboardAction({ label, description, onClick }: DashboardActionProps) {
     return (
         <button
             type="button"
@@ -65,18 +65,19 @@ export default function DashboardPage() {
         buildings,
         tenants,
         payments,
+        topTenants,
     } = useDashboard();
 
-    const buildingsWithAlert = useMemo(() => {
-        const buildings = new Set<string>();
+    const propertiesWithAlert = useMemo(() => {
+        const properties = new Set<string>();
 
         [...dueSoonBillings, ...overdueBillings].forEach((item) => {
-            if (item.edificio) {
-                buildings.add(item.edificio);
+            if (item.propiedad) {
+                properties.add(item.propiedad);
             }
         });
 
-        return buildings.size;
+        return properties.size;
     }, [dueSoonBillings, overdueBillings]);
 
     const dueSoonAmount = useMemo(() => {
@@ -157,7 +158,7 @@ export default function DashboardPage() {
                     value={`${overview.occupancyRate}%`}
                     subtitle={`${overview.occupiedProperties} de ${overview.totalProperties} unidades ocupadas en total`}
                     variant="default"
-                />                
+                />
                 <StatCard
                     label="Índice de morosidad"
                     value={`${payments.morosityRate}%`}
@@ -166,9 +167,9 @@ export default function DashboardPage() {
                     variant="danger"
                 />
                 <StatCard
-                    label="Edificios con alerta"
-                    value={String(buildingsWithAlert)}
-                    subtitle={`${buildingsWithAlert} edificios con vencimientos próximos o atrasados`}
+                    label="Propiedades con alerta"
+                    value={String(propertiesWithAlert)}
+                    subtitle={`${propertiesWithAlert} propiedades con vencimientos próximos o atrasados`}
                     variant="danger"
                 />
             </section>
@@ -185,165 +186,192 @@ export default function DashboardPage() {
 
             <section className="dashboard-grid">
                 <div className="dashboard-grid__main">
-                <article className="dashboard-card dashboard-card--followup dashboard-card--wide">
-                    <div className="dashboard-card__header">
-                        <div>
-                            <div className="dashboard-card__eyebrow">Cobros que requieren seguimiento</div>
-                            <h2 className="dashboard-card__title">Próximos vencimientos y mora</h2>
-                        </div>
-                    </div>
-
-                    <div className="dashboard-followup-grid">
-                        <section className="dashboard-followup-group" aria-label="Próximos siete días">
-                            <div className="dashboard-followup__header">
-                                <h3 className="dashboard-followup__title">Próximos 7 días</h3>
-                                <span className="dashboard-followup__count">{dueSoonBillings.length}</span>
+                    <article className="dashboard-card dashboard-card--followup dashboard-card--wide">
+                        <div className="dashboard-card__header">
+                            <div>
+                                <div className="dashboard-card__eyebrow">Cobros que requieren seguimiento</div>
+                                <h2 className="dashboard-card__title">Próximos vencimientos y mora</h2>
                             </div>
-                            <div className="dashboard-due-list">
-                                {dueSoonBillings.length === 0 ? (
-                                    <div className="dashboard-empty-state">No hay cobros por vencer en los próximos 7 días.</div>
-                                ) : (
-                                    dueSoonBillings.map((item) => (
-                                        <div className="dashboard-due-item" key={item.id}>
-                                            <div className="dashboard-due-item__main">
-                                                <strong>{item.propiedad}</strong>
-                                                <span>
-                                                    {item.inquilino || "Unidad sin asignar"} · {formatDashboardDueDate(item.fechaVencimiento)}
-                                                </span>
+                        </div>
+
+                        <div className="dashboard-followup-grid">
+                            <section className="dashboard-followup-group" aria-label="Próximos siete días">
+                                <div className="dashboard-followup__header">
+                                    <h3 className="dashboard-followup__title">Próximos 7 días</h3>
+                                    <span className="dashboard-followup__count">{dueSoonBillings.length}</span>
+                                </div>
+                                <div className="dashboard-due-list">
+                                    {dueSoonBillings.length === 0 ? (
+                                        <div className="dashboard-empty-state">No hay cobros por vencer en los próximos 7 días.</div>
+                                    ) : (
+                                        dueSoonBillings.map((item) => (
+                                            <div className="dashboard-due-item" key={item.id}>
+                                                <div className="dashboard-due-item__main">
+                                                    <strong>{item.propiedad}</strong>
+                                                    <span>
+                                                        {item.inquilino || "Unidad sin asignar"} · {formatDashboardDueDate(item.fechaVencimiento)}
+                                                    </span>
+                                                </div>
+                                                <div className="dashboard-due-item__side">
+                                                    <span className={`dashboard-status dashboard-status--${item.tone}`}>
+                                                        {getDashboardDueStatusLabel(item.daysLeft)}
+                                                    </span>
+                                                    <strong>{formatArs(item.montoACobrar)}</strong>
+                                                </div>
                                             </div>
-                                            <div className="dashboard-due-item__side">
-                                                <span className={`dashboard-status dashboard-status--${item.tone}`}>
-                                                    {getDashboardDueStatusLabel(item.daysLeft)}
-                                                </span>
-                                                <strong>{formatArs(item.montoACobrar)}</strong>
+                                        ))
+                                    )}
+                                </div>
+                            </section>
+
+                            <section className="dashboard-followup-group" aria-label="Vencimientos atrasados">
+                                <div className="dashboard-followup__header">
+                                    <h3 className="dashboard-followup__title">Vencidos</h3>
+                                    <span className="dashboard-followup__count">{overdueBillings.length}</span>
+                                </div>
+                                <div className="dashboard-due-list">
+                                    {overdueBillings.length === 0 ? (
+                                        <div className="dashboard-empty-state">No hay cobros vencidos para seguir.</div>
+                                    ) : (
+                                        overdueBillings.map((item) => (
+                                            <div className="dashboard-due-item" key={item.id}>
+                                                <div className="dashboard-due-item__main">
+                                                    <strong>{item.propiedad}</strong>
+                                                    <span>
+                                                        {item.inquilino || "Unidad sin asignar"} · {formatDashboardDueDate(item.fechaVencimiento)}
+                                                    </span>
+                                                </div>
+                                                <div className="dashboard-due-item__side">
+                                                    <span className={`dashboard-status dashboard-status--${item.tone}`}>
+                                                        {getDashboardDueStatusLabel(item.daysLeft)}
+                                                    </span>
+                                                    <strong>{formatArs(item.montoACobrar)}</strong>
+                                                </div>
                                             </div>
+                                        ))
+                                    )}
+                                </div>
+                            </section>
+                        </div>
+
+                        <div className="dashboard-card__note">Solo se muestran hasta 10 cobranzas por sección con vencimiento cargado y estado pendiente o atrasado.</div>
+
+                    </article>
+
+                    <article className="dashboard-card dashboard-card--buildings dashboard-buildings-card">
+                        <div className="dashboard-card__header dashboard-card__header--stacked">
+                            <div>
+                                <div className="dashboard-card__eyebrow">Propiedades</div>
+                                <h2 className="dashboard-card__title">Concentración de unidades</h2>
+                            </div>
+                        </div>
+
+                        <p className="dashboard-buildings-card__copy">
+                            Revisión de edificios con mayor cantidad de unidades y su nivel de ocupación.
+                        </p>
+
+                        <div className="dashboard-buildings-summary" aria-label="Resumen de cartera">
+                            <div className="dashboard-buildings-summary__item">
+                                <span className="dashboard-buildings-summary__value">{buildings.length}</span>
+                                <span className="dashboard-buildings-summary__label">Edificios activos</span>
+                            </div>
+                            <div className="dashboard-buildings-summary__item">
+                                <span className="dashboard-buildings-summary__value">{tenants.length}</span>
+                                <span className="dashboard-buildings-summary__label">Inquilinos activos</span>
+                            </div>
+                            <div className="dashboard-buildings-summary__item">
+                                <span className="dashboard-buildings-summary__value">{overview.totalProperties}</span>
+                                <span className="dashboard-buildings-summary__label">Unidades totales</span>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-card__divider" />
+
+                        <div className="dashboard-building-list dashboard-building-list--compact">
+                            {buildingBreakdown.map((building) => {
+                                const occupancyTone = getOccupancyTone(building.occupancyRate);
+
+                                return (
+                                    <div className="dashboard-building dashboard-building--compact" key={building.id}>
+                                        <div className="dashboard-building__main">
+                                            <strong>{building.name}</strong>
+                                            <span>{building.address}</span>
                                         </div>
-                                    ))
-                                )}
-                            </div>
-                        </section>
 
-                        <section className="dashboard-followup-group" aria-label="Vencimientos atrasados">
-                            <div className="dashboard-followup__header">
-                                <h3 className="dashboard-followup__title">Vencidos</h3>
-                                <span className="dashboard-followup__count">{overdueBillings.length}</span>
-                            </div>
-                            <div className="dashboard-due-list">
-                                {overdueBillings.length === 0 ? (
-                                    <div className="dashboard-empty-state">No hay cobros vencidos para seguir.</div>
-                                ) : (
-                                    overdueBillings.map((item) => (
-                                        <div className="dashboard-due-item" key={item.id}>
-                                            <div className="dashboard-due-item__main">
-                                                <strong>{item.propiedad}</strong>
-                                                <span>
-                                                    {item.inquilino || "Unidad sin asignar"} · {formatDashboardDueDate(item.fechaVencimiento)}
+                                        <div className="dashboard-building__occupancy">
+                                            <div className="dashboard-building__occupancy-row">
+                                                <strong className={`dashboard-building__occupancy-value dashboard-building__occupancy-value--${occupancyTone}`}>
+                                                    {building.occupancyRate}%
+                                                </strong>
+                                                <span className={`dashboard-building__occupancy-pill dashboard-building__occupancy-pill--${occupancyTone}`}>
+                                                    {getOccupancyLabel(building.occupancyRate)}
                                                 </span>
                                             </div>
-                                            <div className="dashboard-due-item__side">
-                                                <span className={`dashboard-status dashboard-status--${item.tone}`}>
-                                                    {getDashboardDueStatusLabel(item.daysLeft)}
-                                                </span>
-                                                <strong>{formatArs(item.montoACobrar)}</strong>
+
+                                            <div
+                                                className="dashboard-building__occupancy-track"
+                                                role="progressbar"
+                                                aria-label={`Ocupación ${building.name}`}
+                                                aria-valuemin={0}
+                                                aria-valuemax={100}
+                                                aria-valuenow={building.occupancyRate}
+                                            >
+                                                <span
+                                                    className={`dashboard-building__occupancy-fill dashboard-building__occupancy-fill--${occupancyTone}`}
+                                                    style={{ width: `${building.occupancyRate}%` }}
+                                                />
                                             </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </section>
-                    </div>
 
-                    <div className="dashboard-card__note">Solo se muestran cobranzas con vencimiento cargado y estado pendiente o atrasado.</div>
-
-                </article>
-
-                <article className="dashboard-card dashboard-card--buildings dashboard-buildings-card">
-                    <div className="dashboard-card__header dashboard-card__header--stacked">
-                        <div>
-                            <div className="dashboard-card__eyebrow">Propiedades</div>
-                            <h2 className="dashboard-card__title">Concentración de unidades</h2>
-                        </div>
-                    </div>
-
-                    <p className="dashboard-buildings-card__copy">
-                        Revisión de edificios con mayor cantidad de unidades y su nivel de ocupación.
-                    </p>
-
-                    <div className="dashboard-buildings-summary" aria-label="Resumen de cartera">
-                        <div className="dashboard-buildings-summary__item">
-                            <span className="dashboard-buildings-summary__value">{buildings.length}</span>
-                            <span className="dashboard-buildings-summary__label">Edificios activos</span>
-                        </div>
-                        <div className="dashboard-buildings-summary__item">
-                            <span className="dashboard-buildings-summary__value">{tenants.length}</span>
-                            <span className="dashboard-buildings-summary__label">Inquilinos activos</span>
-                        </div>
-                        <div className="dashboard-buildings-summary__item">
-                            <span className="dashboard-buildings-summary__value">{overview.totalProperties}</span>
-                            <span className="dashboard-buildings-summary__label">Unidades totales</span>
-                        </div>
-                    </div>
-
-                    <div className="dashboard-card__divider" />
-
-                    <div className="dashboard-building-list dashboard-building-list--compact">
-                        {buildingBreakdown.map((building) => {
-                            const occupancyTone = getOccupancyTone(building.occupancyRate);
-
-                            return (
-                                <div className="dashboard-building dashboard-building--compact" key={building.id}>
-                                    <div className="dashboard-building__main">
-                                        <strong>{building.name}</strong>
-                                        <span>{building.address}</span>
-                                    </div>
-
-                                    <div className="dashboard-building__occupancy">
-                                        <div className="dashboard-building__occupancy-row">
-                                            <strong className={`dashboard-building__occupancy-value dashboard-building__occupancy-value--${occupancyTone}`}>
-                                                {building.occupancyRate}%
-                                            </strong>
-                                            <span className={`dashboard-building__occupancy-pill dashboard-building__occupancy-pill--${occupancyTone}`}>
-                                                {getOccupancyLabel(building.occupancyRate)}
+                                            <span className="dashboard-building__occupancy-meta">
+                                                {building.occupiedUnits}/{building.units} ocupadas
                                             </span>
                                         </div>
-
-                                        <div
-                                            className="dashboard-building__occupancy-track"
-                                            role="progressbar"
-                                            aria-label={`Ocupación ${building.name}`}
-                                            aria-valuemin={0}
-                                            aria-valuemax={100}
-                                            aria-valuenow={building.occupancyRate}
-                                        >
-                                            <span
-                                                className={`dashboard-building__occupancy-fill dashboard-building__occupancy-fill--${occupancyTone}`}
-                                                style={{ width: `${building.occupancyRate}%` }}
-                                            />
-                                        </div>
-
-                                        <span className="dashboard-building__occupancy-meta">
-                                            {building.occupiedUnits}/{building.units} ocupadas
-                                        </span>
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </article>
-                </div>
-                <aside className="dashboard-card">
-                    <div className="dashboard-card__header">
-                        <div>
-                            <div className="dashboard-card__eyebrow">Acciones rápidas</div>
-                            <h2 className="dashboard-card__title">Atajos operativos</h2>
+                                );
+                            })}
                         </div>
-                    </div>
+                    </article>
+                </div>
+                <aside style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    <article className="dashboard-card">
+                        <div className="dashboard-card__header">
+                            <div>
+                                <div className="dashboard-card__eyebrow">Acciones rápidas</div>
+                                <h2 className="dashboard-card__title">Atajos operativos</h2>
+                            </div>
+                        </div>
 
-                    <div className="dashboard-actions-stack">
-                        {actionCards.map((action) => (
-                            <DashboardAction key={action.label} {...action} />
-                        ))}
-                    </div>
+                        <div className="dashboard-actions-stack">
+                            {actionCards.map((action) => (
+                                <DashboardAction key={action.label} {...action} />
+                            ))}
+                        </div>
+                    </article>
+
+                    <article className="dashboard-card">
+                        <div className="dashboard-card__header">
+                            <div>
+                                <div className="dashboard-card__eyebrow">Inquilinos</div>
+                                <h2 className="dashboard-card__title">Top 5 con más propiedades</h2>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-top-tenants-list">
+                            {topTenants.length === 0 ? (
+                                <div className="dashboard-empty-state">No hay inquilinos activos.</div>
+                            ) : (
+                                topTenants.map((item, index) => (
+                                    <div key={item.name} className="dashboard-top-tenant-item">
+                                        <div className="dashboard-top-tenant-rank">#{index + 1}</div>
+                                        <div className="dashboard-top-tenant-name">{item.name}</div>
+                                        <div className="dashboard-top-tenant-count">
+                                            {item.count} {item.count === 1 ? 'propiedad' : 'propiedades'}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </article>
                 </aside>
 
 

@@ -126,7 +126,7 @@ export function useDashboard() {
 				return leftDays - rightDays;
 			})
 			.filter((item) => item.daysLeft !== null && item.daysLeft >= 0 && item.daysLeft <= 7)
-			.slice(0, 5);
+			.slice(0, 10);
 	}, [billableItems]);
 
 	const overdueBillings = useMemo<UpcomingBillingItem[]>(() => {
@@ -141,7 +141,7 @@ export function useDashboard() {
 			})
 			.filter((item) => isOverdueBilling(item))
 			.sort((left, right) => (left.daysLeft ?? 0) - (right.daysLeft ?? 0))
-			.slice(0, 5);
+			.slice(0, 10);
 	}, [billableItems]);
 
 	const payments = useMemo<DashboardPaymentsSummary>(() => {
@@ -166,6 +166,21 @@ export function useDashboard() {
 
 	const openFollowUps = overview.pendingProperties + overview.overdueProperties;
 
+	const topTenants = useMemo(() => {
+		const tenantCounts = new Map<string, number>();
+		properties.forEach((prop) => {
+			if (prop.nombreInquilino && prop.nombreInquilino.trim() !== "") {
+				const name = prop.nombreInquilino.trim();
+				tenantCounts.set(name, (tenantCounts.get(name) ?? 0) + 1);
+			}
+		});
+
+		return Array.from(tenantCounts.entries())
+			.map(([name, count]) => ({ name, count }))
+			.sort((left, right) => right.count - left.count)
+			.slice(0, 5);
+	}, [properties]);
+
 	return {
 		isLoading,
 		hasError,
@@ -177,5 +192,6 @@ export function useDashboard() {
 		buildings,
 		tenants,
 		payments,
+		topTenants,
 	};
 }
