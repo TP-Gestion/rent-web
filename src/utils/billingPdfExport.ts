@@ -28,14 +28,15 @@ function todayStr(): string {
 function labelValue(
   doc: jsPDF,
   label: string,
-  value: string,
+  value: string | null | undefined,
   x: number,
   y: number,
 ): void {
+  const safeValue = value != null && value !== "" ? value : "—";
   doc.setFont("helvetica", "bold");
   doc.text(`${label}:`, x, y);
   doc.setFont("helvetica", "normal");
-  doc.text(value, x + doc.getTextWidth(`${label}:`) + 2, y);
+  doc.text(safeValue, x + doc.getTextWidth(`${label}:`) + 2, y);
 }
 
 function sanitizeSegment(s: string): string {
