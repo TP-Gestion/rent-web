@@ -14,9 +14,9 @@ function normalizeItem(api: ApiBillableItem): BillingItem {
     inquilino:
       api.tenant.firstName && api.tenant.lastName
         ? `${api.tenant.firstName} ${api.tenant.lastName}`
-        : "",
-    correo: api.tenant.email,
-    telefono: api.tenant.phone,
+        : "Sin inquilino",
+    correo: api.tenant.email ?? "",
+    telefono: api.tenant.phone ?? "",
     direccion: api.address,
     estadoAnterior: api.previousStatus,
     deudaAmount: api.debtAmount,
