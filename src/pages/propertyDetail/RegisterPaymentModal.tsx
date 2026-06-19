@@ -75,23 +75,8 @@ export default function RegisterPaymentModal({
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    setFechaPago(new Date().toISOString().slice(0, 10));
-    setErrors((prev) => ({ ...prev, paymentDate: undefined }));
-  }, [selectedPeriods]);
 
   if (!isOpen) return null;
-
-  const today = new Date().toISOString().slice(0, 10);
-
-  const minFechaPago =
-    selectedPeriods.length > 0
-      ? facturas
-          .filter((f) => selectedPeriods.includes(f.period))
-          .map((f) => f.dueDate)
-          .sort()
-          .slice(-1)[0]
-      : undefined;
 
   const handleSubmit = () => {
     if (receiptError) return;
@@ -110,12 +95,6 @@ export default function RegisterPaymentModal({
         const key = issue.path[0] as keyof RegisterPaymentFormErrors;
         if (!newErrors[key]) newErrors[key] = issue.message;
       }
-    }
-
-    if (fechaPago && fechaPago > today) {
-      newErrors.paymentDate = "La fecha de pago no puede ser futura";
-    } else if (minFechaPago && fechaPago < minFechaPago) {
-      newErrors.paymentDate = `La fecha de pago no puede ser anterior al vencimiento (${minFechaPago})`;
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -256,20 +235,11 @@ export default function RegisterPaymentModal({
                 Fecha de pago <span className="pm-required">*</span>
               </label>
               <input
-                className={`pm-field__input${errors.paymentDate ? " pm-field__input--error" : ""}`}
+                className="pm-field__input"
                 type="date"
                 value={fechaPago}
-                max={today}
-                min={minFechaPago}
-                onChange={(e) => {
-                  setFechaPago(e.target.value);
-                  if (errors.paymentDate)
-                    setErrors((prev) => ({ ...prev, paymentDate: undefined }));
-                }}
+                onChange={(e) => setFechaPago(e.target.value)}
               />
-              {errors.paymentDate && (
-                <p className="pm-field__error">{errors.paymentDate}</p>
-              )}
             </div>
 
             <div className="pm-field">

@@ -4,7 +4,7 @@ export const registrarPagoSchema = z.object({
   periods: z
     .array(z.string())
     .min(1, "Debe seleccionar al menos un período a pagar"),
-  paymentDate: z.string().min(1, "Debe ingresar una fecha de pago"),
+  paymentDate: z.string().optional(),
   paymentMethod: z.string().min(1, "Debe seleccionar un medio de pago válido"),
   reference: z.string().optional(),
   notes: z.string().optional(),

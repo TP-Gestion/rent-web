@@ -75,28 +75,24 @@ export default function BillingTable({
 }: BillingTableProps) {
   const [page, setPage] = useState(1);
 
-  const visibleItems = items.filter(
-    (i) => i.inquilino && i.inquilino.trim() !== "",
-  );
-
   useEffect(() => {
     setPage(1);
   }, [items]);
 
-  const totalPages = Math.max(1, Math.ceil(visibleItems.length / PER_PAGE));
-  const pageItems = visibleItems.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(items.length / PER_PAGE));
+  const pageItems = items.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   const allSelected =
-    visibleItems.length > 0 && visibleItems.every((i) => selectedIds.has(i.id));
+    items.length > 0 && items.every((i) => selectedIds.has(i.id));
   const someSelected =
-    !allSelected && visibleItems.some((i) => selectedIds.has(i.id));
+    !allSelected && items.some((i) => selectedIds.has(i.id));
 
   const handleSelectAll = () => {
     const next = new Set(selectedIds);
     if (allSelected) {
-      visibleItems.forEach((i) => next.delete(i.id));
+      items.forEach((i) => next.delete(i.id));
     } else {
-      visibleItems.forEach((i) => next.add(i.id));
+      items.forEach((i) => next.add(i.id));
     }
     onSelectionChange(next);
   };
