@@ -147,19 +147,21 @@ export default function PaymentDetailModal({
               </div>
             </div>
 
-            <div className="ph-payment-actions" style={{ marginTop: 14 }}>
-              <button
-                className="ph-download-btn"
-                onClick={handleDownloadBillingFile}
-                disabled={loadingInvoice}
-                type="button"
-              >
-                <DownloadIcon />
-                <span>
-                  {loadingInvoice ? "Descargando..." : "Descargar factura"}
-                </span>
-              </button>
-            </div>
+            {!(typeof billing.id === "number" ? billing.id < 0 : String(billing.id).startsWith("-")) && (
+              <div className="ph-payment-actions" style={{ marginTop: 14 }}>
+                <button
+                  className="ph-download-btn"
+                  onClick={handleDownloadBillingFile}
+                  disabled={loadingInvoice}
+                  type="button"
+                >
+                  <DownloadIcon />
+                  <span>
+                    {loadingInvoice ? "Descargando..." : "Descargar factura"}
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="pm-section" style={{ marginTop: 18 }}>
